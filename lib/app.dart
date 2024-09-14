@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'core/config/theme.dart';
+import 'core/utils/create_text_theme.dart';
 import 'features/splash/presentation/screens/splash_screen.dart';
 import 'features/home/presentation/screens/home_screen.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
@@ -11,12 +12,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const materialTheme = MaterialTheme(Typography.blackCupertino);
+    final brightness = View.of(context).platformDispatcher.platformBrightness;
+
+    // Use with Google Fonts package to use downloadable fonts
+    TextTheme textTheme = createTextTheme(context, "Roboto", "Roboto");
+
+    MaterialTheme theme = MaterialTheme(textTheme);
+
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: materialTheme.light().colorScheme.surface,
-      systemNavigationBarIconBrightness: materialTheme.light().brightness == Brightness.dark ? Brightness.light : Brightness.dark,
-      statusBarColor: materialTheme.light().colorScheme.surface,
-      statusBarIconBrightness: materialTheme.light().brightness == Brightness.dark ? Brightness.light : Brightness.dark,
+      systemNavigationBarColor: Brightness.light == brightness ? Colors.white : Colors.black,
+      systemNavigationBarIconBrightness: Brightness.light == brightness ? Brightness.dark : Brightness.light,
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light == brightness ? Brightness.dark : Brightness.light,
     ));
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
@@ -25,7 +32,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Food Waste',
-      theme: materialTheme.light(),
+      theme: brightness == Brightness.light ? theme.light() : theme.dark(),
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),

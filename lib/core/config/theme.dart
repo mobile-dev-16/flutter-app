@@ -69,7 +69,7 @@ class MaterialTheme {
   static MaterialScheme lightMediumContrastScheme() {
     return const MaterialScheme(
       brightness: Brightness.light,
-      primary: Color(4283580672),
+      primary: Color(4285684748),
       surfaceTint: Color(4285684748),
       onPrimary: Color(4294967295),
       primaryContainer: Color(4287263268),
@@ -128,7 +128,7 @@ class MaterialTheme {
   static MaterialScheme lightHighContrastScheme() {
     return const MaterialScheme(
       brightness: Brightness.light,
-      primary: Color(4281016576),
+      primary: Color(4285619212),
       surfaceTint: Color(4285684748),
       onPrimary: Color(4294967295),
       primaryContainer: Color(4283580672),
@@ -246,7 +246,7 @@ class MaterialTheme {
   static MaterialScheme darkMediumContrastScheme() {
     return const MaterialScheme(
       brightness: Brightness.dark,
-      primary: Color(4293314673),
+      primary: Color(4293051501),
       surfaceTint: Color(4292985965),
       onPrimary: Color(4280096000),
       primaryContainer: Color(4289236541),
@@ -305,7 +305,7 @@ class MaterialTheme {
   static MaterialScheme darkHighContrastScheme() {
     return const MaterialScheme(
       brightness: Brightness.dark,
-      primary: Color(4294966006),
+      primary: Color(4292658798),
       surfaceTint: Color(4292985965),
       onPrimary: Color(4278190080),
       primaryContainer: Color(4293314673),
@@ -370,7 +370,7 @@ class MaterialTheme {
         bodyColor: colorScheme.onSurface,
         displayColor: colorScheme.onSurface,
       ),
-      scaffoldBackgroundColor: colorScheme.background,
+      scaffoldBackgroundColor: colorScheme.surface,
       canvasColor: colorScheme.surface,
   );
 
@@ -505,12 +505,17 @@ extension MaterialSchemeUtils on MaterialScheme {
       onError: onError,
       errorContainer: errorContainer,
       onErrorContainer: onErrorContainer,
-      background: background,
-      onBackground: onBackground,
       surface: surface,
       onSurface: onSurface,
-      surfaceVariant: surfaceVariant,
       onSurfaceVariant: onSurfaceVariant,
+      surfaceTint: surfaceTint,
+      surfaceDim: surfaceDim,
+      surfaceBright: surfaceBright,
+      surfaceContainerLowest: surfaceContainerLowest,
+      surfaceContainerLow: surfaceContainerLow,
+      surfaceContainer: surfaceContainer,
+      surfaceContainerHigh: surfaceContainerHigh,
+      surfaceContainerHighest: surfaceContainerHighest,
       outline: outline,
       outlineVariant: outlineVariant,
       shadow: shadow,
@@ -518,6 +523,18 @@ extension MaterialSchemeUtils on MaterialScheme {
       inverseSurface: inverseSurface,
       onInverseSurface: inverseOnSurface,
       inversePrimary: inversePrimary,
+      primaryFixed: primaryFixed,
+      onPrimaryFixed: onPrimaryFixed,
+      primaryFixedDim: primaryFixedDim,
+      onPrimaryFixedVariant: onPrimaryFixedVariant,
+      secondaryFixed: secondaryFixed,
+      onSecondaryFixed: onSecondaryFixed,
+      secondaryFixedDim: secondaryFixedDim,
+      onSecondaryFixedVariant: onSecondaryFixedVariant,
+      tertiaryFixed: tertiaryFixed,
+      onTertiaryFixed: onTertiaryFixed,
+      tertiaryFixedDim: tertiaryFixedDim,
+      onTertiaryFixedVariant: onTertiaryFixedVariant,
     );
   }
 }

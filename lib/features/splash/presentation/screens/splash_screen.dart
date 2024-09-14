@@ -16,7 +16,7 @@ class SplashScreen extends StatelessWidget {
         statusBarIconBrightness: theme.brightness == Brightness.dark ? Brightness.light : Brightness.dark,
       ),
       child: Scaffold(
-        backgroundColor: theme.colorScheme.surface,
+        backgroundColor: theme.colorScheme.surfaceContainer,
         body: Center(
           child: Text(
             'Food Waste',
