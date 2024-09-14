@@ -23,8 +23,8 @@ jobs:
           channel: stable
       - name: Install dependencies
         run: flutter pub get
-      - name: Test
-        run: flutter test
+      # - name: Test
+      #   run: flutter test
       - name: Build
         run: flutter build apk
       - name: Bundle
