@@ -1,24 +1,29 @@
+import 'package:eco_bites/features/splash/presentation/bloc/splash_event.dart';
+import 'package:eco_bites/features/splash/presentation/bloc/splash_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'splash_event.dart';
-import 'splash_state.dart';
 
 class SplashBloc extends Bloc<SplashEvent, SplashState> {
   SplashBloc() : super(SplashInitial()) {
     on<AppStarted>(_onAppStarted);
   }
 
-  Future<void> _onAppStarted(AppStarted event, Emitter<SplashState> emit) async {
-    // TODO: Delete this when the authentication is implemented
-    await Future.delayed(const Duration(seconds: 3));
+  Future<void> _onAppStarted(
+    AppStarted event,
+    Emitter<SplashState> emit,
+  ) async {
+    // TODO(1): Implement the authentication
+    // ignore: always_specify_types
+    await Future.delayed(const Duration(milliseconds: 200));
 
-    // TODO: Implement the authentication
+    // TODO(2): Replace the following line with the actual authentication logic
 
-    bool isAuthenticated = true;
+    const bool isAuthenticated = true;
 
     if (isAuthenticated) {
       emit(Authenticated());
-    } else {
-      emit(Unauthenticated());
     }
+    // else {
+    //   emit(Unauthenticated());
+    // }
   }
 }

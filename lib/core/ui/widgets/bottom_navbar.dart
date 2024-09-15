@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 class BottomNavbar extends StatelessWidget {
-  final int currentIndex;
-  final Function(int) onTap;
 
   const BottomNavbar({
     super.key,
@@ -11,9 +9,12 @@ class BottomNavbar extends StatelessWidget {
     required this.onTap,
   });
 
+  final int currentIndex;
+  final Function(int) onTap;
+
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final ThemeData theme = Theme.of(context);
 
     return NavigationBar(
       selectedIndex: currentIndex,
