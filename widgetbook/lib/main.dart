@@ -16,9 +16,7 @@ class WidgetbookApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     TextTheme textTheme = createTextTheme(context, "Roboto", "Roboto");
-
     MaterialTheme theme = MaterialTheme(textTheme);
 
     return Widgetbook.material(
@@ -35,15 +33,28 @@ class WidgetbookApp extends StatelessWidget {
         initialDevice: Devices.android.samsungGalaxyNote20,
         ),
         InspectorAddon(),
+        MaterialThemeAddon(
+          themes: [
+            WidgetbookTheme(
+              name: 'Light',
+              data: theme.light(),
+            ),
+            WidgetbookTheme(
+              name: 'Dark',
+              data: theme.dark(),
+            ),
+          ],
+          initialTheme: WidgetbookTheme(
+            name: 'Light',
+            data: theme.light(),
+          ),
+        ),
         AlignmentAddon(),
         BuilderAddon(name: 'SafeArea', builder: (_,child) => SafeArea(child: child,))
       ],
       integrations: [
         WidgetbookCloudIntegration(),
       ],
-      lightTheme: theme.light(),
-      darkTheme: theme.dark(),
-      themeMode: ThemeMode.light,
     );
   }
 }
