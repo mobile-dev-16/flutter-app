@@ -4,10 +4,12 @@ import 'package:material_symbols_icons/symbols.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+  final bool showBackButton;
 
   const CustomAppBar({
     Key? key,
     required this.title,
+    this.showBackButton = false,
   }) : super(key: key);
 
   @override
@@ -24,7 +26,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         title,
         style: Theme.of(context).textTheme.headlineSmall,
       ),
-      leading: IconButton(
+      leading: showBackButton?
+      IconButton(
         icon: Icon(
           Symbols.chevron_left_rounded,
           color: Theme.of(context).colorScheme.onSurface,
@@ -33,7 +36,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         onPressed: () {
           Navigator.of(context).pop();
         },
-      ),
+      ) : null,
       automaticallyImplyLeading: false,
       systemOverlayStyle: SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
