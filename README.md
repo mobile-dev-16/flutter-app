@@ -1,4 +1,4 @@
-# flutter_app
+# eco_bites
 
 A new Flutter project.
 
