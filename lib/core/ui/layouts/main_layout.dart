@@ -7,7 +7,7 @@ import 'package:eco_bites/features/orders/presentation/screens/order_list_screen
 import 'package:eco_bites/features/profile/presentation/screens/profile_screen.dart';
 
 class MainLayout extends StatefulWidget {
-  const MainLayout({Key? key}) : super(key: key);
+  const MainLayout({super.key});
 
   @override
   _MainLayoutState createState() => _MainLayoutState();
