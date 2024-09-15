@@ -1,31 +1,32 @@
-// lib/app.dart
+import 'package:eco_bites/core/config/theme.dart';
+import 'package:eco_bites/core/ui/layouts/main_layout.dart';
+import 'package:eco_bites/core/utils/create_text_theme.dart';
+import 'package:eco_bites/features/auth/presentation/screens/login_screen.dart';
+import 'package:eco_bites/features/splash/presentation/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'core/config/theme.dart';
-import 'core/utils/create_text_theme.dart';
-import 'features/splash/presentation/screens/splash_screen.dart';
-import 'features/auth/presentation/screens/login_screen.dart';
-import 'core/ui/layouts/main_layout.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final brightness = View.of(context).platformDispatcher.platformBrightness;
+    final Brightness brightness = View.of(context).platformDispatcher.platformBrightness;
 
     // Use with Google Fonts package to use downloadable fonts
-    TextTheme textTheme = createTextTheme(context, "Roboto", "Roboto");
+    final TextTheme textTheme = createTextTheme(context, 'Roboto', 'Roboto');
 
-    MaterialTheme theme = MaterialTheme(textTheme);
+    final MaterialTheme theme = MaterialTheme(textTheme);
 
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: Brightness.light == brightness ? Colors.white : Colors.black,
-      systemNavigationBarIconBrightness: Brightness.light == brightness ? Brightness.dark : Brightness.light,
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.light == brightness ? Brightness.dark : Brightness.light,
-    ));
-    SystemChrome.setPreferredOrientations([
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        systemNavigationBarColor: Brightness.light == brightness ? Colors.white : Colors.black,
+        systemNavigationBarIconBrightness: Brightness.light == brightness ? Brightness.dark : Brightness.light,
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.light == brightness ? Brightness.dark : Brightness.light,
+      ),
+    );
+    SystemChrome.setPreferredOrientations(<DeviceOrientation>[
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
@@ -35,10 +36,10 @@ class MyApp extends StatelessWidget {
       title: 'Food Waste',
       theme: brightness == Brightness.light ? theme.light() : theme.dark(),
       initialRoute: '/',
-      routes: {
-        '/': (context) => const SplashScreen(),
-        '/main': (context) => const MainLayout(),
-        '/login': (context) => const LoginScreen(),
+      routes: <String, WidgetBuilder>{
+        '/': (BuildContext context) => const SplashScreen(),
+        '/main': (BuildContext context) => const MainLayout(),
+        '/login': (BuildContext context) => const LoginScreen(),
       },
     );
   }

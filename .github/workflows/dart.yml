@@ -7,9 +7,9 @@ name: Flutter
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
@@ -23,6 +23,8 @@ jobs:
           channel: stable
       - name: Install dependencies
         run: flutter pub get
+      - name: Analyze
+        run: flutter analyze
       # - name: Test
       #   run: flutter test
       - name: Build

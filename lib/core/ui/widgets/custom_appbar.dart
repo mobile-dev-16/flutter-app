@@ -3,14 +3,15 @@ import 'package:flutter/services.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
-  final bool showBackButton;
 
   const CustomAppBar({
     super.key,
     required this.title,
     this.showBackButton = false,
   });
+
+  final String title;
+  final bool showBackButton;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);

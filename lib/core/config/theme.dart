@@ -1,10 +1,10 @@
 // ignore_for_file: use_full_hex_values_for_flutter_colors
-import "package:flutter/material.dart";
+import 'package:flutter/material.dart';
 
 class MaterialTheme {
-  final TextTheme textTheme;
 
   const MaterialTheme(this.textTheme);
+  final TextTheme textTheme;
 
   static MaterialScheme lightScheme() {
     return const MaterialScheme(
@@ -380,7 +380,7 @@ class MaterialTheme {
   );
 
 
-  List<ExtendedColor> get extendedColors => [
+  List<ExtendedColor> get extendedColors => <ExtendedColor>[
   ];
 }
 
@@ -545,13 +545,6 @@ extension MaterialSchemeUtils on MaterialScheme {
 }
 
 class ExtendedColor {
-  final Color seed, value;
-  final ColorFamily light;
-  final ColorFamily lightHighContrast;
-  final ColorFamily lightMediumContrast;
-  final ColorFamily dark;
-  final ColorFamily darkHighContrast;
-  final ColorFamily darkMediumContrast;
 
   const ExtendedColor({
     required this.seed,
@@ -563,6 +556,13 @@ class ExtendedColor {
     required this.darkHighContrast,
     required this.darkMediumContrast,
   });
+  final Color seed, value;
+  final ColorFamily light;
+  final ColorFamily lightHighContrast;
+  final ColorFamily lightMediumContrast;
+  final ColorFamily dark;
+  final ColorFamily darkHighContrast;
+  final ColorFamily darkMediumContrast;
 }
 
 class ColorFamily {
