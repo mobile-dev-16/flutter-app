@@ -1,4 +1,3 @@
-// lib/features/splash/presentation/screens/splash_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
@@ -33,12 +32,10 @@ class SplashScreen extends StatelessWidget {
           child: Scaffold(
             backgroundColor: theme.colorScheme.surfaceContainer,
             body: Center(
-              child: Text(
-                'Food Waste',
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      fontWeight: FontWeight.bold,
-                    ),
+              child: Image.asset(
+                'assets/logo.png',
+                width: 240,
+                fit: BoxFit.contain,
               ),
             ),
           ),

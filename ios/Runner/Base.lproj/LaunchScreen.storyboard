@@ -10,7 +10,7 @@
         <!--View Controller-->
         <scene sceneID="EHf-IW-A2E">
             <objects>
-                <viewController id="01J-lp-oVM" sceneMemberID="viewController">
+                <viewController modalTransitionStyle="crossDissolve" id="01J-lp-oVM" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Ydg-fD-yQy"/>
                         <viewControllerLayoutGuide type="bottom" id="xbc-2k-c8Z"/>
@@ -36,6 +36,7 @@
             <point key="canvasLocation" x="80.916030534351137" y="264.08450704225356"/>
         </scene>
     </scenes>
+    <color key="tintColor" red="0.18823529780000001" green="0.41176474089999998" blue="0.34901961679999999" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
     <resources>
         <image name="LaunchImage" width="240" height="165.33332824707031"/>
     </resources>
