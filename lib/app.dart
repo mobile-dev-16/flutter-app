@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Food Waste',
       theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-      initialRoute: '/main',
+      initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),
         '/main': (context) => const MainLayout(),
