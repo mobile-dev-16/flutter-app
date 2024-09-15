@@ -1,4 +1,3 @@
-// lib/core/layout/main_layout.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:eco_bites/core/ui/widgets/bottom_navbar.dart';
