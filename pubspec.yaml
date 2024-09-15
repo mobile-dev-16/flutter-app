@@ -1,4 +1,4 @@
-name: flutter_app
+name: eco_bites
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -36,6 +36,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   google_fonts: ^6.2.1
+  material_symbols_icons: ^4.2785.1
 
 dev_dependencies:
   flutter_test:
