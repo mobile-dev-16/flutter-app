@@ -7,3 +7,8 @@ import 'package:eco_bites/core/ui/widgets/custom_appbar.dart';
 Widget buildCustomAppBarUseCase(BuildContext context) {
   return const CustomAppBar(title: 'AppBar');
 }
+
+@widgetbook.UseCase(name: 'With Back Button', type: CustomAppBar)
+Widget buildCustomAppBarWithBackButtonUseCase(BuildContext context) {
+  return const CustomAppBar(title: 'AppBar', showBackButton: true);
+}
