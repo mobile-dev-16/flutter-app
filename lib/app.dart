@@ -4,8 +4,8 @@ import 'package:flutter/services.dart';
 import 'core/config/theme.dart';
 import 'core/utils/create_text_theme.dart';
 import 'features/splash/presentation/screens/splash_screen.dart';
-import 'features/home/presentation/screens/home_screen.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
+import 'core/ui/layouts/main_layout.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Food Waste',
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const SplashScreen(),
-        '/home': (context) => const HomeScreen(),
+        '/main': (context) => const MainLayout(),
         '/login': (context) => const LoginScreen(),
       },
     );

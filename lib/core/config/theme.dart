@@ -1,5 +1,4 @@
 // ignore_for_file: use_full_hex_values_for_flutter_colors
-
 import "package:flutter/material.dart";
 
 class MaterialTheme {
@@ -372,6 +371,12 @@ class MaterialTheme {
       ),
       scaffoldBackgroundColor: colorScheme.surface,
       canvasColor: colorScheme.surface,
+      iconTheme: IconThemeData(
+        color: colorScheme.onSurface,
+        fill: 0,
+        weight: 600,
+        opticalSize: 48,
+        ),
   );
 
 
