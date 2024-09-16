@@ -11,24 +11,26 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:widgetbook/widgetbook.dart' as _i1;
 import 'package:widgetbook_workspace/core/ui/layouts/main_layout.dart' as _i2;
-import 'package:widgetbook_workspace/core/ui/widgets/bottom_navbar.dart' as _i3;
-import 'package:widgetbook_workspace/core/ui/widgets/custom_appbar.dart' as _i4;
+import 'package:widgetbook_workspace/core/ui/widgets/basic_image.dart' as _i3;
+import 'package:widgetbook_workspace/core/ui/widgets/bottom_navbar.dart' as _i4;
+import 'package:widgetbook_workspace/core/ui/widgets/custom_appbar.dart' as _i5;
+import 'package:widgetbook_workspace/core/ui/widgets/price_display.dart' as _i6;
 import 'package:widgetbook_workspace/features/auth/presentation/screens/login_screen.dart'
-    as _i5;
-import 'package:widgetbook_workspace/features/cart/presentation/screens/cart_screen.dart'
-    as _i6;
-import 'package:widgetbook_workspace/features/cart/presentation/widgets/cart_item.dart'
     as _i7;
-import 'package:widgetbook_workspace/features/cart/presentation/widgets/quantity_input.dart'
+import 'package:widgetbook_workspace/features/cart/presentation/screens/cart_screen.dart'
     as _i8;
-import 'package:widgetbook_workspace/features/home/presentation/screens/home_screen.dart'
+import 'package:widgetbook_workspace/features/cart/presentation/widgets/cart_item.dart'
     as _i9;
-import 'package:widgetbook_workspace/features/orders/presentation/screens/order_list_screen.dart'
+import 'package:widgetbook_workspace/features/cart/presentation/widgets/quantity_input.dart'
     as _i10;
-import 'package:widgetbook_workspace/features/profile/presentation/screens/profile_screen.dart'
+import 'package:widgetbook_workspace/features/home/presentation/screens/home_screen.dart'
     as _i11;
-import 'package:widgetbook_workspace/features/splash/presentation/screens/splash_screen.dart'
+import 'package:widgetbook_workspace/features/orders/presentation/screens/order_list_screen.dart'
     as _i12;
+import 'package:widgetbook_workspace/features/profile/presentation/screens/profile_screen.dart'
+    as _i13;
+import 'package:widgetbook_workspace/features/splash/presentation/screens/splash_screen.dart'
+    as _i14;
 
 final directories = <_i1.WidgetbookNode>[
   _i1.WidgetbookFolder(
@@ -52,11 +54,24 @@ final directories = <_i1.WidgetbookNode>[
           _i1.WidgetbookFolder(
             name: 'widgets',
             children: [
+              _i1.WidgetbookComponent(
+                name: 'BasicImage',
+                useCases: [
+                  _i1.WidgetbookUseCase(
+                    name: 'Placeholder',
+                    builder: _i3.buildBasicImageUseCase,
+                  ),
+                  _i1.WidgetbookUseCase(
+                    name: 'With Image',
+                    builder: _i3.buildBasicImageWithImageUseCase,
+                  ),
+                ],
+              ),
               _i1.WidgetbookLeafComponent(
                 name: 'BottomNavbar',
                 useCase: _i1.WidgetbookUseCase(
                   name: 'Default',
-                  builder: _i3.buildBottomNavbarUseCase,
+                  builder: _i4.buildBottomNavbarUseCase,
                 ),
               ),
               _i1.WidgetbookComponent(
@@ -64,13 +79,20 @@ final directories = <_i1.WidgetbookNode>[
                 useCases: [
                   _i1.WidgetbookUseCase(
                     name: 'Default',
-                    builder: _i4.buildCustomAppBarUseCase,
+                    builder: _i5.buildCustomAppBarUseCase,
                   ),
                   _i1.WidgetbookUseCase(
                     name: 'With Back Button',
-                    builder: _i4.buildCustomAppBarWithBackButtonUseCase,
+                    builder: _i5.buildCustomAppBarWithBackButtonUseCase,
                   ),
                 ],
+              ),
+              _i1.WidgetbookLeafComponent(
+                name: 'PriceDisplay',
+                useCase: _i1.WidgetbookUseCase(
+                  name: 'Default',
+                  builder: _i6.buildPriceDisplayUseCase,
+                ),
               ),
             ],
           ),
@@ -94,7 +116,7 @@ final directories = <_i1.WidgetbookNode>[
                     name: 'LoginScreen',
                     useCase: _i1.WidgetbookUseCase(
                       name: 'Default',
-                      builder: _i5.buildLoginScreenUseCase,
+                      builder: _i7.buildLoginScreenUseCase,
                     ),
                   )
                 ],
@@ -116,7 +138,7 @@ final directories = <_i1.WidgetbookNode>[
                     name: 'CartScreen',
                     useCase: _i1.WidgetbookUseCase(
                       name: 'Default',
-                      builder: _i6.buildCartScreenUseCase,
+                      builder: _i8.buildCartScreenUseCase,
                     ),
                   )
                 ],
@@ -128,14 +150,14 @@ final directories = <_i1.WidgetbookNode>[
                     name: 'CartItem',
                     useCase: _i1.WidgetbookUseCase(
                       name: 'Default',
-                      builder: _i7.buildCartItemUseCase,
+                      builder: _i9.buildCartItemUseCase,
                     ),
                   ),
                   _i1.WidgetbookLeafComponent(
                     name: 'QuantityInput',
                     useCase: _i1.WidgetbookUseCase(
                       name: 'Default',
-                      builder: _i8.buildQuantityInputUseCase,
+                      builder: _i10.buildQuantityInputUseCase,
                     ),
                   ),
                 ],
@@ -157,7 +179,7 @@ final directories = <_i1.WidgetbookNode>[
                     name: 'HomeScreen',
                     useCase: _i1.WidgetbookUseCase(
                       name: 'Default',
-                      builder: _i9.buildHomeScreenUseCase,
+                      builder: _i11.buildHomeScreenUseCase,
                     ),
                   )
                 ],
@@ -179,7 +201,7 @@ final directories = <_i1.WidgetbookNode>[
                     name: 'OrderListScreen',
                     useCase: _i1.WidgetbookUseCase(
                       name: 'Default',
-                      builder: _i10.buildOrderListScreenUseCase,
+                      builder: _i12.buildOrderListScreenUseCase,
                     ),
                   )
                 ],
@@ -201,7 +223,7 @@ final directories = <_i1.WidgetbookNode>[
                     name: 'ProfileScreen',
                     useCase: _i1.WidgetbookUseCase(
                       name: 'Default',
-                      builder: _i11.buildProfileScreenUseCase,
+                      builder: _i13.buildProfileScreenUseCase,
                     ),
                   )
                 ],
@@ -223,7 +245,7 @@ final directories = <_i1.WidgetbookNode>[
                     name: 'SplashScreen',
                     useCase: _i1.WidgetbookUseCase(
                       name: 'Default',
-                      builder: _i12.buildSplashScreenUseCase,
+                      builder: _i14.buildSplashScreenUseCase,
                     ),
                   )
                 ],
