@@ -9,6 +9,7 @@ import 'package:eco_bites/features/cart/presentation/bloc/cart_item_state.dart';
 import 'package:eco_bites/features/cart/presentation/widgets/quantity_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class CartItem extends StatelessWidget {
   const CartItem({
@@ -45,11 +46,27 @@ class CartItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    item.title,
-                    style: theme.textTheme.titleLarge,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          item.title,
+                          style: theme.textTheme.titleLarge,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: IconButton(
+                          icon: const Icon(Symbols.close_rounded, size: 18),
+                          onPressed: () => _onDelete(context),
+                          padding: EdgeInsets.zero,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 8),
                   BlocBuilder<CartItemBloc, CartItemState>(
@@ -101,5 +118,9 @@ class CartItem extends StatelessWidget {
     } else {
       context.read<CartBloc>().add(CartItemRemoved(item.id));
     }
+  }
+
+  void _onDelete(BuildContext context) {
+    context.read<CartBloc>().add(CartItemRemoved(item.id));
   }
 }
