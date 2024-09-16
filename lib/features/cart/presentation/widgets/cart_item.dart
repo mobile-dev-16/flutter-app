@@ -37,6 +37,9 @@ class CartItem extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
 
     return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -54,36 +57,45 @@ class CartItem extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     title,
-                    style: theme.textTheme.titleMedium,
-                    maxLines: 2,
+                    style: theme.textTheme.titleLarge,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
                   Row(
                     children: <Widget>[
-                      Text(
-                        '\$${offerPrice.toStringAsFixed(2)}',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: theme.colorScheme.primary,
-                          fontWeight: FontWeight.bold,
+                      Expanded(
+                        child: Row(
+                          children: <Widget>[
+                            Text(
+                              '${offerPrice.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} COP',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                color:
+                                    theme.colorScheme.onSecondaryFixedVariant,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              '${normalPrice.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} COP',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                decoration: TextDecoration.lineThrough,
+                                color: theme.colorScheme.onSurface
+                                    .withOpacity(0.6),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        '\$${normalPrice.toStringAsFixed(2)}',
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          decoration: TextDecoration.lineThrough,
-                          color: theme.colorScheme.onSurface.withOpacity(0.6),
-                        ),
+                      QuantityInput(
+                        initialValue: state.quantity,
+                        onChanged: (int value) {
+                          context
+                              .read<CartItemBloc>()
+                              .add(QuantityChanged(value));
+                        },
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 8),
-                  QuantityInput(
-                    initialValue: state.quantity,
-                    onChanged: (int value) {
-                      context.read<CartItemBloc>().add(QuantityChanged(value));
-                    },
                   ),
                 ],
               ),
@@ -98,8 +110,8 @@ class CartItem extends StatelessWidget {
     if (imageUrl != null && imageUrl!.isNotEmpty) {
       return Image.network(
         imageUrl!,
-        width: 80,
-        height: 80,
+        width: 64,
+        height: 64,
         fit: BoxFit.cover,
         errorBuilder:
             (BuildContext context, Object error, StackTrace? stackTrace) =>
@@ -112,8 +124,8 @@ class CartItem extends StatelessWidget {
 
   Widget _buildPlaceholder(ThemeData theme) {
     return Container(
-      width: 80,
-      height: 80,
+      width: 64,
+      height: 64,
       color: theme.colorScheme.surfaceContainerHigh,
       child: Icon(
         Icons.image,

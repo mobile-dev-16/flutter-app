@@ -13,14 +13,14 @@ class CartScreen extends StatelessWidget {
         children: const <Widget>[
           CartItem(
             title: 'Organic Apples',
-            normalPrice: 5.99,
-            offerPrice: 4.99,
+            normalPrice: 32800,
+            offerPrice: 20400,
             initialQuantity: 1,
           ),
           CartItem(
             title: 'Fresh Carrots',
-            normalPrice: 3.99,
-            offerPrice: 2.99,
+            normalPrice: 42200,
+            offerPrice: 25300,
             initialQuantity: 2,
           ),
         ],

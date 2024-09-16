@@ -11,16 +11,10 @@ Widget buildCartItemUseCase(BuildContext context) {
           label: 'Title',
           initialValue: 'Organic Apples',
         ),
-        normalPrice: context.knobs.double.slider(
-          label: 'Normal Price',
-          initialValue: 5.99,
-        ),
-        offerPrice: context.knobs.double.slider(
-          label: 'Offer Price',
-          initialValue: 4.99,
-          min: 0,
-          max: 100,
-        ),
+        normalPrice: context.knobs.double
+            .input(label: 'Normal Price', initialValue: 5.99),
+        offerPrice: context.knobs.double
+            .input(label: 'Offer Price', initialValue: 4.99),
         initialQuantity: context.knobs.int.slider(
           label: 'Initial Quantity',
           initialValue: 1,
