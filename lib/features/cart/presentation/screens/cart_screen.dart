@@ -29,12 +29,7 @@ class CartScreenContent extends StatelessWidget {
             itemBuilder: (BuildContext context, int index) {
               final CartItemData item = state.items[index];
               return CartItem(
-                id: item.id,
-                imageUrl: item.imageUrl,
-                title: item.title,
-                normalPrice: item.normalPrice,
-                offerPrice: item.offerPrice,
-                quantity: item.quantity,
+                item: item,
               );
             },
           );

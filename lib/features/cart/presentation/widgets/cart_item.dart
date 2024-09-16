@@ -1,4 +1,6 @@
-import 'package:eco_bites/core/utils/format_price.dart';
+import 'package:eco_bites/core/ui/widgets/basic_image.dart';
+import 'package:eco_bites/core/ui/widgets/price_display.dart';
+import 'package:eco_bites/features/cart/domain/models/cart_item_data.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_event.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_item_bloc.dart';
@@ -7,29 +9,20 @@ import 'package:eco_bites/features/cart/presentation/bloc/cart_item_state.dart';
 import 'package:eco_bites/features/cart/presentation/widgets/quantity_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_symbols_icons/symbols.dart';
 
 class CartItem extends StatelessWidget {
   const CartItem({
     super.key,
-    required this.id,
-    this.imageUrl,
-    required this.title,
-    required this.normalPrice,
-    required this.offerPrice,
-    required this.quantity,
+    required this.item,
   });
 
-  final String id;
-  final String? imageUrl;
-  final String title;
-  final double normalPrice;
-  final double offerPrice;
-  final int quantity;
+  final CartItemData item;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<CartItemBloc>(
-      create: (BuildContext context) => CartItemBloc(quantity),
+      create: (BuildContext context) => CartItemBloc(item.quantity),
       child: _buildCartItem(context),
     );
   }
@@ -47,83 +40,50 @@ class CartItem extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: _buildImage(theme),
-            ),
+            BasicImage(imageUrl: item.imageUrl),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    title,
-                    style: theme.textTheme.titleLarge,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Expanded(
+                        child: Text(
+                          item.title,
+                          style: theme.textTheme.titleLarge,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: IconButton(
+                          icon: const Icon(Symbols.close_rounded, size: 18),
+                          onPressed: () => _onDelete(context),
+                          padding: EdgeInsets.zero,
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 8),
                   BlocBuilder<CartItemBloc, CartItemState>(
                     builder: (BuildContext context, CartItemState state) {
                       return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
                           Expanded(
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: <Widget>[
-                                Text(
-                                  '${formatPrice((offerPrice * state.quantity).toInt())} COP',
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    color: theme
-                                        .colorScheme.onSecondaryFixedVariant,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  '${formatPrice((normalPrice * state.quantity).toInt())} COP',
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    decoration: TextDecoration.lineThrough,
-                                    color: theme.colorScheme.onSurface
-                                        .withOpacity(0.6),
-                                  ),
-                                ),
-                              ],
+                            child: PriceDisplay(
+                              offerPrice: item.offerPrice * state.quantity,
+                              normalPrice: item.normalPrice * state.quantity,
                             ),
                           ),
                           QuantityInput(
-                            onIncrease: () {
-                              context.read<CartItemBloc>().add(
-                                    const QuantityChanged(
-                                      QuantityChangeType.increase,
-                                    ),
-                                  );
-                              context.read<CartBloc>().add(
-                                    CartItemQuantityChanged(
-                                      id,
-                                      state.quantity + 1,
-                                    ),
-                                  );
-                            },
-                            onDecrease: () {
-                              if (state.quantity > 1) {
-                                context.read<CartItemBloc>().add(
-                                      const QuantityChanged(
-                                        QuantityChangeType.decrease,
-                                      ),
-                                    );
-                                context.read<CartBloc>().add(
-                                      CartItemQuantityChanged(
-                                        id,
-                                        state.quantity - 1,
-                                      ),
-                                    );
-                              } else {
-                                context
-                                    .read<CartBloc>()
-                                    .add(CartItemRemoved(id));
-                              }
-                            },
+                            onIncrease: () => _onIncrease(context, state),
+                            onDecrease: () => _onDecrease(context, state),
                           ),
                         ],
                       );
@@ -138,25 +98,29 @@ class CartItem extends StatelessWidget {
     );
   }
 
-  Widget _buildImage(ThemeData theme) {
-    if (imageUrl != null) {
-      return Image.network(
-        imageUrl!,
-        width: 64,
-        height: 64,
-        fit: BoxFit.cover,
-      );
+  void _onIncrease(BuildContext context, CartItemState state) {
+    context.read<CartItemBloc>().add(
+          const QuantityChanged(QuantityChangeType.increase),
+        );
+    context.read<CartBloc>().add(
+          CartItemQuantityChanged(item.id, state.quantity + 1),
+        );
+  }
+
+  void _onDecrease(BuildContext context, CartItemState state) {
+    if (state.quantity > 1) {
+      context.read<CartItemBloc>().add(
+            const QuantityChanged(QuantityChangeType.decrease),
+          );
+      context.read<CartBloc>().add(
+            CartItemQuantityChanged(item.id, state.quantity - 1),
+          );
     } else {
-      return Container(
-        width: 64,
-        height: 64,
-        color: theme.colorScheme.secondary,
-        child: Icon(
-          Icons.image,
-          color: theme.colorScheme.onSecondary,
-          size: 32,
-        ),
-      );
+      context.read<CartBloc>().add(CartItemRemoved(item.id));
     }
+  }
+
+  void _onDelete(BuildContext context) {
+    context.read<CartBloc>().add(CartItemRemoved(item.id));
   }
 }
