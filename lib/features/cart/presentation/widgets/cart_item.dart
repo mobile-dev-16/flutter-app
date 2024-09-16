@@ -1,3 +1,5 @@
+import 'package:eco_bites/features/cart/presentation/bloc/cart_bloc.dart';
+import 'package:eco_bites/features/cart/presentation/bloc/cart_event.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_item_bloc.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_item_event.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_item_state.dart';
@@ -8,32 +10,30 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class CartItem extends StatelessWidget {
   const CartItem({
     super.key,
+    required this.id,
     this.imageUrl,
     required this.title,
     required this.normalPrice,
     required this.offerPrice,
-    required this.initialQuantity,
+    required this.quantity,
   });
 
+  final String id;
   final String? imageUrl;
   final String title;
   final double normalPrice;
   final double offerPrice;
-  final int initialQuantity;
+  final int quantity;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<CartItemBloc>(
-      create: (BuildContext context) => CartItemBloc(initialQuantity),
-      child: BlocBuilder<CartItemBloc, CartItemState>(
-        builder: (BuildContext context, CartItemState state) {
-          return _buildCartItem(context, state);
-        },
-      ),
+      create: (BuildContext context) => CartItemBloc(quantity),
+      child: _buildCartItem(context),
     );
   }
 
-  Widget _buildCartItem(BuildContext context, CartItemState state) {
+  Widget _buildCartItem(BuildContext context) {
     final ThemeData theme = Theme.of(context);
 
     return Card(
@@ -62,40 +62,71 @@ class CartItem extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Row(
-                          children: <Widget>[
-                            Text(
-                              '${offerPrice.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} COP',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                color:
-                                    theme.colorScheme.onSecondaryFixedVariant,
-                                fontWeight: FontWeight.bold,
-                              ),
+                  BlocBuilder<CartItemBloc, CartItemState>(
+                    builder: (BuildContext context, CartItemState state) {
+                      return Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: <Widget>[
+                                Text(
+                                  '${(offerPrice * state.quantity).toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} COP',
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    color: theme
+                                        .colorScheme.onSecondaryFixedVariant,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  '${(normalPrice * state.quantity).toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} COP',
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    decoration: TextDecoration.lineThrough,
+                                    color: theme.colorScheme.onSurface
+                                        .withOpacity(0.6),
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              '${normalPrice.toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} COP',
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                decoration: TextDecoration.lineThrough,
-                                color: theme.colorScheme.onSurface
-                                    .withOpacity(0.6),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      QuantityInput(
-                        initialValue: state.quantity,
-                        onChanged: (int value) {
-                          context
-                              .read<CartItemBloc>()
-                              .add(QuantityChanged(value));
-                        },
-                      ),
-                    ],
+                          ),
+                          QuantityInput(
+                            onIncrease: () {
+                              context.read<CartItemBloc>().add(
+                                    const QuantityChanged(
+                                      QuantityChangeType.increase,
+                                    ),
+                                  );
+                              context.read<CartBloc>().add(
+                                    CartItemQuantityChanged(
+                                      id,
+                                      state.quantity + 1,
+                                    ),
+                                  );
+                            },
+                            onDecrease: () {
+                              if (state.quantity > 1) {
+                                context.read<CartItemBloc>().add(
+                                      const QuantityChanged(
+                                        QuantityChangeType.decrease,
+                                      ),
+                                    );
+                                context.read<CartBloc>().add(
+                                      CartItemQuantityChanged(
+                                        id,
+                                        state.quantity - 1,
+                                      ),
+                                    );
+                              } else {
+                                context
+                                    .read<CartBloc>()
+                                    .add(CartItemRemoved(id));
+                              }
+                            },
+                          ),
+                        ],
+                      );
+                    },
                   ),
                 ],
               ),
@@ -107,31 +138,24 @@ class CartItem extends StatelessWidget {
   }
 
   Widget _buildImage(ThemeData theme) {
-    if (imageUrl != null && imageUrl!.isNotEmpty) {
+    if (imageUrl != null) {
       return Image.network(
         imageUrl!,
         width: 64,
         height: 64,
         fit: BoxFit.cover,
-        errorBuilder:
-            (BuildContext context, Object error, StackTrace? stackTrace) =>
-                _buildPlaceholder(theme),
       );
     } else {
-      return _buildPlaceholder(theme);
+      return Container(
+        width: 64,
+        height: 64,
+        color: theme.colorScheme.secondary,
+        child: Icon(
+          Icons.image,
+          color: theme.colorScheme.onSecondary,
+          size: 32,
+        ),
+      );
     }
-  }
-
-  Widget _buildPlaceholder(ThemeData theme) {
-    return Container(
-      width: 64,
-      height: 64,
-      color: theme.colorScheme.surfaceContainerHigh,
-      child: Icon(
-        Icons.image,
-        size: 40,
-        color: theme.colorScheme.onSurfaceVariant,
-      ),
-    );
   }
 }

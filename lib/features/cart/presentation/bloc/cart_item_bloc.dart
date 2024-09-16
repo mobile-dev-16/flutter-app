@@ -9,6 +9,15 @@ class CartItemBloc extends Bloc<CartItemEvent, CartItemState> {
   }
 
   void _onQuantityChanged(QuantityChanged event, Emitter<CartItemState> emit) {
-    emit(CartItemState(quantity: event.quantity));
+    int newQuantity = state.quantity;
+
+    switch (event.changeType) {
+      case QuantityChangeType.increase:
+        newQuantity++;
+      case QuantityChangeType.decrease:
+        newQuantity = newQuantity > 0 ? newQuantity - 1 : 0;
+    }
+
+    emit(CartItemState(quantity: newQuantity));
   }
 }

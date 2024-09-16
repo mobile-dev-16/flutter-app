@@ -7,8 +7,8 @@ import 'package:eco_bites/features/cart/presentation/widgets/quantity_input.dart
 Widget buildQuantityInputUseCase(BuildContext context) {
   return Center(
     child: QuantityInput(
-      initialValue: 1,
-      onChanged: (value) {},
+      onIncrease: () {},
+      onDecrease: () {},
     ),
   );
 }
@@ -17,8 +17,8 @@ Widget buildQuantityInputUseCase(BuildContext context) {
 Widget buildQuantityInputCustomValuesUseCase(BuildContext context) {
   return Center(
     child: QuantityInput(
-      initialValue: 12,
-      onChanged: (value) {},
+      onIncrease: () {},
+      onDecrease: () {},
     ),
   );
 }

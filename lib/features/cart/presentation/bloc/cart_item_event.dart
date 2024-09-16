@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+enum QuantityChangeType { increase, decrease }
+
 abstract class CartItemEvent extends Equatable {
   const CartItemEvent();
 
@@ -8,9 +10,6 @@ abstract class CartItemEvent extends Equatable {
 }
 
 class QuantityChanged extends CartItemEvent {
-  const QuantityChanged(this.quantity);
-  final int quantity;
-
-  @override
-  List<Object> get props => <Object>[quantity];
+  const QuantityChanged(this.changeType);
+  final QuantityChangeType changeType;
 }

@@ -1,6 +1,5 @@
-import 'package:eco_bites/features/cart/presentation/bloc/quantity_bloc.dart';
-import 'package:eco_bites/features/cart/presentation/bloc/quantity_event.dart';
-import 'package:eco_bites/features/cart/presentation/bloc/quantity_state.dart';
+import 'package:eco_bites/features/cart/presentation/bloc/cart_item_bloc.dart';
+import 'package:eco_bites/features/cart/presentation/bloc/cart_item_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_symbols_icons/symbols.dart';
@@ -8,33 +7,36 @@ import 'package:material_symbols_icons/symbols.dart';
 class QuantityInput extends StatelessWidget {
   const QuantityInput({
     super.key,
-    required this.initialValue,
-    required this.onChanged,
+    required this.onIncrease,
+    required this.onDecrease,
   });
 
-  final int initialValue;
-  final ValueChanged<int> onChanged;
+  final VoidCallback onIncrease;
+  final VoidCallback onDecrease;
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<QuantityBloc>(
-      create: (BuildContext context) =>
-          QuantityBloc(initialValue: initialValue),
-      child: _QuantityInputContent(onChanged: onChanged),
+    return _QuantityInputContent(
+      onIncrease: onIncrease,
+      onDecrease: onDecrease,
     );
   }
 }
 
 class _QuantityInputContent extends StatelessWidget {
-  const _QuantityInputContent({required this.onChanged});
+  const _QuantityInputContent({
+    required this.onIncrease,
+    required this.onDecrease,
+  });
 
-  final ValueChanged<int> onChanged;
+  final VoidCallback onIncrease;
+  final VoidCallback onDecrease;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    return BlocBuilder<QuantityBloc, QuantityState>(
-      builder: (BuildContext context, QuantityState state) {
+    return BlocBuilder<CartItemBloc, CartItemState>(
+      builder: (BuildContext context, CartItemState state) {
         return SizedBox(
           height: 28,
           child: Container(
@@ -47,13 +49,10 @@ class _QuantityInputContent extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 _buildButton(
-                  icon: state.value == 1
+                  icon: state.quantity == 1
                       ? Symbols.delete_rounded
                       : Symbols.remove_rounded,
-                  onPressed: () {
-                    context.read<QuantityBloc>().add(QuantityDecreased());
-                    onChanged(context.read<QuantityBloc>().state.value);
-                  },
+                  onPressed: onDecrease,
                   theme: theme,
                   isLeft: true,
                 ),
@@ -61,16 +60,13 @@ class _QuantityInputContent extends StatelessWidget {
                   width: 28,
                   alignment: Alignment.center,
                   child: Text(
-                    state.value.toString(),
+                    state.quantity.toString(),
                     style: theme.textTheme.titleMedium,
                   ),
                 ),
                 _buildButton(
                   icon: Symbols.add_rounded,
-                  onPressed: () {
-                    context.read<QuantityBloc>().add(QuantityIncreased());
-                    onChanged(context.read<QuantityBloc>().state.value);
-                  },
+                  onPressed: onIncrease,
                   theme: theme,
                   isLeft: false,
                 ),
