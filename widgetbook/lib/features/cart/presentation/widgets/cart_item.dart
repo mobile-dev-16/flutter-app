@@ -1,0 +1,32 @@
+import 'package:flutter/material.dart';
+import 'package:widgetbook_annotation/widgetbook_annotation.dart' as widgetbook;
+import 'package:widgetbook/widgetbook.dart';
+import 'package:eco_bites/features/cart/presentation/widgets/cart_item.dart';
+
+@widgetbook.UseCase(name: 'Default', type: CartItem)
+Widget buildCartItemUseCase(BuildContext context) {
+  return Center(
+    child: CartItem(
+        title: context.knobs.string(
+          label: 'Title',
+          initialValue: 'Organic Apples',
+        ),
+        normalPrice: context.knobs.double.slider(
+          label: 'Normal Price',
+          initialValue: 5.99,
+        ),
+        offerPrice: context.knobs.double.slider(
+          label: 'Offer Price',
+          initialValue: 4.99,
+          min: 0,
+          max: 100,
+        ),
+        initialQuantity: context.knobs.int.slider(
+          label: 'Initial Quantity',
+          initialValue: 1,
+          min: 0,
+          max: 10,
+          divisions: 10,
+        )),
+  );
+}

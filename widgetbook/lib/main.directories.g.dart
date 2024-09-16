@@ -17,16 +17,18 @@ import 'package:widgetbook_workspace/features/auth/presentation/screens/login_sc
     as _i5;
 import 'package:widgetbook_workspace/features/cart/presentation/screens/cart_screen.dart'
     as _i6;
-import 'package:widgetbook_workspace/features/cart/presentation/widgets/quantity_input.dart'
+import 'package:widgetbook_workspace/features/cart/presentation/widgets/cart_item.dart'
     as _i7;
-import 'package:widgetbook_workspace/features/home/presentation/screens/home_screen.dart'
+import 'package:widgetbook_workspace/features/cart/presentation/widgets/quantity_input.dart'
     as _i8;
-import 'package:widgetbook_workspace/features/orders/presentation/screens/order_list_screen.dart'
+import 'package:widgetbook_workspace/features/home/presentation/screens/home_screen.dart'
     as _i9;
-import 'package:widgetbook_workspace/features/profile/presentation/screens/profile_screen.dart'
+import 'package:widgetbook_workspace/features/orders/presentation/screens/order_list_screen.dart'
     as _i10;
-import 'package:widgetbook_workspace/features/splash/presentation/screens/splash_screen.dart'
+import 'package:widgetbook_workspace/features/profile/presentation/screens/profile_screen.dart'
     as _i11;
+import 'package:widgetbook_workspace/features/splash/presentation/screens/splash_screen.dart'
+    as _i12;
 
 final directories = <_i1.WidgetbookNode>[
   _i1.WidgetbookFolder(
@@ -122,19 +124,26 @@ final directories = <_i1.WidgetbookNode>[
               _i1.WidgetbookFolder(
                 name: 'widgets',
                 children: [
+                  _i1.WidgetbookLeafComponent(
+                    name: 'CartItem',
+                    useCase: _i1.WidgetbookUseCase(
+                      name: 'Default',
+                      builder: _i7.buildCartItemUseCase,
+                    ),
+                  ),
                   _i1.WidgetbookComponent(
                     name: 'QuantityInput',
                     useCases: [
                       _i1.WidgetbookUseCase(
                         name: 'Default',
-                        builder: _i7.buildQuantityInputUseCase,
+                        builder: _i8.buildQuantityInputUseCase,
                       ),
                       _i1.WidgetbookUseCase(
                         name: 'With Custom Values',
-                        builder: _i7.buildQuantityInputCustomValuesUseCase,
+                        builder: _i8.buildQuantityInputCustomValuesUseCase,
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ],
@@ -154,7 +163,7 @@ final directories = <_i1.WidgetbookNode>[
                     name: 'HomeScreen',
                     useCase: _i1.WidgetbookUseCase(
                       name: 'Default',
-                      builder: _i8.buildHomeScreenUseCase,
+                      builder: _i9.buildHomeScreenUseCase,
                     ),
                   )
                 ],
@@ -176,7 +185,7 @@ final directories = <_i1.WidgetbookNode>[
                     name: 'OrderListScreen',
                     useCase: _i1.WidgetbookUseCase(
                       name: 'Default',
-                      builder: _i9.buildOrderListScreenUseCase,
+                      builder: _i10.buildOrderListScreenUseCase,
                     ),
                   )
                 ],
@@ -198,7 +207,7 @@ final directories = <_i1.WidgetbookNode>[
                     name: 'ProfileScreen',
                     useCase: _i1.WidgetbookUseCase(
                       name: 'Default',
-                      builder: _i10.buildProfileScreenUseCase,
+                      builder: _i11.buildProfileScreenUseCase,
                     ),
                   )
                 ],
@@ -220,7 +229,7 @@ final directories = <_i1.WidgetbookNode>[
                     name: 'SplashScreen',
                     useCase: _i1.WidgetbookUseCase(
                       name: 'Default',
-                      builder: _i11.buildSplashScreenUseCase,
+                      builder: _i12.buildSplashScreenUseCase,
                     ),
                   )
                 ],
