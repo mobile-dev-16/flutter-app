@@ -131,18 +131,12 @@ final directories = <_i1.WidgetbookNode>[
                       builder: _i7.buildCartItemUseCase,
                     ),
                   ),
-                  _i1.WidgetbookComponent(
+                  _i1.WidgetbookLeafComponent(
                     name: 'QuantityInput',
-                    useCases: [
-                      _i1.WidgetbookUseCase(
-                        name: 'Default',
-                        builder: _i8.buildQuantityInputUseCase,
-                      ),
-                      _i1.WidgetbookUseCase(
-                        name: 'With Custom Values',
-                        builder: _i8.buildQuantityInputCustomValuesUseCase,
-                      ),
-                    ],
+                    useCase: _i1.WidgetbookUseCase(
+                      name: 'Default',
+                      builder: _i8.buildQuantityInputUseCase,
+                    ),
                   ),
                 ],
               ),

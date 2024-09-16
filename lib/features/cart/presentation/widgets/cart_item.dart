@@ -1,3 +1,4 @@
+import 'package:eco_bites/core/utils/format_price.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_event.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_item_bloc.dart';
@@ -71,7 +72,7 @@ class CartItem extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: <Widget>[
                                 Text(
-                                  '${(offerPrice * state.quantity).toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} COP',
+                                  '${formatPrice((offerPrice * state.quantity).toInt())} COP',
                                   style: theme.textTheme.titleMedium?.copyWith(
                                     color: theme
                                         .colorScheme.onSecondaryFixedVariant,
@@ -80,7 +81,7 @@ class CartItem extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  '${(normalPrice * state.quantity).toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} COP',
+                                  '${formatPrice((normalPrice * state.quantity).toInt())} COP',
                                   style: theme.textTheme.bodyMedium?.copyWith(
                                     decoration: TextDecoration.lineThrough,
                                     color: theme.colorScheme.onSurface
