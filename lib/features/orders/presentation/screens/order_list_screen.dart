@@ -1,5 +1,5 @@
 import 'package:eco_bites/core/ui/widgets/custom_appbar.dart';
-import 'package:eco_bites/features/orders/domain/models/order.dart'; // Asegúrate de importar el modelo de order
+import 'package:eco_bites/features/orders/domain/models/order.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_bloc.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_state.dart';
 import 'package:eco_bites/features/orders/presentation/widgets/order_item.dart';
@@ -25,10 +25,10 @@ class OrderListScreenContent extends StatelessWidget {
       body: BlocBuilder<OrderBloc, OrderState>(
         builder: (BuildContext context, OrderState state) {
           if (state is OrdersLoading) {
-            return const Center(child: CircularProgressIndicator()); // Indicador de carga
+            return const Center(child: CircularProgressIndicator());
           } else if (state is OrdersLoaded) {
             if (state.orders.isEmpty) {
-              return const Center(child: Text('No orders available')); // Manejo del estado vacío
+              return const Center(child: Text('No orders available'));
             }
             return ListView.builder(
               itemCount: state.orders.length,
@@ -38,7 +38,7 @@ class OrderListScreenContent extends StatelessWidget {
               },
             );
           } else {
-            return const Center(child: Text('Failed to load orders')); // Manejo de errores
+            return const Center(child: Text('Failed to load orders'));
           }
         },
       ),

@@ -1,4 +1,4 @@
-import 'package:eco_bites/core/ui/widgets/basic_image.dart'; // Importamos el widget BasicImage
+import 'package:eco_bites/core/ui/widgets/basic_image.dart';
 import 'package:eco_bites/features/orders/domain/models/order.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_item_bloc.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +34,6 @@ class OrderItem extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            // Usamos BasicImage para mostrar la imagen
             BasicImage(imageUrl: order.imageUrl),
             const SizedBox(width: 16),
             Expanded(
@@ -46,7 +45,7 @@ class OrderItem extends StatelessWidget {
                     children: <Widget>[
                       Expanded(
                         child: Text(
-                          order.title, // Usamos `title` para el nombre del pedido
+                          order.title,
                           style: theme.textTheme.titleLarge,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -62,7 +61,7 @@ class OrderItem extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
                           Text(
-                            'Delivered: ${DateFormat.yMMMd().format(order.date)}', // Mostramos la fecha formateada
+                            'Delivered: ${DateFormat.yMMMd().format(order.date)}',
                             style: theme.textTheme.bodyMedium,
                           ),
                         ],

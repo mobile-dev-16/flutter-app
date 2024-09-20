@@ -7,7 +7,7 @@ class OrderItemState extends Equatable {
   final String status;
 
   @override
-  List<Object> get props => [status];
+  List<Object> get props => <Object>[status];
 }
 
 abstract class OrderItemEvent extends Equatable {
@@ -23,7 +23,7 @@ class OrderStatusChanged extends OrderItemEvent {
   final String newStatus;
 
   @override
-  List<Object> get props => [newStatus];
+  List<Object> get props => <Object>[newStatus];
 }
 
 class OrderItemBloc extends Bloc<OrderItemEvent, OrderItemState> {

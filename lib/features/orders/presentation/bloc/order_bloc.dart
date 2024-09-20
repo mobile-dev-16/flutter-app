@@ -11,7 +11,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   void _onLoadOrders(LoadOrders event, Emitter<OrderState> emit) {
     emit(OrdersLoading());
 
-    final List<Order> orders = [
+    final List<Order> orders = <Order>[
       Order(id: '1', title: 'Order 1', date: DateTime(2024, 9, 15)),
       Order(id: '2', title: 'Order 2', date: DateTime(2024, 8, 20)),
       Order(id: '3', title: 'Order 3', date: DateTime(2024, 7, 15)),

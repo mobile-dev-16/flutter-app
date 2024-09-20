@@ -5,12 +5,13 @@ import 'package:eco_bites/features/orders/presentation/bloc/order_bloc.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nested/nested.dart';
 
 
 void main() {
   runApp(
     MultiBlocProvider(
-      providers: [
+      providers: <SingleChildWidget>[
         BlocProvider<CartBloc>(
           create: (BuildContext context) => CartBloc(<CartItemData>[
             CartItemData(
@@ -28,14 +29,14 @@ void main() {
             ),
             CartItemData(
               id: '3',
-              title: 'Chesseburger',
+              title: 'Cheeseburger',
               normalPrice: 15000,
               offerPrice: 12000,
             ),
           ]),
         ),
         BlocProvider<OrderBloc>(
-          create: (BuildContext context) => OrderBloc()..add(LoadOrders()), 
+          create: (BuildContext context) => OrderBloc()..add(LoadOrders()),
         ),
       ],
       child: const MyApp(),
