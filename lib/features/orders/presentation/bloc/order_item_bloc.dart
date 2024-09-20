@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-// Estado del Pedido
 class OrderItemState extends Equatable {
 
   const OrderItemState({required this.status});

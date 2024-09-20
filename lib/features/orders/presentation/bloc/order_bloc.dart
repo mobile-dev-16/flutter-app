@@ -11,7 +11,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   void _onLoadOrders(LoadOrders event, Emitter<OrderState> emit) {
     emit(OrdersLoading());
 
-    // Simulamos la carga de pedidos con algunas URLs de imágenes y otras nulas
     final List<Order> orders = [
       Order(id: '1', title: 'Order 1', date: DateTime(2024, 9, 15)),
       Order(id: '2', title: 'Order 2', date: DateTime(2024, 8, 20)),

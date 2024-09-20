@@ -34,7 +34,7 @@ class OrderListScreenContent extends StatelessWidget {
               itemCount: state.orders.length,
               itemBuilder: (BuildContext context, int index) {
                 final Order order = state.orders[index];
-                return OrderItem(order: order); // Renderiza cada OrderItem
+                return OrderItem(order: order);
               },
             );
           } else {
