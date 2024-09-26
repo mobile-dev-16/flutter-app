@@ -2,6 +2,7 @@ import 'package:eco_bites/core/ui/widgets/basic_image.dart';
 import 'package:eco_bites/core/utils/date_utils.dart' as date_utils;
 import 'package:eco_bites/features/orders/domain/models/order.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_item_bloc.dart';
+import 'package:eco_bites/features/orders/presentation/bloc/order_item_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -9,14 +10,16 @@ class OrderItem extends StatelessWidget {
   const OrderItem({
     super.key,
     required this.order,
+    this.status = 'Delivered', // Default status
   });
 
   final Order order;
+  final String status; // Make the status configurable
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<OrderItemBloc>(
-      create: (BuildContext context) => OrderItemBloc('Delivered'),
+      create: (BuildContext context) => OrderItemBloc(status), // Use the provided status
       child: _buildOrderItem(context),
     );
   }
@@ -61,7 +64,7 @@ class OrderItem extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
                           Text(
-                            'Delivered: ${date_utils.DateUtils.formatOrderDate(order.date)}',
+                            '${state.status}: ${date_utils.DateUtils.formatOrderDate(order.date)}',
                             style: theme.textTheme.bodyMedium,
                           ),
                         ],

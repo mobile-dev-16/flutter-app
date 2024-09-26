@@ -10,7 +10,8 @@ class OrdersLoading extends OrderState {}
 
 class OrdersLoaded extends OrderState {
 
-  OrdersLoaded(this.orders);
+  OrdersLoaded(List<Order>? orders) : orders = orders ?? <Order>[];
+
   final List<Order> orders;
 
   @override
