@@ -6,20 +6,49 @@ import 'package:eco_bites/features/orders/presentation/bloc/order_item_state.dar
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+const double cardBorderRadius = 24.0;
+const EdgeInsets cardMargin = EdgeInsets.symmetric(vertical: 8, horizontal: 16);
+const EdgeInsets cardPadding = EdgeInsets.all(16);
+const double spaceBetweenElements = 16.0;
+
 class OrderItem extends StatelessWidget {
   const OrderItem({
     super.key,
     required this.order,
-    this.status = 'Delivered', // Default status
+    this.status = 'Delivered',
   });
 
   final Order order;
-  final String status; // Make the status configurable
+  final String status;
+
+  // Helper method to map the enum value to a user-friendly text.
+  String _mapStatusToText(OrderItemStatus status) {
+    switch (status) {
+      case OrderItemStatus.pending:
+        return 'Pending';
+      case OrderItemStatus.processing:
+        return 'Processing';
+      case OrderItemStatus.shipped:
+        return 'Shipped';
+      case OrderItemStatus.delivered:
+        return 'Delivered';
+      case OrderItemStatus.cancelled:
+        return 'Cancelled';
+    }
+  }
+
+  // Helper method to convert String to OrderItemStatus
+  OrderItemStatus _mapStatus(String status) {
+    return OrderItemStatus.values.firstWhere(
+      (OrderItemStatus e) => e.toString().split('.').last == status.toLowerCase(),
+      orElse: () => OrderItemStatus.delivered, // Default to delivered if not found
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<OrderItemBloc>(
-      create: (BuildContext context) => OrderItemBloc(status), // Use the provided status
+      create: (BuildContext context) => OrderItemBloc(_mapStatus(status)), // Convert String to OrderItemStatus
       child: _buildOrderItem(context),
     );
   }
@@ -29,16 +58,16 @@ class OrderItem extends StatelessWidget {
 
     return Card(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(cardBorderRadius),
       ),
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      margin: cardMargin,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: cardPadding,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             BasicImage(imageUrl: order.imageUrl),
-            const SizedBox(width: 16),
+            const SizedBox(width: spaceBetweenElements),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,15 +85,23 @@ class OrderItem extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: spaceBetweenElements),
                   BlocBuilder<OrderItemBloc, OrderItemState>(
                     builder: (BuildContext context, OrderItemState state) {
+                      final String statusText = _mapStatusToText(state.status);
+
                       return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
+                          // Status text
                           Text(
-                            '${state.status}: ${date_utils.DateUtils.formatOrderDate(order.date)}',
+                            statusText,
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                          // Add some space between the status and date
+                          const SizedBox(width: 10),
+                          // Date text aligned next to the status
+                          Text(
+                            date_utils.DateUtils.formatDayMonth(order.date),
                             style: theme.textTheme.bodyMedium,
                           ),
                         ],

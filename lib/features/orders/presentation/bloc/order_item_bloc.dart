@@ -2,7 +2,7 @@ import 'package:eco_bites/features/orders/presentation/bloc/order_item_event.dar
 import 'package:eco_bites/features/orders/presentation/bloc/order_item_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 class OrderItemBloc extends Bloc<OrderItemEvent, OrderItemState> {
-  OrderItemBloc(String initialStatus)
+  OrderItemBloc(OrderItemStatus initialStatus)
       : super(OrderItemState(status: initialStatus)) {
     on<OrderStatusChanged>(_onOrderStatusChanged);
   }
@@ -11,6 +11,6 @@ class OrderItemBloc extends Bloc<OrderItemEvent, OrderItemState> {
     OrderStatusChanged event,
     Emitter<OrderItemState> emit,
   ) {
-    emit(OrderItemState(status: event.newStatus));
+    emit(OrderItemState(status: OrderItemStatus.values.firstWhere((OrderItemStatus e) => e.toString() == event.newStatus)));
   }
 }
