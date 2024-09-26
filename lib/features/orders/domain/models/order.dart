@@ -11,13 +11,13 @@ class Order {
   final String? imageUrl;
 
   Order copyWith({
-    String? id,
+    required String id,
     String? title,
     DateTime? date,
     String? imageUrl,
   }) {
     return Order(
-      id: id ?? this.id,
+      id: id,
       title: title ?? this.title,
       date: date ?? this.date,
       imageUrl: imageUrl ?? this.imageUrl,

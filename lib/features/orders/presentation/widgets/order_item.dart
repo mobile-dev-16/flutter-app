@@ -1,9 +1,9 @@
 import 'package:eco_bites/core/ui/widgets/basic_image.dart';
+import 'package:eco_bites/core/utils/date_utils.dart' as date_utils;
 import 'package:eco_bites/features/orders/domain/models/order.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_item_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 class OrderItem extends StatelessWidget {
   const OrderItem({
@@ -61,7 +61,7 @@ class OrderItem extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
                           Text(
-                            'Delivered: ${DateFormat.yMMMd().format(order.date)}',
+                            'Delivered: ${date_utils.DateUtils.formatOrderDate(order.date)}',
                             style: theme.textTheme.bodyMedium,
                           ),
                         ],
