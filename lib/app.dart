@@ -38,8 +38,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/login',
       routes: <String, WidgetBuilder>{
         '/': (BuildContext context) => const SplashScreen(),
-        '/login': (BuildContext context) => const LoginScreen(),
         '/main': (BuildContext context) => const MainLayout(),
+        '/login': (BuildContext context) => const LoginScreen(),
       },
     );
   }

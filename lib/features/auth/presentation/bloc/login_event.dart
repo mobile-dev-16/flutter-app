@@ -13,5 +13,8 @@ class LoginSubmitted extends LoginEvent {
   final String password;
 
   @override
-  List<Object> get props => <Object>[username, password];
+  List<Object> get props => <Object>[
+    username,
+    password,
+  ];
 }

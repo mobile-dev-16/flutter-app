@@ -21,7 +21,7 @@ class LoginScreen extends StatelessWidget {
                 padding: EdgeInsets.only(bottom: 32.0),
                 child: Image(
                   image: AssetImage('assets/logo.png'),
-                  height: 160,
+                  height: 180,
                 ),
               ),
               const SizedBox(height: 16),
@@ -53,9 +53,15 @@ class LoginScreen extends StatelessWidget {
               // Sign In Button
               BlocListener<LoginBloc, LoginState>(
                 listener: (BuildContext context, LoginState state) {
-                  if (state is LoginSuccess) {
+                  if (state is LoginLoading) {
+                    // Show splash screen while loading
+                    Navigator.of(context).pushReplacementNamed('/splash');
+                  } else if (state is LoginSuccess) {
+                    // Navigate to main after successful login
                     Navigator.of(context).pushReplacementNamed('/main');
                   } else if (state is LoginFailure) {
+                    // Close splash screen (if open) and show error message
+                    Navigator.pop(context); // Close the splash screen
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(state.errorMessage)),
                     );
