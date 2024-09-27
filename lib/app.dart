@@ -33,13 +33,13 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Food Waste',
+      title: 'Eco Bites',
       theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-      initialRoute: '/',
+      initialRoute: '/login',
       routes: <String, WidgetBuilder>{
         '/': (BuildContext context) => const SplashScreen(),
-        '/main': (BuildContext context) => const MainLayout(),
         '/login': (BuildContext context) => const LoginScreen(),
+        '/main': (BuildContext context) => const MainLayout(),
       },
     );
   }
