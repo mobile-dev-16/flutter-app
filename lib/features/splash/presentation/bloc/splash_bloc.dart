@@ -13,7 +13,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
     Emitter<SplashState> emit,
   ) async {
     // Simulate a delay for the splash screen
-    await Future.delayed(const Duration(milliseconds: 200));
+    await Future<void>.delayed(const Duration(milliseconds: 200));
 
     // Retrieve authentication status from local storage
     final SharedPreferences pref = await SharedPreferences.getInstance();

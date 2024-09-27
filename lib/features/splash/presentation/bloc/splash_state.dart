@@ -17,5 +17,5 @@ class SplashError extends SplashState {
   final String message;
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => <Object?>[message];
 }
