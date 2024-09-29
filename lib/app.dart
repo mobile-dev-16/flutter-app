@@ -11,7 +11,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Brightness brightness = View.of(context).platformDispatcher.platformBrightness;
+    final Brightness brightness =
+        View.of(context).platformDispatcher.platformBrightness;
 
     // Use with Google Fonts package to use downloadable fonts
     final TextTheme textTheme = createTextTheme(context, 'Roboto', 'Roboto');
@@ -20,10 +21,13 @@ class MyApp extends StatelessWidget {
 
     SystemChrome.setSystemUIOverlayStyle(
       SystemUiOverlayStyle(
-        systemNavigationBarColor: Brightness.light == brightness ? Colors.white : Colors.black,
-        systemNavigationBarIconBrightness: Brightness.light == brightness ? Brightness.dark : Brightness.light,
+        systemNavigationBarColor:
+            Brightness.light == brightness ? Colors.white : Colors.black,
+        systemNavigationBarIconBrightness:
+            Brightness.light == brightness ? Brightness.dark : Brightness.light,
         statusBarColor: Colors.transparent,
-        statusBarIconBrightness: Brightness.light == brightness ? Brightness.dark : Brightness.light,
+        statusBarIconBrightness:
+            Brightness.light == brightness ? Brightness.dark : Brightness.light,
       ),
     );
     SystemChrome.setPreferredOrientations(<DeviceOrientation>[
@@ -33,7 +37,7 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Food Waste',
+      title: 'Eco Bites',
       theme: brightness == Brightness.light ? theme.light() : theme.dark(),
       initialRoute: '/',
       routes: <String, WidgetBuilder>{

@@ -1,6 +1,7 @@
 import 'package:eco_bites/features/splash/presentation/bloc/splash_event.dart';
 import 'package:eco_bites/features/splash/presentation/bloc/splash_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashBloc extends Bloc<SplashEvent, SplashState> {
   SplashBloc() : super(SplashInitial()) {
@@ -11,19 +12,17 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
     AppStarted event,
     Emitter<SplashState> emit,
   ) async {
-    // TODO(1): Implement the authentication
-    // ignore: always_specify_types
-    await Future.delayed(const Duration(milliseconds: 200));
+    // Simulate a delay for the splash screen
+    await Future<void>.delayed(const Duration(milliseconds: 200));
 
-    // TODO(2): Replace the following line with the actual authentication logic
-
-    const bool isAuthenticated = true;
+    // Retrieve authentication status from local storage
+    final SharedPreferences pref = await SharedPreferences.getInstance();
+    final bool isAuthenticated = pref.getBool('isAuthenticated') ?? false;
 
     if (isAuthenticated) {
       emit(Authenticated());
+    } else {
+      emit(Unauthenticated());
     }
-    // else {
-    //   emit(Unauthenticated());
-    // }
   }
 }
