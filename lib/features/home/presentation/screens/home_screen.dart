@@ -75,25 +75,19 @@ class _HomeScreenContentState extends State<HomeScreenContent>
                 ),
               ),
               // Search Bar
-              BlocBuilder<HomeBloc, HomeState>(
-                buildWhen: (HomeState previous, HomeState current) =>
-                    previous.searchQuery != current.searchQuery,
-                builder: (BuildContext context, HomeState state) {
-                  return TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Search deals...',
-                      suffixIcon: const Icon(Symbols.search_rounded, fill: 1),
-                      border: OutlineInputBorder(
-                        borderSide: BorderSide.none,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      fillColor: theme.colorScheme.surfaceContainerHigh,
-                      filled: true,
-                    ),
-                    onChanged: (String query) {
-                      context.read<HomeBloc>().add(SearchQueryChanged(query));
-                    },
-                  );
+              TextField(
+                decoration: InputDecoration(
+                  hintText: 'Search deals...',
+                  suffixIcon: const Icon(Symbols.search_rounded, fill: 1),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide.none,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  fillColor: theme.colorScheme.surfaceContainerHigh,
+                  filled: true,
+                ),
+                onChanged: (String query) {
+                  context.read<HomeBloc>().add(SearchQueryChanged(query));
                 },
               ),
               const SizedBox(height: 16),
