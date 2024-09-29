@@ -12,14 +12,18 @@ class HomeScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.only(top: 24.0), // Add padding to the top
           child: Column(
-            children: [
+            children: <Widget>[
               // Title with Icon
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Symbols.location_on_rounded, fill: 1),
+                  children: <Widget>[
+                    Icon(
+                      Symbols.location_on_rounded,
+                      fill: 1,
+                      color: theme.colorScheme.primary,
+                    ),
                     const SizedBox(width: 8),
                     Text(
                       'Calle 13 #12-34',
@@ -44,21 +48,34 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 8),
               // Carousel
-              Container(
-                height: 200,
-                color: Colors.grey[300], // Placeholder for carousel
-                child: Center(child: Text('Carousel Placeholder')),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 200),
+                    child: CarouselView(
+                      itemExtent: 330,
+                      shrinkExtent: 200,
+                      children: <Widget>[
+                        Image.asset('assets/carousel/50off.jpeg',
+                            fit: BoxFit.cover),
+                        Image.asset('assets/carousel/free-delivery.jpeg',
+                            fit: BoxFit.cover),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 8),
               // Tab Bar
               DefaultTabController(
                 length: 3,
                 child: Column(
-                  children: [
-                    TabBar(
-                      tabs: [
+                  children: <Widget>[
+                    const TabBar(
+                      tabs: <Widget>[
                         Tab(text: 'Tab 1'),
                         Tab(text: 'Tab 2'),
                         Tab(text: 'Tab 3'),
@@ -66,8 +83,8 @@ class HomeScreen extends StatelessWidget {
                     ),
                     Container(
                       height: 200, // Placeholder for tab content
-                      child: TabBarView(
-                        children: [
+                      child: const TabBarView(
+                        children: <Widget>[
                           Center(child: Text('Content 1')),
                           Center(child: Text('Content 2')),
                           Center(child: Text('Content 3')),
@@ -77,13 +94,13 @@ class HomeScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               // Card Lists
               Container(
                 height: 400, // Set a fixed height for the ListView
                 child: ListView(
                   padding: const EdgeInsets.all(16.0),
-                  children: [
+                  children: const <Widget>[
                     Card(
                       child: ListTile(
                         title: Text('Card 1'),
@@ -107,6 +124,32 @@ class HomeScreen extends StatelessWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class UncontainedLayoutCard extends StatelessWidget {
+  const UncontainedLayoutCard({
+    super.key,
+    required this.index,
+    required this.label,
+  });
+
+  final int index;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: Colors.primaries[index % Colors.primaries.length].withOpacity(0.5),
+      child: Center(
+        child: Text(
+          label,
+          style: const TextStyle(color: Colors.white, fontSize: 20),
+          overflow: TextOverflow.clip,
+          softWrap: false,
         ),
       ),
     );
