@@ -82,7 +82,9 @@ class LoginScreen extends StatelessWidget {
                     onPressed: () {
                       context.read<LoginBloc>().add(
                             LoginSubmitted(
-                                username: 'admin', password: 'admin'),
+                              username: 'admin',
+                              password: 'admin',
+                            ),
                           );
                     },
                     style: ElevatedButton.styleFrom(
@@ -93,8 +95,10 @@ class LoginScreen extends StatelessWidget {
                             BorderRadius.circular(10), // Rounded corners
                       ),
                     ),
-                    child: const Text('Sign in',
-                        style: TextStyle(color: Colors.white)),
+                    child: const Text(
+                      'Sign in',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
               ),
@@ -115,8 +119,10 @@ class LoginScreen extends StatelessWidget {
                           BorderRadius.circular(10), // Rounded corners
                     ),
                   ),
-                  child: const Text('Sign Up',
-                      style: TextStyle(color: Colors.white)),
+                  child: const Text(
+                    'Sign Up',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
             ],
