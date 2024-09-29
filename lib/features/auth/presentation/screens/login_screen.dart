@@ -54,42 +54,55 @@ class LoginScreen extends StatelessWidget {
               BlocListener<LoginBloc, LoginState>(
                 listener: (BuildContext context, LoginState state) {
                   if (state is LoginLoading) {
-                    // Show splash screen while loading
-                    Navigator.of(context).pushReplacementNamed('/splash');
+                    // Show loading indicator while loading
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (BuildContext context) {
+                        return const Center(child: CircularProgressIndicator());
+                      },
+                    );
                   } else if (state is LoginSuccess) {
-                    // Navigate to main after successful login
-                    Navigator.of(context).pushReplacementNamed('/main');
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/main',
+                      (Route<dynamic> route) => false,
+                    );
                   } else if (state is LoginFailure) {
-                    // Close splash screen (if open) and show error message
-                    Navigator.pop(context); // Close the splash screen
+                    // Close loading indicator (if open) and show error message
+                    Navigator.pop(context); // Close the loading indicator
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(state.errorMessage)),
                     );
                   }
                 },
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.5, // Reduce button width
+                  width: MediaQuery.of(context).size.width *
+                      0.5, // Reduce button width
                   child: ElevatedButton(
                     onPressed: () {
                       context.read<LoginBloc>().add(
-                        LoginSubmitted(username: 'admin', password: 'admin'),
-                      );
+                            LoginSubmitted(
+                                username: 'admin', password: 'admin'),
+                          );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF725C0C),
                       minimumSize: const Size(0, 48), // Adjust minimum height
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10), // Rounded corners
+                        borderRadius:
+                            BorderRadius.circular(10), // Rounded corners
                       ),
                     ),
-                    child: const Text('Sign in', style: TextStyle(color: Colors.white)),
+                    child: const Text('Sign in',
+                        style: TextStyle(color: Colors.white)),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
               // Sign Up Button
               SizedBox(
-                width: MediaQuery.of(context).size.width * 0.5, // Reduce button width
+                width: MediaQuery.of(context).size.width *
+                    0.5, // Reduce button width
                 child: ElevatedButton(
                   onPressed: () {
                     // Handle Sign Up button press
@@ -98,10 +111,12 @@ class LoginScreen extends StatelessWidget {
                     backgroundColor: const Color(0xFF725C0C),
                     minimumSize: const Size(0, 48), // Adjust minimum height
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10), // Rounded corners
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
                     ),
                   ),
-                  child: const Text('Sign Up', style: TextStyle(color: Colors.white)),
+                  child: const Text('Sign Up',
+                      style: TextStyle(color: Colors.white)),
                 ),
               ),
             ],
