@@ -51,7 +51,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAdqtUof3Jq-xc8kz8CodgliFZKPm8bDAU',
-    appId: '1:581276785266:android:585f9493780c41221bc0eb',
+    appId: '1:581276785266:android:ed76b09ddd0782101bc0eb',
     messagingSenderId: '581276785266',
     projectId: 'ecobites-444',
     storageBucket: 'ecobites-444.appspot.com',
@@ -65,4 +65,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'ecobites-444.appspot.com',
     iosBundleId: 'com.example.flutterApp',
   );
+
 }

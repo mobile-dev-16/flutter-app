@@ -1,4 +1,4 @@
-package com.example.eco_bites
+package com.uniandes.ecobite
 
 import android.os.Build
 import android.os.Bundle
