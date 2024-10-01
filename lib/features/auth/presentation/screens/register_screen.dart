@@ -4,14 +4,14 @@ import 'package:eco_bites/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  LoginScreenState createState() => LoginScreenState();
+  RegisterScreenState createState() => RegisterScreenState();
 }
 
-class LoginScreenState extends State<LoginScreen> {
+class RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -40,8 +40,8 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              // Google Sign In Button
-              _buildGoogleSignInButton(context),
+              // Google Sign Up Button
+              _buildGoogleSignUpButton(context),
               const SizedBox(height: 16),
               const Text('OR'),
               const SizedBox(height: 16),
@@ -72,7 +72,7 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 32),
-              // Sign In Button
+              // Register Button
               BlocListener<AuthBloc, AuthState>(
                 listener: (BuildContext context, AuthState state) {
                   if (state is AuthLoading) {
@@ -94,7 +94,7 @@ class LoginScreenState extends State<LoginScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       context.read<AuthBloc>().add(
-                        SignInRequested(
+                        SignUpRequested(
                           email: _emailController.text,
                           password: _passwordController.text,
                         ),
@@ -108,19 +108,19 @@ class LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     child: const Text(
-                      'Sign In',
+                      'Register',
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              // Navigate to Register Screen
+              // Navigate back to Login Screen
               TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/register');
+                  Navigator.pop(context); // Navigate back to LoginScreen
                 },
-                child: const Text("Don't have an account? Register here"),
+                child: const Text('Already have an account? Log in here'),
               ),
             ],
           ),
@@ -129,14 +129,14 @@ class LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Google Sign In Button
-  Widget _buildGoogleSignInButton(BuildContext context) {
+  // Google Sign Up Button
+  Widget _buildGoogleSignUpButton(BuildContext context) {
     return ElevatedButton.icon(
       icon: const Icon(Icons.login, color: Colors.white),
       onPressed: () {
         context.read<AuthBloc>().add(SignUpWithGoogleRequested());
       },
-      label: const Text('Continue with Google', style: TextStyle(color: Colors.white)),
+      label: const Text('Register with Google', style: TextStyle(color: Colors.white)),
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.redAccent,
         minimumSize: const Size(double.infinity, 48),
