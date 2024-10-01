@@ -42,6 +42,7 @@ dependencies:
   material_symbols_icons: ^4.2785.1
   nested: ^1.0.0
   shared_preferences: ^2.3.2
+  sign_button: ^2.0.6
 
 dev_dependencies:
   flutter_lints: ^4.0.0

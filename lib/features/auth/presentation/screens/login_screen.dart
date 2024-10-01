@@ -3,6 +3,7 @@ import 'package:eco_bites/features/auth/presentation/bloc/auth_event.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sign_button/sign_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -40,7 +41,7 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              // Google Sign In Button
+              // Google Sign In Button (Using SignInButton)
               _buildGoogleSignInButton(context),
               const SizedBox(height: 16),
               const Text('OR'),
@@ -129,18 +130,16 @@ class LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Google Sign In Button
+  // Google Sign In Button using the SignInButton package
   Widget _buildGoogleSignInButton(BuildContext context) {
-    return ElevatedButton.icon(
-      icon: const Icon(Icons.login, color: Colors.white),
+    return SignInButton(
+      buttonType: ButtonType.google,
+      width: 175,
+      btnColor: Colors.white,
+      elevation: 0,
       onPressed: () {
         context.read<AuthBloc>().add(SignUpWithGoogleRequested());
       },
-      label: const Text('Continue with Google', style: TextStyle(color: Colors.white)),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.redAccent,
-        minimumSize: const Size(double.infinity, 48),
-      ),
     );
   }
 

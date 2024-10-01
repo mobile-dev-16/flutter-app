@@ -38,9 +38,12 @@ class AuthRepository {
     }
   }
 
-  // Sign up with Google
+  // Sign up or sign in with Google
   Future<User?> signUpWithGoogle() async {
     try {
+      // Disconnect any previously authenticated Google account
+      await _googleSignIn.signOut();
+
       // Initiating the Google Sign-In process
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
@@ -67,7 +70,7 @@ class AuthRepository {
   Future<void> signOut() async {
     try {
       await _firebaseAuth.signOut();
-      await _googleSignIn.signOut(); // Ensures sign out from Google as well
+      await _googleSignIn.signOut();  // Ensures sign out from Google as well
       _logger.i('User signed out successfully');
     } catch (e) {
       _logger.e('Error signing out: $e');
