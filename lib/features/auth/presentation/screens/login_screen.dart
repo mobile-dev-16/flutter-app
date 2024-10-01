@@ -47,29 +47,35 @@ class LoginScreenState extends State<LoginScreen> {
               const Text('OR'),
               const SizedBox(height: 16),
               // Email TextField
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.75,  // Reduce width to 75%
+                child: TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
-                  filled: true,
-                  fillColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 16),
               // Password TextField
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.75,
+                child: TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
-                  filled: true,
-                  fillColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 32),
@@ -92,7 +98,7 @@ class LoginScreenState extends State<LoginScreen> {
                   }
                 },
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.5,
+                  width: MediaQuery.of(context).size.width * 0.5,  // Reduce button width to 50%
                   child: ElevatedButton(
                     onPressed: () {
                       context.read<AuthBloc>().add(
@@ -104,7 +110,7 @@ class LoginScreenState extends State<LoginScreen> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF725C0C),
-                      minimumSize: const Size(0, 48),
+                      minimumSize: const Size(0, 48),  // Reduce the height of the button
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -135,7 +141,7 @@ class LoginScreenState extends State<LoginScreen> {
   Widget _buildGoogleSignInButton(BuildContext context) {
     return SignInButton(
       buttonType: ButtonType.google,
-      width: 175,
+      width: 195,  // Adjust the width for the Google button
       btnColor: Colors.white,
       elevation: 0,
       onPressed: () {

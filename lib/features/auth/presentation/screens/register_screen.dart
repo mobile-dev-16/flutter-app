@@ -3,7 +3,7 @@ import 'package:eco_bites/features/auth/presentation/bloc/auth_event.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sign_button/sign_button.dart';  // Import the sign_button package
+import 'package:sign_button/sign_button.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -47,29 +47,35 @@ class RegisterScreenState extends State<RegisterScreen> {
               const Text('OR'),
               const SizedBox(height: 16),
               // Email TextField
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.75,
+                child: TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
-                  filled: true,
-                  fillColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 16),
               // Password TextField
-              TextField(
-                controller: _passwordController,
-                obscureText: true,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.75,
+                child: TextField(
+                  controller: _passwordController,
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
-                  filled: true,
-                  fillColor: Colors.white,
                 ),
               ),
               const SizedBox(height: 32),
@@ -103,7 +109,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF725C0C),
-                      minimumSize: const Size(0, 48),
+                      minimumSize: const Size(0, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
@@ -136,7 +142,7 @@ class RegisterScreenState extends State<RegisterScreen> {
       buttonType: ButtonType.google,
       btnColor: Colors.white,
       btnText: 'Sign up with Google',
-      width: 180,
+      width: 200,  // Adjust the width for the Google button
       onPressed: () {
         context.read<AuthBloc>().add(SignUpWithGoogleRequested());
       },
