@@ -79,6 +79,7 @@ class LoginScreenState extends State<LoginScreen> {
                   if (state is AuthLoading) {
                     _showLoadingDialog(context);
                   } else if (state is AuthAuthenticated) {
+                    Navigator.pop(context);
                     Navigator.of(context).pushNamedAndRemoveUntil(
                       '/main',
                       (Route<dynamic> route) => false,
@@ -138,7 +139,7 @@ class LoginScreenState extends State<LoginScreen> {
       btnColor: Colors.white,
       elevation: 0,
       onPressed: () {
-        context.read<AuthBloc>().add(SignUpWithGoogleRequested());
+        context.read<AuthBloc>().add(SignInWithGoogleRequested());
       },
     );
   }

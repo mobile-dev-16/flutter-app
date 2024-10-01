@@ -5,17 +5,17 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-
   AuthBloc({required this.authRepository}) : super(AuthInitial()) {
     on<SignInRequested>(_onSignInRequested);
-    on<SignUpRequested>(_onSignUpRequested); // Added event for sign up
-    on<SignUpWithGoogleRequested>(_onSignUpWithGoogleRequested); // Added event for Google sign up
+    on<SignUpRequested>(_onSignUpRequested);
+    on<SignUpWithGoogleRequested>(_onSignUpWithGoogleRequested);  // Sign up with Google
+    on<SignInWithGoogleRequested>(_onSignInWithGoogleRequested);  // Sign in with Google
     on<SignOutRequested>(_onSignOutRequested);
   }
 
   final AuthRepository authRepository;
 
-  // Handle sign-in request
+  // Handle sign-in request with email and password
   Future<void> _onSignInRequested(SignInRequested event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
@@ -26,7 +26,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthError('Sign in failed'));
       }
     } catch (e) {
-      emit(AuthError(e.toString()));
+      if (e is FirebaseAuthException) {
+        emit(AuthError(e.message ?? 'An authentication error occurred'));
+      } else {
+        emit(AuthError('An unexpected error occurred'));
+      }
     }
   }
 
@@ -41,28 +45,60 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthError('Sign up failed'));
       }
     } catch (e) {
-      emit(AuthError(e.toString()));
+      if (e is FirebaseAuthException) {
+        emit(AuthError(e.message ?? 'An authentication error occurred'));
+      } else {
+        emit(AuthError('An unexpected error occurred'));
+      }
     }
   }
 
-  // Handle sign-up with Google
+  // Handle sign-up with Google (forces account selection)
   Future<void> _onSignUpWithGoogleRequested(SignUpWithGoogleRequested event, Emitter<AuthState> emit) async {
     emit(AuthLoading());
     try {
-      final User? user = await authRepository.signUpWithGoogle();
+      final User? user = await authRepository.signUpWithGoogle(); // Forces account chooser
       if (user != null) {
         emit(AuthAuthenticated(user));
       } else {
         emit(AuthError('Sign up with Google failed'));
       }
     } catch (e) {
-      emit(AuthError(e.toString()));
+      if (e is FirebaseAuthException) {
+        emit(AuthError(e.message ?? 'An authentication error occurred'));
+      } else {
+        emit(AuthError('An unexpected error occurred'));
+      }
+    }
+  }
+
+  // Handle sign-in with Google (remembers the account or tries silent login)
+  Future<void> _onSignInWithGoogleRequested(SignInWithGoogleRequested event, Emitter<AuthState> emit) async {
+    emit(AuthLoading());
+    try {
+      final User? user = await authRepository.signInWithGoogle(); // Silent sign-in or recall
+      if (user != null) {
+        emit(AuthAuthenticated(user));
+      } else {
+        emit(AuthError('Sign in with Google failed'));
+      }
+    } catch (e) {
+      if (e is FirebaseAuthException) {
+        emit(AuthError(e.message ?? 'An authentication error occurred'));
+      } else {
+        emit(AuthError('An unexpected error occurred'));
+      }
     }
   }
 
   // Handle sign-out request
   Future<void> _onSignOutRequested(SignOutRequested event, Emitter<AuthState> emit) async {
-    await authRepository.signOut();
-    emit(AuthUnauthenticated());
+    emit(AuthLoading());
+    try {
+      await authRepository.signOut();
+      emit(AuthUnauthenticated());
+    } catch (e) {
+      emit(AuthError('Failed to sign out'));
+    }
   }
 }
