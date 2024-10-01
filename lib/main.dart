@@ -1,5 +1,5 @@
 import 'package:eco_bites/app.dart';
-import 'package:eco_bites/features/auth/presentation/bloc/login_bloc.dart';
+import 'package:eco_bites/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:eco_bites/features/auth/repository/auth_repository.dart';
 import 'package:eco_bites/features/cart/domain/models/cart_item_data.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_bloc.dart';
@@ -47,9 +47,9 @@ Future<void> main() async{
             ),
           ]),
         ),
-        BlocProvider<LoginBloc>(
+        BlocProvider<AuthBloc>(
           create: (BuildContext context) =>
-              LoginBloc(authRepository: authRepository),
+              AuthBloc(authRepository: authRepository),
         ),
         BlocProvider<OrderBloc>(
           create: (BuildContext context) => OrderBloc()..add(LoadOrders()),

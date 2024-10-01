@@ -3,16 +3,16 @@ import 'package:eco_bites/features/auth/presentation/bloc/auth_event.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sign_button/sign_button.dart';
+import 'package:sign_button/sign_button.dart';  // Import the sign_button package
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  LoginScreenState createState() => LoginScreenState();
+  RegisterScreenState createState() => RegisterScreenState();
 }
 
-class LoginScreenState extends State<LoginScreen> {
+class RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -41,8 +41,8 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              // Google Sign In Button (Using SignInButton)
-              _buildGoogleSignInButton(context),
+              // Google Sign Up Button using SignInButton package
+              _buildGoogleSignUpButton(context),
               const SizedBox(height: 16),
               const Text('OR'),
               const SizedBox(height: 16),
@@ -73,13 +73,12 @@ class LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 32),
-              // Sign In Button
+              // Register Button
               BlocListener<AuthBloc, AuthState>(
                 listener: (BuildContext context, AuthState state) {
                   if (state is AuthLoading) {
                     _showLoadingDialog(context);
                   } else if (state is AuthAuthenticated) {
-                    Navigator.pop(context);
                     Navigator.of(context).pushNamedAndRemoveUntil(
                       '/main',
                       (Route<dynamic> route) => false,
@@ -96,7 +95,7 @@ class LoginScreenState extends State<LoginScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       context.read<AuthBloc>().add(
-                        SignInRequested(
+                        SignUpRequested(
                           email: _emailController.text,
                           password: _passwordController.text,
                         ),
@@ -110,19 +109,19 @@ class LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     child: const Text(
-                      'Sign In',
+                      'Register',
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              // Navigate to Register Screen
+              // Navigate back to Login Screen
               TextButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '/register');
+                  Navigator.pop(context); // Navigate back to LoginScreen
                 },
-                child: const Text("Don't have an account? Register here"),
+                child: const Text('Already have an account? Log in here'),
               ),
             ],
           ),
@@ -131,16 +130,17 @@ class LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Google Sign In Button using the SignInButton package
-  Widget _buildGoogleSignInButton(BuildContext context) {
+  // Google Sign Up Button using SignInButton package
+  Widget _buildGoogleSignUpButton(BuildContext context) {
     return SignInButton(
       buttonType: ButtonType.google,
-      width: 175,
       btnColor: Colors.white,
-      elevation: 0,
+      btnText: 'Sign up with Google',
+      width: 180,
       onPressed: () {
-        context.read<AuthBloc>().add(SignInWithGoogleRequested());
+        context.read<AuthBloc>().add(SignUpWithGoogleRequested());
       },
+      elevation: 0,
     );
   }
 
