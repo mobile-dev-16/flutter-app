@@ -122,7 +122,7 @@ class AddressScreenState extends State<AddressScreen> {
           ),
           Positioned(
             right: 16,
-            bottom: 200, // Adjusted to be above the bottom sheet
+            bottom: 160,
             child: FloatingActionButton(
               onPressed: _onMyLocationButtonPressed,
               child: const Icon(Icons.my_location),
@@ -169,7 +169,7 @@ class AddressScreenState extends State<AddressScreen> {
               style: Theme.of(context).textTheme.titleMedium,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: selectedPosition != null
                   ? () {
@@ -178,6 +178,7 @@ class AddressScreenState extends State<AddressScreen> {
                   : null,
               child: const Text('Confirm Address'),
             ),
+            const SizedBox(height: 10),
           ],
         ),
       ),
