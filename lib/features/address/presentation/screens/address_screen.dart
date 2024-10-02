@@ -4,6 +4,7 @@ import 'package:eco_bites/core/utils/reverse_geocoding.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart'; // GPS
 import 'package:google_maps_flutter/google_maps_flutter.dart'; //GOOGLE MAPS EXTERNAL SERVICE
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AddressScreen extends StatefulWidget {
   const AddressScreen({super.key});
@@ -18,7 +19,6 @@ class AddressScreenState extends State<AddressScreen> {
   String selectedAddress = 'Tap on the map to select a location';
   bool isLoading = false;
   Marker? selectedMarker;
-  final String apiKey = 'AIzaSyDeLQq34HhoXDacI5UOJ1VVKbXCT1iStYo';
 
   @override
   void initState() {
@@ -240,4 +240,6 @@ class AddressScreenState extends State<AddressScreen> {
 
     _fetchAddress();
   }
+
+  String get apiKey => dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
 }
