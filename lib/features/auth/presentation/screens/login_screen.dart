@@ -15,12 +15,25 @@ class LoginScreen extends StatefulWidget {
 class LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _submitForm() {
+    if (_formKey.currentState!.validate()) {
+      // Trigger the sign-in event if form is valid
+      context.read<AuthBloc>().add(
+        SignInRequested(
+          email: _emailController.text,
+          password: _passwordController.text,
+        ),
+      );
+    }
   }
 
   @override
@@ -30,107 +43,122 @@ class LoginScreenState extends State<LoginScreen> {
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const Padding(
-                padding: EdgeInsets.only(bottom: 32.0),
-                child: Image(
-                  image: AssetImage('assets/logo.png'),
-                  height: 180,
-                ),
-              ),
-              const SizedBox(height: 16),
-              // Google Sign In Button (Using SignInButton)
-              _buildGoogleSignInButton(context),
-              const SizedBox(height: 16),
-              const Text('OR'),
-              const SizedBox(height: 16),
-              // Email TextField
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.75,  // Reduce width to 75%
-                child: TextField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    filled: true,
-                    fillColor: Colors.white,
+          child: Form(
+            key: _formKey,  // Form key for validation
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 32.0),
+                  child: Image(
+                    image: AssetImage('assets/logo.png'),
+                    height: 180,
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              // Password TextField
-              SizedBox(
-                width: MediaQuery.of(context).size.width * 0.75,
-                child: TextField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5),
+                const SizedBox(height: 16),
+                // Google Sign In Button (Using SignInButton)
+                _buildGoogleSignInButton(context),
+                const SizedBox(height: 16),
+                const Text('OR'),
+                const SizedBox(height: 16),
+                // Email TextFormField
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.75,
+                  child: TextFormField(
+                    controller: _emailController,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
                     ),
-                    filled: true,
-                    fillColor: Colors.white,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 32),
-              // Sign In Button
-              BlocListener<AuthBloc, AuthState>(
-                listener: (BuildContext context, AuthState state) {
-                  if (state is AuthLoading) {
-                    _showLoadingDialog(context);
-                  } else if (state is AuthAuthenticated) {
-                    Navigator.pop(context);
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/main',
-                      (Route<dynamic> route) => false,
-                    );
-                  } else if (state is AuthError) {
-                    Navigator.pop(context); // Close loading dialog
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.errorMessage)),
-                    );
-                  }
-                },
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.5,  // Reduce button width to 50%
-                  child: ElevatedButton(
-                    onPressed: () {
-                      context.read<AuthBloc>().add(
-                        SignInRequested(
-                          email: _emailController.text,
-                          password: _passwordController.text,
-                        ),
-                      );
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email';
+                      }
+                      if (!RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+                          .hasMatch(value)) {
+                        return 'Please enter a valid email address';
+                      }
+                      return null;
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF725C0C),
-                      minimumSize: const Size(0, 48),  // Reduce the height of the button
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // Password TextFormField
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.75,
+                  child: TextFormField(
+                    controller: _passwordController,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                    ),
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      if (value.length < 6) {
+                        return 'Password must be at least 6 characters';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                const SizedBox(height: 32),
+                // Sign In Button
+                BlocListener<AuthBloc, AuthState>(
+                  listener: (BuildContext context, AuthState state) {
+                    if (state is AuthLoading) {
+                      _showLoadingDialog(context);
+                    } else if (state is AuthAuthenticated) {
+                      Navigator.pop(context);
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        '/main',
+                        (Route<dynamic> route) => false,
+                      );
+                    } else if (state is AuthError) {
+                      Navigator.pop(context); // Close loading dialog
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.errorMessage)),
+                      );
+                    }
+                  },
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.5,
+                    child: ElevatedButton(
+                      onPressed: _submitForm,  // Validate form and submit
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF725C0C),
+                        minimumSize: const Size(0, 48),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: const Text(
+                        'Sign In',
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
-                    child: const Text(
-                      'Sign In',
-                      style: TextStyle(color: Colors.white),
-                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              // Navigate to Register Screen
-              TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/register');
-                },
-                child: const Text("Don't have an account? Register here"),
-              ),
-            ],
+                const SizedBox(height: 16),
+                // Navigate to Register Screen
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/register');
+                  },
+                  child: const Text("Don't have an account? Register here"),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -141,7 +169,7 @@ class LoginScreenState extends State<LoginScreen> {
   Widget _buildGoogleSignInButton(BuildContext context) {
     return SignInButton(
       buttonType: ButtonType.google,
-      width: 195,  // Adjust the width for the Google button
+      width: 195,
       btnColor: Colors.white,
       elevation: 0,
       onPressed: () {
