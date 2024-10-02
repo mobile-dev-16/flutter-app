@@ -1,4 +1,5 @@
 import 'package:eco_bites/app.dart';
+import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:eco_bites/features/auth/repository/auth_repository.dart';
 import 'package:eco_bites/features/cart/domain/models/cart_item_data.dart';
@@ -9,10 +10,10 @@ import 'package:eco_bites/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nested/nested.dart';
 
-Future<void> main() async{
-
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(
@@ -20,6 +21,8 @@ Future<void> main() async{
   );
 
   final AuthRepository authRepository = AuthRepository();
+
+  await dotenv.load();
 
   runApp(
     MultiBlocProvider(
@@ -53,6 +56,9 @@ Future<void> main() async{
         ),
         BlocProvider<OrderBloc>(
           create: (BuildContext context) => OrderBloc()..add(LoadOrders()),
+        ),
+        BlocProvider<AddressBloc>(
+          create: (BuildContext context) => AddressBloc(),
         ),
       ],
       child: const MyApp(),

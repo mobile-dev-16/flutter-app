@@ -1,11 +1,20 @@
+import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
+import 'package:eco_bites/features/address/presentation/bloc/address_event.dart';
+import 'package:eco_bites/features/address/presentation/bloc/address_state.dart';
+import 'package:eco_bites/features/address/presentation/screens/address_screen.dart';
 import 'package:eco_bites/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<HomeBloc>(
@@ -25,13 +34,23 @@ class HomeScreenContent extends StatefulWidget {
 class _HomeScreenContentState extends State<HomeScreenContent>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String _selectedAddress = 'Put your address';  // Default address
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(
+      length: 5,
+      vsync: this,
+    );
     _tabController.addListener(_handleTabSelection);
+
+    // Dispatch the LoadAddress event only if the address is not already loaded
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final AddressState addressState = context.read<AddressBloc>().state;
+      if (addressState is! AddressLoaded) {
+        context.read<AddressBloc>().add(LoadAddress());
+      }
+    });
   }
 
   void _handleTabSelection() {
@@ -47,20 +66,13 @@ class _HomeScreenContentState extends State<HomeScreenContent>
     super.dispose();
   }
 
-  // Navigate to AddressScreen and wait for the selected address
   Future<void> _navigateToAddressScreen() async {
-    // Navigate to the address screen and wait for the result (selected address)
-    final String? selectedAddress = await Navigator.pushNamed(
+    await Navigator.push(
       context,
-      '/address',
-    ) as String?;
-
-    // If an address was selected, update the state
-    if (selectedAddress != null) {
-      setState(() {
-        _selectedAddress = selectedAddress;
-      });
-    }
+      MaterialPageRoute<void>(
+        builder: (BuildContext context) => const AddressScreen(),
+      ),
+    );
   }
 
   @override
@@ -75,23 +87,29 @@ class _HomeScreenContentState extends State<HomeScreenContent>
               // Display the selected address and allow user to tap to choose a new address
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: GestureDetector(
-                  onTap: _navigateToAddressScreen,  // Navigate to address screen when tapped
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Icon(
-                        Symbols.location_on_rounded,
-                        fill: 1,
-                        color: theme.colorScheme.primary,
+                child: BlocBuilder<AddressBloc, AddressState>(
+                  builder: (BuildContext context, AddressState state) {
+                    return GestureDetector(
+                      onTap: _navigateToAddressScreen,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Symbols.location_on_rounded,
+                            fill: 1,
+                            color: theme.colorScheme.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            state is AddressLoaded
+                                ? state.address.fullAddress
+                                : 'Add an address',
+                            style: theme.textTheme.titleMedium,
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 8),
-                      Text(
-                        _selectedAddress,  // Display selected address
-                        style: theme.textTheme.titleMedium,
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
               // Search Bar

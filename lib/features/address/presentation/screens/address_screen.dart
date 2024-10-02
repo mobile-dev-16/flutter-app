@@ -1,7 +1,12 @@
 // ignore_for_file: deprecated_member_use
 import 'package:eco_bites/core/ui/widgets/custom_appbar.dart';
 import 'package:eco_bites/core/utils/reverse_geocoding.dart';
+import 'package:eco_bites/features/address/domain/models/address.dart';
+import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
+import 'package:eco_bites/features/address/presentation/bloc/address_event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart'; // GPS
 import 'package:google_maps_flutter/google_maps_flutter.dart'; //GOOGLE MAPS EXTERNAL SERVICE
 
@@ -18,12 +23,19 @@ class AddressScreenState extends State<AddressScreen> {
   String selectedAddress = 'Tap on the map to select a location';
   bool isLoading = false;
   Marker? selectedMarker;
-  final String apiKey = 'AIzaSyDeLQq34HhoXDacI5UOJ1VVKbXCT1iStYo';
+  final TextEditingController _deliveryDetailsController =
+      TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation(); // Get user's current location on screen load
+    _getCurrentLocation();
+  }
+
+  @override
+  void dispose() {
+    _deliveryDetailsController.dispose();
+    super.dispose();
   }
 
   Future<void> _getCurrentLocation() async {
@@ -60,7 +72,8 @@ class AddressScreenState extends State<AddressScreen> {
 
     // Get the current position of the user
     final Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,);
+      desiredAccuracy: LocationAccuracy.high,
+    );
 
     final LatLng userPosition = LatLng(position.latitude, position.longitude);
 
@@ -84,64 +97,117 @@ class AddressScreenState extends State<AddressScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Choose your address', showBackButton: true),
-      body: Column(
+      appBar: const CustomAppBar(
+        title: 'Choose your address',
+        showBackButton: true,
+      ),
+      body: Stack(
         children: <Widget>[
-          // The GoogleMap only takes 50% of the screen height
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.4,  // 50% of the screen
-            child: Stack(
-              children: <Widget>[
-                GoogleMap(
-                  initialCameraPosition: const CameraPosition(
-                    target: LatLng(4.7110, -74.0721),  // Default to Bogota until GPS fetches location
-                    zoom: 14,
+          GoogleMap(
+            initialCameraPosition: const CameraPosition(
+              target: LatLng(4.7110, -74.0721),
+              zoom: 14,
+            ),
+            onMapCreated: (GoogleMapController controller) {
+              mapController = controller;
+            },
+            markers:
+                selectedMarker != null ? <Marker>{selectedMarker!} : <Marker>{},
+            onTap: (LatLng position) {
+              setState(() {
+                selectedPosition = position;
+                selectedMarker = Marker(
+                  markerId: const MarkerId('selected-location'),
+                  position: position,
+                  icon: BitmapDescriptor.defaultMarkerWithHue(
+                    BitmapDescriptor.hueRed,
                   ),
-                  onMapCreated: (GoogleMapController controller) {
-                    mapController = controller;
-                  },
-                  markers: selectedMarker != null ? <Marker>{selectedMarker!} : <Marker>{},  // Show the selected marker
-                  onTap: (LatLng position) {
-                    setState(() {
-                      selectedPosition = position;
-                      selectedMarker = Marker(
-                        markerId: const MarkerId('selected-location'),
-                        position: position,
-                        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-                      );
-                      _fetchAddress();  // Fetch address when a new location is tapped
-                    });
-                  },
-                ),
-                if (isLoading)
-                  const Center(child: CircularProgressIndicator()),  // Show loader while fetching address
-              ],
+                );
+                _fetchAddress(); // Fetch address when a new location is tapped
+              });
+            },
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false, // Disable default button
+            zoomControlsEnabled: false, // Hide zoom controls
+            mapToolbarEnabled: false,
+            compassEnabled: false,
+          ),
+          Positioned(
+            right: 16,
+            bottom: 220,
+            child: FloatingActionButton(
+              onPressed: _onMyLocationButtonPressed,
+              child: const Icon(Icons.my_location),
             ),
           ),
-
-          // The other 50% of the screen is used to display the address and buttons
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: <Widget>[
-                // Display the geocoded address
-                Text(
-                  selectedAddress,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                // Confirm address button
-                ElevatedButton(
-                  onPressed: selectedPosition != null ? () {
-                    Navigator.pop(context, selectedAddress);
-                  } : null,  // Disable button if no position is selected
-                  child: const Text('Confirm Address'),
-                ),
-              ],
-            ),
-          ),
+          _buildBottomSheet(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBottomSheet() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 5,
+              blurRadius: 7,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Text(
+              selectedAddress,
+              style: Theme.of(context).textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: _deliveryDetailsController,
+              decoration: const InputDecoration(
+                hintText: 'Add delivery details (optional)',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: selectedPosition != null
+                  ? () async {
+                      final Address address = Address(
+                        fullAddress: selectedAddress,
+                        latitude: selectedPosition!.latitude,
+                        longitude: selectedPosition!.longitude,
+                        deliveryDetails: _deliveryDetailsController.text,
+                      );
+                      context.read<AddressBloc>().add(SaveAddress(address));
+                      Navigator.pop(context, address);
+                    }
+                  : null,
+              child: const Text('Confirm Address'),
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
       ),
     );
   }
@@ -180,4 +246,28 @@ class AddressScreenState extends State<AddressScreen> {
       }
     }
   }
+
+  Future<void> _onMyLocationButtonPressed() async {
+    final Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+    final LatLng userPosition = LatLng(position.latitude, position.longitude);
+
+    mapController.animateCamera(
+      CameraUpdate.newLatLngZoom(userPosition, 14),
+    );
+
+    setState(() {
+      selectedPosition = userPosition;
+      selectedMarker = Marker(
+        markerId: const MarkerId('user-location'),
+        position: userPosition,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      );
+    });
+
+    _fetchAddress();
+  }
+
+  String get apiKey => dotenv.env['GOOGLE_MAPS_API_KEY'] ?? '';
 }

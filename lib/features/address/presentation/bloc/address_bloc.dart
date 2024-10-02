@@ -1,38 +1,47 @@
-import 'package:eco_bites/features/address/domain/address.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_event.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_state.dart';
-import 'package:eco_bites/features/address/repository/address_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddressBloc extends Bloc<AddressEvent, AddressState> {
-
-  AddressBloc(this.repository) : super(AddressInitial()) {
+  AddressBloc() : super(AddressInitial()) {
     on<SaveAddress>(_onSaveAddress);
-    on<LoadAddresses>(_onLoadAddresses);
+    on<LoadAddress>(_onLoadAddress);
+    on<ClearAddress>(_onClearAddress);
   }
 
-  final AddressRepository repository;
-
-  // Handle saving the address
-  Future<void> _onSaveAddress(SaveAddress event, Emitter<AddressState> emit) async {
+  Future<void> _onSaveAddress(
+    SaveAddress event,
+    Emitter<AddressState> emit,
+  ) async {
     emit(AddressLoading());
     try {
-      // Make sure to pass both the userId and the Address object
-      await repository.saveAddress(event.userId, event.address);
-      emit(AddressSaved());
+      emit(AddressLoaded(event.address));
     } catch (e) {
       emit(AddressError(e.toString()));
     }
   }
 
-  // Handle loading addresses
-  Future<void> _onLoadAddresses(LoadAddresses event, Emitter<AddressState> emit) async {
+  Future<void> _onLoadAddress(
+    LoadAddress event,
+    Emitter<AddressState> emit,
+  ) async {
     emit(AddressLoading());
     try {
-      final List<Address> addresses = await repository.fetchUserAddresses(event.userId);
-      emit(AddressLoaded(addresses));
+      final AddressState currentState = state;
+      if (currentState is AddressLoaded) {
+        emit(currentState);
+      } else {
+        emit(AddressInitial());
+      }
     } catch (e) {
       emit(AddressError(e.toString()));
     }
+  }
+
+  void _onClearAddress(
+    ClearAddress event,
+    Emitter<AddressState> emit,
+  ) {
+    emit(AddressInitial());
   }
 }

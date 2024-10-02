@@ -1,16 +1,12 @@
-import 'package:eco_bites/features/address/domain/address.dart';
+import 'package:eco_bites/features/address/domain/models/address.dart';
 
 abstract class AddressEvent {}
 
 class SaveAddress extends AddressEvent {
-
-  SaveAddress({required this.userId, required this.address});
-  final String userId;  // Add userId to this event
+  SaveAddress(this.address);
   final Address address;
 }
 
-class LoadAddresses extends AddressEvent {
+class LoadAddress extends AddressEvent {}
 
-  LoadAddresses(this.userId);
-  final String userId;
-}
+class ClearAddress extends AddressEvent {}
