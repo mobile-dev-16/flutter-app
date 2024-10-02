@@ -10,3 +10,8 @@ class SaveAddress extends AddressEvent {
 class LoadAddress extends AddressEvent {}
 
 class ClearAddress extends AddressEvent {}
+
+class UpdateCurrentLocation extends AddressEvent {
+  UpdateCurrentLocation(this.currentLocation);
+  final Address currentLocation;
+}
