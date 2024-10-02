@@ -50,12 +50,16 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
   }
 
   Future<void> _onUpdateCurrentLocation(
-      UpdateCurrentLocation event, Emitter<AddressState> emit) async {
+    UpdateCurrentLocation event,
+    Emitter<AddressState> emit,
+  ) async {
     final AddressState currentState = state;
     if (currentState is AddressLoaded) {
       emit(
-        AddressLoaded(currentState.savedAddress,
-            currentLocation: event.currentLocation),
+        AddressLoaded(
+          currentState.savedAddress,
+          currentLocation: event.currentLocation,
+        ),
       );
     }
   }
