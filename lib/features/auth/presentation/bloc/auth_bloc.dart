@@ -10,9 +10,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignInRequested>(_onSignInRequested);
     on<SignUpRequested>(_onSignUpRequested);
     on<SignUpWithGoogleRequested>(
-        _onSignUpWithGoogleRequested); // Sign up with Google
+      _onSignUpWithGoogleRequested,
+    );
     on<SignInWithGoogleRequested>(
-        _onSignInWithGoogleRequested); // Sign in with Google
+      _onSignInWithGoogleRequested,
+    );
     on<SignOutRequested>(_onSignOutRequested);
   }
 
@@ -26,7 +28,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     try {
       final User? user = await authRepository.signIn(
-          email: event.email, password: event.password);
+        email: event.email,
+        password: event.password,
+      );
       if (user != null) {
         await _saveUserId(user.uid);
         emit(AuthAuthenticated(user));
@@ -50,7 +54,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(AuthLoading());
     try {
       final User? user = await authRepository.signUp(
-          email: event.email, password: event.password);
+        email: event.email,
+        password: event.password,
+      );
       if (user != null) {
         await _saveUserId(user.uid);
         emit(AuthAuthenticated(user));

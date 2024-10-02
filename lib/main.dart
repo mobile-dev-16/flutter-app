@@ -1,4 +1,5 @@
 import 'package:eco_bites/app.dart';
+import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:eco_bites/features/auth/repository/auth_repository.dart';
 import 'package:eco_bites/features/cart/domain/models/cart_item_data.dart';
@@ -11,8 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nested/nested.dart';
-import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
-import 'package:eco_bites/features/address/repository/address_repository.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,7 +58,7 @@ Future<void> main() async {
           create: (BuildContext context) => OrderBloc()..add(LoadOrders()),
         ),
         BlocProvider<AddressBloc>(
-          create: (BuildContext context) => AddressBloc(AddressRepository()),
+          create: (BuildContext context) => AddressBloc(),
         ),
       ],
       child: const MyApp(),

@@ -7,18 +7,11 @@ class AddressInitial extends AddressState {}
 class AddressLoading extends AddressState {}
 
 class AddressLoaded extends AddressState {
-  AddressLoaded(this.addresses);
-  final List<Address> addresses;
+  AddressLoaded(this.address);
+  final Address address;
 }
 
 class AddressError extends AddressState {
   AddressError(this.message);
   final String message;
-}
-
-class AddressSaved extends AddressState {}
-
-class CurrentAddressUpdated extends AddressState {
-  CurrentAddressUpdated(this.address);
-  final Address address;
 }

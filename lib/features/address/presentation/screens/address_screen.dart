@@ -1,7 +1,6 @@
 // ignore_for_file: deprecated_member_use
 import 'package:eco_bites/core/ui/widgets/custom_appbar.dart';
 import 'package:eco_bites/core/utils/reverse_geocoding.dart';
-import 'package:eco_bites/core/utils/user_util.dart';
 import 'package:eco_bites/features/address/domain/models/address.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_event.dart';
@@ -30,7 +29,7 @@ class AddressScreenState extends State<AddressScreen> {
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation(); // Get user's current location on screen load
+    _getCurrentLocation();
   }
 
   @override
@@ -194,26 +193,14 @@ class AddressScreenState extends State<AddressScreen> {
             ElevatedButton(
               onPressed: selectedPosition != null
                   ? () async {
-                      final String? userId = await getUserId();
-                      if (userId != null) {
-                        final address = Address(
-                          fullAddress: selectedAddress,
-                          latitude: selectedPosition!.latitude,
-                          longitude: selectedPosition!.longitude,
-                          deliveryDetails: _deliveryDetailsController.text,
-                        );
-                        context
-                            .read<AddressBloc>()
-                            .add(SaveAddress(userId: userId, address: address));
-                        context
-                            .read<AddressBloc>()
-                            .add(UpdateCurrentAddress(address));
-                        Navigator.pop(context);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('User not logged in')),
-                        );
-                      }
+                      final Address address = Address(
+                        fullAddress: selectedAddress,
+                        latitude: selectedPosition!.latitude,
+                        longitude: selectedPosition!.longitude,
+                        deliveryDetails: _deliveryDetailsController.text,
+                      );
+                      context.read<AddressBloc>().add(SaveAddress(address));
+                      Navigator.pop(context, address);
                     }
                   : null,
               child: const Text('Confirm Address'),
