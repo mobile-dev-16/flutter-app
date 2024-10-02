@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use
 import 'package:eco_bites/core/ui/widgets/custom_appbar.dart';
 import 'package:eco_bites/core/utils/reverse_geocoding.dart';
 import 'package:flutter/material.dart';
