@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:eco_bites/features/address/domain/address.dart';
+import 'package:eco_bites/features/address/domain/models/address.dart';
 
 class AddressRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;

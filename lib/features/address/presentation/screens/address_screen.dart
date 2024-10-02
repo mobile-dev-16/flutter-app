@@ -1,7 +1,12 @@
 // ignore_for_file: deprecated_member_use
 import 'package:eco_bites/core/ui/widgets/custom_appbar.dart';
 import 'package:eco_bites/core/utils/reverse_geocoding.dart';
+import 'package:eco_bites/core/utils/user_util.dart';
+import 'package:eco_bites/features/address/domain/models/address.dart';
+import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
+import 'package:eco_bites/features/address/presentation/bloc/address_event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart'; // GPS
 import 'package:google_maps_flutter/google_maps_flutter.dart'; //GOOGLE MAPS EXTERNAL SERVICE
@@ -19,11 +24,19 @@ class AddressScreenState extends State<AddressScreen> {
   String selectedAddress = 'Tap on the map to select a location';
   bool isLoading = false;
   Marker? selectedMarker;
+  final TextEditingController _deliveryDetailsController =
+      TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _getCurrentLocation(); // Get user's current location on screen load
+  }
+
+  @override
+  void dispose() {
+    _deliveryDetailsController.dispose();
+    super.dispose();
   }
 
   Future<void> _getCurrentLocation() async {
@@ -122,7 +135,7 @@ class AddressScreenState extends State<AddressScreen> {
           ),
           Positioned(
             right: 16,
-            bottom: 160,
+            bottom: 220,
             child: FloatingActionButton(
               onPressed: _onMyLocationButtonPressed,
               child: const Icon(Icons.my_location),
@@ -170,10 +183,37 @@ class AddressScreenState extends State<AddressScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 10),
+            TextField(
+              controller: _deliveryDetailsController,
+              decoration: const InputDecoration(
+                hintText: 'Add delivery details (optional)',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: selectedPosition != null
-                  ? () {
-                      Navigator.pop(context, selectedAddress);
+                  ? () async {
+                      final String? userId = await getUserId();
+                      if (userId != null) {
+                        final address = Address(
+                          fullAddress: selectedAddress,
+                          latitude: selectedPosition!.latitude,
+                          longitude: selectedPosition!.longitude,
+                          deliveryDetails: _deliveryDetailsController.text,
+                        );
+                        context
+                            .read<AddressBloc>()
+                            .add(SaveAddress(userId: userId, address: address));
+                        context
+                            .read<AddressBloc>()
+                            .add(UpdateCurrentAddress(address));
+                        Navigator.pop(context);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('User not logged in')),
+                        );
+                      }
                     }
                   : null,
               child: const Text('Confirm Address'),

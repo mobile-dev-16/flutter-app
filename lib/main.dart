@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nested/nested.dart';
+import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
+import 'package:eco_bites/features/address/repository/address_repository.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,6 +57,9 @@ Future<void> main() async {
         ),
         BlocProvider<OrderBloc>(
           create: (BuildContext context) => OrderBloc()..add(LoadOrders()),
+        ),
+        BlocProvider<AddressBloc>(
+          create: (BuildContext context) => AddressBloc(AddressRepository()),
         ),
       ],
       child: const MyApp(),
