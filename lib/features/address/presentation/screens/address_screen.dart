@@ -2,9 +2,9 @@
 import 'package:eco_bites/core/ui/widgets/custom_appbar.dart';
 import 'package:eco_bites/core/utils/reverse_geocoding.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart'; // GPS
 import 'package:google_maps_flutter/google_maps_flutter.dart'; //GOOGLE MAPS EXTERNAL SERVICE
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AddressScreen extends StatefulWidget {
   const AddressScreen({super.key});
@@ -86,9 +86,11 @@ class AddressScreenState extends State<AddressScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const CustomAppBar(
-          title: 'Choose your address', showBackButton: true),
+        title: 'Choose your address',
+        showBackButton: true,
+      ),
       body: Stack(
-        children: [
+        children: <Widget>[
           GoogleMap(
             initialCameraPosition: const CameraPosition(
               target: LatLng(4.7110, -74.0721),
@@ -106,7 +108,8 @@ class AddressScreenState extends State<AddressScreen> {
                   markerId: const MarkerId('selected-location'),
                   position: position,
                   icon: BitmapDescriptor.defaultMarkerWithHue(
-                      BitmapDescriptor.hueRed),
+                    BitmapDescriptor.hueRed,
+                  ),
                 );
                 _fetchAddress(); // Fetch address when a new location is tapped
               });
@@ -116,8 +119,6 @@ class AddressScreenState extends State<AddressScreen> {
             zoomControlsEnabled: false, // Hide zoom controls
             mapToolbarEnabled: false,
             compassEnabled: false,
-            trafficEnabled: false,
-            indoorViewEnabled: false,
           ),
           Positioned(
             right: 16,
@@ -141,7 +142,7 @@ class AddressScreenState extends State<AddressScreen> {
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-          boxShadow: [
+          boxShadow: <BoxShadow>[
             BoxShadow(
               color: Colors.grey.withOpacity(0.5),
               spreadRadius: 5,
@@ -153,7 +154,7 @@ class AddressScreenState extends State<AddressScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: [
+          children: <Widget>[
             Container(
               width: 40,
               height: 4,
@@ -218,8 +219,7 @@ class AddressScreenState extends State<AddressScreen> {
     }
   }
 
-  // Add this new method
-  void _onMyLocationButtonPressed() async {
+  Future<void> _onMyLocationButtonPressed() async {
     final Position position = await Geolocator.getCurrentPosition(
       desiredAccuracy: LocationAccuracy.high,
     );
