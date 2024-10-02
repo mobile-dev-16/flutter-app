@@ -1,3 +1,7 @@
+import 'dart:async';
+
+import 'package:eco_bites/core/utils/distance.dart';
+import 'package:eco_bites/features/address/domain/models/address.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_event.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_state.dart';
@@ -5,6 +9,7 @@ import 'package:eco_bites/features/address/presentation/screens/address_screen.d
 import 'package:eco_bites/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -34,6 +39,7 @@ class HomeScreenContent extends StatefulWidget {
 class _HomeScreenContentState extends State<HomeScreenContent>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  StreamSubscription<Position>? _positionStreamSubscription;
 
   @override
   void initState() {
@@ -44,13 +50,36 @@ class _HomeScreenContentState extends State<HomeScreenContent>
     );
     _tabController.addListener(_handleTabSelection);
 
-    // Dispatch the LoadAddress event only if the address is not already loaded
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final AddressState addressState = context.read<AddressBloc>().state;
       if (addressState is! AddressLoaded) {
         context.read<AddressBloc>().add(LoadAddress());
       }
+      _startListeningToLocationChanges();
     });
+  }
+
+  void _startListeningToLocationChanges() {
+    _positionStreamSubscription = Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 100, // Update every 100 meters
+      ),
+    ).listen((Position position) {
+      _updateCurrentLocation(position);
+    });
+  }
+
+  void _updateCurrentLocation(Position position) {
+    context.read<AddressBloc>().add(
+          UpdateCurrentLocation(
+            Address(
+              fullAddress: '',
+              latitude: position.latitude,
+              longitude: position.longitude,
+            ),
+          ),
+        );
   }
 
   void _handleTabSelection() {
@@ -61,6 +90,7 @@ class _HomeScreenContentState extends State<HomeScreenContent>
 
   @override
   void dispose() {
+    _positionStreamSubscription?.cancel();
     _tabController.removeListener(_handleTabSelection);
     _tabController.dispose();
     super.dispose();
@@ -84,29 +114,54 @@ class _HomeScreenContentState extends State<HomeScreenContent>
           padding: const EdgeInsets.only(top: 32.0, left: 16.0, right: 16.0),
           child: Column(
             children: <Widget>[
-              // Display the selected address and allow user to tap to choose a new address
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: BlocBuilder<AddressBloc, AddressState>(
                   builder: (BuildContext context, AddressState state) {
+                    if (state is AddressLoaded) {
+                      final bool isFar = state.currentLocation != null &&
+                          isFarFromSavedAddress(
+                            state.currentLocation!.latitude,
+                            state.currentLocation!.longitude,
+                            state.savedAddress.latitude,
+                            state.savedAddress.longitude,
+                          );
+                      return Column(
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: _navigateToAddressScreen,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Icon(
+                                  Symbols.location_on_rounded,
+                                  fill: 1,
+                                  color: theme.colorScheme.primary,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  state.savedAddress.fullAddress,
+                                  style: theme.textTheme.titleMedium,
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (isFar) ...<Widget>[
+                            const SizedBox(height: 8),
+                            Text(
+                              'You are far from your saved address',
+                              style: theme.textTheme.bodySmall
+                                  ?.copyWith(color: Colors.red),
+                            ),
+                          ],
+                        ],
+                      );
+                    }
                     return GestureDetector(
                       onTap: _navigateToAddressScreen,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Icon(
-                            Symbols.location_on_rounded,
-                            fill: 1,
-                            color: theme.colorScheme.primary,
-                          ),
-                          const SizedBox(width: 8),
-                          Text(
-                            state is AddressLoaded
-                                ? state.address.fullAddress
-                                : 'Add an address',
-                            style: theme.textTheme.titleMedium,
-                          ),
-                        ],
+                      child: Text(
+                        'Add an address',
+                        style: theme.textTheme.titleMedium,
                       ),
                     );
                   },

@@ -7,8 +7,9 @@ class AddressInitial extends AddressState {}
 class AddressLoading extends AddressState {}
 
 class AddressLoaded extends AddressState {
-  AddressLoaded(this.address);
-  final Address address;
+  AddressLoaded(this.savedAddress, {this.currentLocation});
+  final Address savedAddress;
+  final Address? currentLocation;
 }
 
 class AddressError extends AddressState {

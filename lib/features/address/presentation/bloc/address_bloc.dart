@@ -6,6 +6,7 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
   AddressBloc() : super(AddressInitial()) {
     on<SaveAddress>(_onSaveAddress);
     on<LoadAddress>(_onLoadAddress);
+    on<UpdateCurrentLocation>(_onUpdateCurrentLocation);
     on<ClearAddress>(_onClearAddress);
   }
 
@@ -15,7 +16,17 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
   ) async {
     emit(AddressLoading());
     try {
-      emit(AddressLoaded(event.address));
+      final AddressState currentState = state;
+      if (currentState is AddressLoaded) {
+        emit(
+          AddressLoaded(
+            event.address,
+            currentLocation: currentState.currentLocation,
+          ),
+        );
+      } else {
+        emit(AddressLoaded(event.address));
+      }
     } catch (e) {
       emit(AddressError(e.toString()));
     }
@@ -38,10 +49,22 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
     }
   }
 
-  void _onClearAddress(
-    ClearAddress event,
+  Future<void> _onUpdateCurrentLocation(
+    UpdateCurrentLocation event,
     Emitter<AddressState> emit,
-  ) {
+  ) async {
+    final AddressState currentState = state;
+    if (currentState is AddressLoaded) {
+      emit(
+        AddressLoaded(
+          currentState.savedAddress,
+          currentLocation: event.currentLocation,
+        ),
+      );
+    }
+  }
+
+  void _onClearAddress(ClearAddress event, Emitter<AddressState> emit) {
     emit(AddressInitial());
   }
 }
