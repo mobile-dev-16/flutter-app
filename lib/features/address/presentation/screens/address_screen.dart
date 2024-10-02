@@ -1,7 +1,8 @@
 import 'package:eco_bites/core/ui/widgets/custom_appbar.dart';
 import 'package:eco_bites/core/utils/reverse_geocoding.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart'; // GPS
+import 'package:google_maps_flutter/google_maps_flutter.dart'; //GOOGLE MAPS EXTERNAL SERVICE
 
 class AddressScreen extends StatefulWidget {
   const AddressScreen({super.key});
@@ -16,9 +17,68 @@ class AddressScreenState extends State<AddressScreen> {
   String selectedAddress = 'Tap on the map to select a location';
   bool isLoading = false;
   Marker? selectedMarker;
-
-  // Your API Key here
   final String apiKey = 'AIzaSyDeLQq34HhoXDacI5UOJ1VVKbXCT1iStYo';
+
+  @override
+  void initState() {
+    super.initState();
+    _getCurrentLocation(); // Get user's current location on screen load
+  }
+
+  Future<void> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    // Check if location services are enabled
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      setState(() {
+        selectedAddress = 'Location services are disabled.';
+      });
+      return;
+    }
+
+    // Check for location permissions
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        setState(() {
+          selectedAddress = 'Location permissions are denied.';
+        });
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      setState(() {
+        selectedAddress = 'Location permissions are permanently denied.';
+      });
+      return;
+    }
+
+    // Get the current position of the user
+    final Position position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,);
+
+    final LatLng userPosition = LatLng(position.latitude, position.longitude);
+
+    // Move the map camera to the user's location
+    mapController.animateCamera(
+      CameraUpdate.newLatLngZoom(userPosition, 14),
+    );
+
+    // Update the marker and selected position
+    setState(() {
+      selectedPosition = userPosition;
+      selectedMarker = Marker(
+        markerId: const MarkerId('user-location'),
+        position: userPosition,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      );
+      _fetchAddress(); // Fetch address after locating user
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +88,12 @@ class AddressScreenState extends State<AddressScreen> {
         children: <Widget>[
           // The GoogleMap only takes 50% of the screen height
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.5,  // 50% of the screen
+            height: MediaQuery.of(context).size.height * 0.4,  // 50% of the screen
             child: Stack(
               children: <Widget>[
                 GoogleMap(
                   initialCameraPosition: const CameraPosition(
-                    target: LatLng(4.7110, -74.0721),  // Example coordinates (Bogotá)
+                    target: LatLng(4.7110, -74.0721),  // Default to Bogota until GPS fetches location
                     zoom: 14,
                   ),
                   onMapCreated: (GoogleMapController controller) {
@@ -48,7 +108,7 @@ class AddressScreenState extends State<AddressScreen> {
                         position: position,
                         icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
                       );
-                      _fetchAddress();
+                      _fetchAddress();  // Fetch address when a new location is tapped
                     });
                   },
                 ),
