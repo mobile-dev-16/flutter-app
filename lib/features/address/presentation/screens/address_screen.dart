@@ -60,7 +60,8 @@ class AddressScreenState extends State<AddressScreen> {
 
     // Get the current position of the user
     final Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,);
+      desiredAccuracy: LocationAccuracy.high,
+    );
 
     final LatLng userPosition = LatLng(position.latitude, position.longitude);
 
@@ -84,64 +85,100 @@ class AddressScreenState extends State<AddressScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Choose your address', showBackButton: true),
-      body: Column(
-        children: <Widget>[
-          // The GoogleMap only takes 50% of the screen height
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.4,  // 50% of the screen
-            child: Stack(
-              children: <Widget>[
-                GoogleMap(
-                  initialCameraPosition: const CameraPosition(
-                    target: LatLng(4.7110, -74.0721),  // Default to Bogota until GPS fetches location
-                    zoom: 14,
-                  ),
-                  onMapCreated: (GoogleMapController controller) {
-                    mapController = controller;
-                  },
-                  markers: selectedMarker != null ? <Marker>{selectedMarker!} : <Marker>{},  // Show the selected marker
-                  onTap: (LatLng position) {
-                    setState(() {
-                      selectedPosition = position;
-                      selectedMarker = Marker(
-                        markerId: const MarkerId('selected-location'),
-                        position: position,
-                        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-                      );
-                      _fetchAddress();  // Fetch address when a new location is tapped
-                    });
-                  },
-                ),
-                if (isLoading)
-                  const Center(child: CircularProgressIndicator()),  // Show loader while fetching address
-              ],
+      appBar: const CustomAppBar(
+          title: 'Choose your address', showBackButton: true),
+      body: Stack(
+        children: [
+          GoogleMap(
+            initialCameraPosition: const CameraPosition(
+              target: LatLng(4.7110, -74.0721),
+              zoom: 14,
+            ),
+            onMapCreated: (GoogleMapController controller) {
+              mapController = controller;
+            },
+            markers:
+                selectedMarker != null ? <Marker>{selectedMarker!} : <Marker>{},
+            onTap: (LatLng position) {
+              setState(() {
+                selectedPosition = position;
+                selectedMarker = Marker(
+                  markerId: const MarkerId('selected-location'),
+                  position: position,
+                  icon: BitmapDescriptor.defaultMarkerWithHue(
+                      BitmapDescriptor.hueRed),
+                );
+                _fetchAddress(); // Fetch address when a new location is tapped
+              });
+            },
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false, // Disable default button
+            zoomControlsEnabled: false, // Hide zoom controls
+            mapToolbarEnabled: false,
+            compassEnabled: false,
+            trafficEnabled: false,
+            indoorViewEnabled: false,
+          ),
+          Positioned(
+            right: 16,
+            bottom: 200, // Adjusted to be above the bottom sheet
+            child: FloatingActionButton(
+              onPressed: _onMyLocationButtonPressed,
+              child: const Icon(Icons.my_location),
             ),
           ),
-
-          // The other 50% of the screen is used to display the address and buttons
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: <Widget>[
-                // Display the geocoded address
-                Text(
-                  selectedAddress,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                // Confirm address button
-                ElevatedButton(
-                  onPressed: selectedPosition != null ? () {
-                    Navigator.pop(context, selectedAddress);
-                  } : null,  // Disable button if no position is selected
-                  child: const Text('Confirm Address'),
-                ),
-              ],
-            ),
-          ),
+          _buildBottomSheet(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBottomSheet() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.5),
+              spreadRadius: 5,
+              blurRadius: 7,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            Text(
+              selectedAddress,
+              style: Theme.of(context).textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: selectedPosition != null
+                  ? () {
+                      Navigator.pop(context, selectedAddress);
+                    }
+                  : null,
+              child: const Text('Confirm Address'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -179,5 +216,28 @@ class AddressScreenState extends State<AddressScreen> {
         });
       }
     }
+  }
+
+  // Add this new method
+  void _onMyLocationButtonPressed() async {
+    final Position position = await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+    final LatLng userPosition = LatLng(position.latitude, position.longitude);
+
+    mapController.animateCamera(
+      CameraUpdate.newLatLngZoom(userPosition, 14),
+    );
+
+    setState(() {
+      selectedPosition = userPosition;
+      selectedMarker = Marker(
+        markerId: const MarkerId('user-location'),
+        position: userPosition,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      );
+    });
+
+    _fetchAddress();
   }
 }
