@@ -25,6 +25,7 @@ class HomeScreenContent extends StatefulWidget {
 class _HomeScreenContentState extends State<HomeScreenContent>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  String _selectedAddress = 'Put your address';  // Default address
 
   @override
   void initState() {
@@ -46,6 +47,22 @@ class _HomeScreenContentState extends State<HomeScreenContent>
     super.dispose();
   }
 
+  // Navigate to AddressScreen and wait for the selected address
+  Future<void> _navigateToAddressScreen() async {
+    // Navigate to the address screen and wait for the result (selected address)
+    final String? selectedAddress = await Navigator.pushNamed(
+      context,
+      '/address',
+    ) as String?;
+
+    // If an address was selected, update the state
+    if (selectedAddress != null) {
+      setState(() {
+        _selectedAddress = selectedAddress;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -55,23 +72,26 @@ class _HomeScreenContentState extends State<HomeScreenContent>
           padding: const EdgeInsets.only(top: 32.0, left: 16.0, right: 16.0),
           child: Column(
             children: <Widget>[
-              // Title with Icon
+              // Display the selected address and allow user to tap to choose a new address
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(
-                      Symbols.location_on_rounded,
-                      fill: 1,
-                      color: theme.colorScheme.primary,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Calle 13 #12-34',
-                      style: theme.textTheme.titleMedium,
-                    ),
-                  ],
+                child: GestureDetector(
+                  onTap: _navigateToAddressScreen,  // Navigate to address screen when tapped
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(
+                        Symbols.location_on_rounded,
+                        fill: 1,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _selectedAddress,  // Display selected address
+                        style: theme.textTheme.titleMedium,
+                      ),
+                    ],
+                  ),
                 ),
               ),
               // Search Bar

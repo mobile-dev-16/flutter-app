@@ -1,6 +1,7 @@
 import 'package:eco_bites/core/config/theme.dart';
 import 'package:eco_bites/core/ui/layouts/main_layout.dart';
 import 'package:eco_bites/core/utils/create_text_theme.dart';
+import 'package:eco_bites/features/address/presentation/screens/address_screen.dart';
 import 'package:eco_bites/features/auth/presentation/screens/login_screen.dart';
 import 'package:eco_bites/features/auth/presentation/screens/register_screen.dart';
 import 'package:eco_bites/features/splash/presentation/screens/splash_screen.dart';
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
         '/main': (BuildContext context) => const MainLayout(),
         '/login': (BuildContext context) => const LoginScreen(),
         '/register': (BuildContext context) => const RegisterScreen(),
+        '/address': (BuildContext context) => const AddressScreen(),
       },
     );
   }
