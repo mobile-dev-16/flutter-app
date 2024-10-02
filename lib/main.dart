@@ -9,15 +9,11 @@ import 'package:eco_bites/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:nested/nested.dart';
 
 Future<void> main() async{
 
   WidgetsFlutterBinding.ensureInitialized();
-
-  // ignore: avoid_redundant_argument_values
-  await dotenv.load(fileName: '.env');
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
