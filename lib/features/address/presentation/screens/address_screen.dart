@@ -30,7 +30,7 @@ class AddressScreenState extends State<AddressScreen> {
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.5,  // 50% of the screen
             child: Stack(
-              children: [
+              children: <Widget>[
                 GoogleMap(
                   initialCameraPosition: const CameraPosition(
                     target: LatLng(4.7110, -74.0721),  // Example coordinates (Bogotá)
@@ -39,7 +39,7 @@ class AddressScreenState extends State<AddressScreen> {
                   onMapCreated: (GoogleMapController controller) {
                     mapController = controller;
                   },
-                  markers: selectedMarker != null ? {selectedMarker!} : {},  // Show the selected marker
+                  markers: selectedMarker != null ? <Marker>{selectedMarker!} : <Marker>{},  // Show the selected marker
                   onTap: (LatLng position) {
                     setState(() {
                       selectedPosition = position;

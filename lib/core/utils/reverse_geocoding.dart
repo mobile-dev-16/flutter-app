@@ -1,4 +1,4 @@
-// ignore_for_file: always_specify_types, avoid_dynamic_calls
+// ignore_for_file: always_specify_types, avoid_dynamic_calls, avoid_print
 
 import 'package:eco_bites/core/utils/request_util.dart';
 
