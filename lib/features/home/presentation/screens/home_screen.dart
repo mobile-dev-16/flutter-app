@@ -11,6 +11,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:material_symbols_icons/symbols.dart';
+import 'package:eco_bites/features/food/presentation/bloc/food_business_bloc.dart';
+import 'package:eco_bites/features/food/presentation/bloc/food_business_event.dart';
+import 'package:eco_bites/features/food/domain/models/cuisine_type.dart';
+import 'package:eco_bites/features/home/presentation/widgets/for_you_tab.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,25 +23,7 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider<HomeBloc>(
-      create: (BuildContext context) => HomeBloc(),
-      child: const HomeScreenContent(),
-    );
-  }
-}
-
-class HomeScreenContent extends StatefulWidget {
-  const HomeScreenContent({super.key});
-
-  @override
-  State<HomeScreenContent> createState() => _HomeScreenContentState();
-}
-
-class _HomeScreenContentState extends State<HomeScreenContent>
-    with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late TabController _tabController;
   StreamSubscription<Position>? _positionStreamSubscription;
 
@@ -45,7 +31,7 @@ class _HomeScreenContentState extends State<HomeScreenContent>
   void initState() {
     super.initState();
     _tabController = TabController(
-      length: 5,
+      length: 6,
       vsync: this,
     );
     _tabController.addListener(_handleTabSelection);
@@ -56,6 +42,14 @@ class _HomeScreenContentState extends State<HomeScreenContent>
         context.read<AddressBloc>().add(LoadAddress());
       }
       _startListeningToLocationChanges();
+
+      // Fetch offers for the user's favorite cuisine when the screen loads
+      // Assuming you have a way to get the user's favorite cuisine
+      // TODO: Implement a method to get the user's favorite cuisine
+      // For now, we'll use a default value
+      context
+          .read<FoodBusinessBloc>()
+          .add(FetchSurplusFoodBusinesses(favoriteCuisine: CuisineType.local));
     });
   }
 
@@ -217,33 +211,39 @@ class _HomeScreenContentState extends State<HomeScreenContent>
                         isScrollable: true,
                         tabs: <Widget>[
                           _buildTab(
+                            Symbols.recommend_rounded,
+                            'For You',
+                            0,
+                            state.selectedTabIndex,
+                          ),
+                          _buildTab(
                             Symbols.fastfood_rounded,
                             'Restaurant',
-                            0,
+                            1,
                             state.selectedTabIndex,
                           ),
                           _buildTab(
                             Symbols.nutrition_rounded,
                             'Ingredients',
-                            1,
+                            2,
                             state.selectedTabIndex,
                           ),
                           _buildTab(
                             Symbols.store_rounded,
                             'Store',
-                            2,
+                            3,
                             state.selectedTabIndex,
                           ),
                           _buildTab(
                             Symbols.bakery_dining,
                             'Diary',
-                            3,
+                            4,
                             state.selectedTabIndex,
                           ),
                           _buildTab(
                             Symbols.local_cafe_rounded,
                             'Drink',
-                            4,
+                            5,
                             state.selectedTabIndex,
                           ),
                         ],
@@ -253,6 +253,7 @@ class _HomeScreenContentState extends State<HomeScreenContent>
                         child: TabBarView(
                           controller: _tabController,
                           children: const <Widget>[
+                            ForYouTab(),
                             Center(child: Text('Restaurant Content')),
                             Center(child: Text('Ingredients Content')),
                             Center(child: Text('Store Content')),
