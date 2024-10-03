@@ -6,15 +6,15 @@ import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_event.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_state.dart';
 import 'package:eco_bites/features/address/presentation/screens/address_screen.dart';
+import 'package:eco_bites/features/food/domain/models/cuisine_type.dart';
+import 'package:eco_bites/features/food/presentation/bloc/food_business_bloc.dart';
+import 'package:eco_bites/features/food/presentation/bloc/food_business_event.dart';
 import 'package:eco_bites/features/home/presentation/bloc/home_bloc.dart';
+import 'package:eco_bites/features/home/presentation/widgets/for_you_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:material_symbols_icons/symbols.dart';
-import 'package:eco_bites/features/food/presentation/bloc/food_business_bloc.dart';
-import 'package:eco_bites/features/food/presentation/bloc/food_business_event.dart';
-import 'package:eco_bites/features/food/domain/models/cuisine_type.dart';
-import 'package:eco_bites/features/home/presentation/widgets/for_you_tab.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -45,11 +45,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
       // Fetch offers for the user's favorite cuisine when the screen loads
       // Assuming you have a way to get the user's favorite cuisine
-      // TODO: Implement a method to get the user's favorite cuisine
+      // TODO(abel): Implement a method to get the user's favorite cuisine
       // For now, we'll use a default value
-      context
-          .read<FoodBusinessBloc>()
-          .add(FetchSurplusFoodBusinesses(favoriteCuisine: CuisineType.local));
+      context.read<FoodBusinessBloc>().add(
+            const FetchSurplusFoodBusinesses(
+              favoriteCuisine: CuisineType.local,
+            ),
+          );
     });
   }
 

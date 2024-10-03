@@ -39,7 +39,8 @@ class FoodBusinessBloc extends Bloc<FoodBusinessEvent, FoodBusinessState> {
       } else {
         emit(
           const FoodBusinessError(
-              message: 'User address not available. Please set your address.'),
+            message: 'User address not available. Please set your address.',
+          ),
         );
       }
     } catch (e) {

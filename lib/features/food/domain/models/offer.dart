@@ -1,6 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_bites/features/food/domain/models/cuisine_type.dart';
 import 'package:eco_bites/features/food/domain/models/offer_type.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Offer {
   Offer({
@@ -44,11 +44,11 @@ class Offer {
     return Offer(
       id: id,
       type: OfferType.values.firstWhere(
-        (e) => e.toString().split('.').last == map['type'],
+        (OfferType e) => e.toString().split('.').last == map['type'],
         orElse: () => OfferType.values.first,
       ),
       cuisineType: CuisineType.values.firstWhere(
-        (e) => e.toString().split('.').last == map['cuisineType'],
+        (CuisineType e) => e.toString().split('.').last == map['cuisineType'],
         orElse: () => CuisineType.values.first,
       ),
       description: map['description'] as String,

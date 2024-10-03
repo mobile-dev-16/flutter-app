@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_bites/core/utils/distance.dart';
 import 'package:eco_bites/features/address/domain/models/address.dart';
