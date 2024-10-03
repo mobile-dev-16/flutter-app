@@ -9,7 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+
+  const MyApp({super.key, required this.appLaunchTime});
+
+  final DateTime appLaunchTime;
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +46,8 @@ class MyApp extends StatelessWidget {
       theme: brightness == Brightness.light ? theme.light() : theme.dark(),
       initialRoute: '/',
       routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) => const SplashScreen(),
-        '/main': (BuildContext context) => const MainLayout(),
+        '/': (BuildContext context) => SplashScreen(appLaunchTime: appLaunchTime),
+        '/main': (BuildContext context) => MainLayout(appLaunchTime: appLaunchTime),
         '/login': (BuildContext context) => const LoginScreen(),
         '/register': (BuildContext context) => const RegisterScreen(),
         '/address': (BuildContext context) => const AddressScreen(),
