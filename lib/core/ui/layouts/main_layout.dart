@@ -8,8 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class MainLayout extends StatefulWidget {
-  const MainLayout({super.key});
+class MainLayout extends StatefulWidget { // Pass the app launch time here
+
+  const MainLayout({super.key, required this.appLaunchTime});
+
+  final DateTime appLaunchTime;
 
   @override
   MainLayoutState createState() => MainLayoutState();
@@ -18,15 +21,21 @@ class MainLayout extends StatefulWidget {
 class MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = <Widget>[
-    BlocProvider<HomeBloc>(
-      create: (BuildContext context) => HomeBloc(),
-      child: const HomeScreen(),
-    ),
-    const CartScreen(),
-    const OrderListScreen(),
-    const ProfileScreen(),
-  ];
+  late final List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = <Widget>[
+      BlocProvider<HomeBloc>(
+        create: (BuildContext context) => HomeBloc(),
+        child: HomeScreen(appLaunchTime: widget.appLaunchTime), // Pass appLaunchTime to HomeScreen
+      ),
+      const CartScreen(),
+      const OrderListScreen(),
+      const ProfileScreen(),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {

@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_bites/core/utils/distance.dart';
 import 'package:eco_bites/features/address/domain/models/address.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
@@ -12,8 +12,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomeScreen extends StatefulWidget { // Pass appLaunchTime from splash screen
+
+  const HomeScreen({super.key, required this.appLaunchTime});
+  final DateTime appLaunchTime;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -24,18 +26,19 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return BlocProvider<HomeBloc>(
       create: (BuildContext context) => HomeBloc(),
-      child: const HomeScreenContent(),
+      child: HomeScreenContent(appLaunchTime: widget.appLaunchTime),
     );
   }
 }
+class HomeScreenContent extends StatefulWidget { // Get the app launch time
 
-class HomeScreenContent extends StatefulWidget {
-  const HomeScreenContent({super.key});
+  const HomeScreenContent({super.key, required this.appLaunchTime});
+
+  final DateTime appLaunchTime;
 
   @override
   State<HomeScreenContent> createState() => _HomeScreenContentState();
 }
-
 class _HomeScreenContentState extends State<HomeScreenContent>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
@@ -50,12 +53,26 @@ class _HomeScreenContentState extends State<HomeScreenContent>
     );
     _tabController.addListener(_handleTabSelection);
 
+    // Measure and log loading time after UI is rendered
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final DateTime homePageRenderedTime = DateTime.now();
+      final Duration loadTime = homePageRenderedTime.difference(widget.appLaunchTime);
+      logEvent('Home page loaded in ${loadTime.inMilliseconds}ms');
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final AddressState addressState = context.read<AddressBloc>().state;
       if (addressState is! AddressLoaded) {
         context.read<AddressBloc>().add(LoadAddress());
       }
       _startListeningToLocationChanges();
+    });
+  }
+
+  Future<void> logEvent(String message) async {
+    await FirebaseFirestore.instance.collection('logs').add(<String, dynamic>{
+      'message': message,
+      'timestamp': FieldValue.serverTimestamp(),
     });
   }
 

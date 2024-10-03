@@ -33,6 +33,6 @@ Widget buildMainLayoutUseCase(BuildContext context) {
         ]),
       ),
     ],
-    child: const MainLayout(),
+    child: MainLayout(appLaunchTime: DateTime.now()),
   );
 }
