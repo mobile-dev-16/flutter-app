@@ -4,6 +4,8 @@ import 'package:eco_bites/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:eco_bites/features/auth/repository/auth_repository.dart';
 import 'package:eco_bites/features/cart/domain/models/cart_item_data.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_bloc.dart';
+import 'package:eco_bites/features/food/presentation/bloc/food_business_bloc.dart';
+import 'package:eco_bites/features/food/repository/food_business_repository.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_bloc.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_event.dart';
 import 'package:eco_bites/firebase_options.dart';
@@ -64,6 +66,12 @@ Future<void> main() async {
         ),
         BlocProvider<AddressBloc>(
           create: (BuildContext context) => AddressBloc(),
+        ),
+        BlocProvider<FoodBusinessBloc>(
+          create: (BuildContext context) => FoodBusinessBloc(
+            foodBusinessRepository: FoodBusinessRepository(),
+            addressBloc: context.read<AddressBloc>(),
+          ),
         ),
       ],
       child: MyApp(appLaunchTime: appLaunchTime,),
