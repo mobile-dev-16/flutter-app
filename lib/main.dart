@@ -10,6 +10,7 @@ import 'package:eco_bites/features/orders/presentation/bloc/order_bloc.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_event.dart';
 import 'package:eco_bites/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_performance/firebase_performance.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -18,9 +19,13 @@ import 'package:nested/nested.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  final DateTime appLaunchTime = DateTime.now();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  await FirebasePerformance.instance.setPerformanceCollectionEnabled(true);
 
   final AuthRepository authRepository = AuthRepository();
 
@@ -69,7 +74,7 @@ Future<void> main() async {
           ),
         ),
       ],
-      child: const MyApp(),
+      child: MyApp(appLaunchTime: appLaunchTime,),
     ),
   );
 }

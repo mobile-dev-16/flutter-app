@@ -5,5 +5,5 @@ import 'package:eco_bites/features/splash/presentation/screens/splash_screen.dar
 
 @widgetbook.UseCase(name: 'Default', type: SplashScreen)
 Widget buildSplashScreenUseCase(BuildContext context) {
-  return const SplashScreen();
+  return SplashScreen(appLaunchTime: DateTime.now(),);
 }

@@ -5,5 +5,5 @@ import 'package:eco_bites/features/home/presentation/screens/home_screen.dart';
 
 @widgetbook.UseCase(name: 'Default', type: HomeScreen)
 Widget buildHomeScreenUseCase(BuildContext context) {
-  return const HomeScreen();
+  return HomeScreen(appLaunchTime: DateTime.now());
 }
