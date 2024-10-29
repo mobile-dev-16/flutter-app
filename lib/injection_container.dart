@@ -2,6 +2,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:eco_bites/core/blocs/internet_connection/internet_connection_bloc.dart';
 import 'package:eco_bites/core/network/network_info.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
+import 'package:eco_bites/features/address/repository/address_repository.dart';
 import 'package:eco_bites/features/auth/data/datasources/user_local_data_source.dart';
 import 'package:eco_bites/features/auth/data/datasources/user_remote_data_source.dart';
 import 'package:eco_bites/features/auth/data/repositories/auth_repository_impl.dart';
@@ -73,6 +74,11 @@ Future<void> setupServiceLocator() async {
   // Features - Address
   serviceLocator.registerFactory(
     () => AddressBloc(addressRepository: serviceLocator()),
+  );
+
+  // Repositories
+  serviceLocator.registerLazySingleton<AddressRepository>(
+    () => AddressRepository(),
   );
 
   // Features - Orders
