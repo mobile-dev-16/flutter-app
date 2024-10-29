@@ -1,16 +1,14 @@
 import 'package:eco_bites/core/config/theme.dart';
-import 'package:eco_bites/core/ui/layouts/main_layout.dart';
 import 'package:eco_bites/core/utils/create_text_theme.dart';
-import 'package:eco_bites/features/address/presentation/screens/address_screen.dart';
-import 'package:eco_bites/features/auth/presentation/screens/login_screen.dart';
-import 'package:eco_bites/features/auth/presentation/screens/register_screen.dart';
-import 'package:eco_bites/features/splash/presentation/screens/splash_screen.dart';
+import 'package:eco_bites/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:eco_bites/injection_container.dart';
+import 'package:eco_bites/route_generator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class MyApp extends StatelessWidget {
-
-  const MyApp({super.key, required this.appLaunchTime});
+class EcoBitesApp extends StatelessWidget {
+  const EcoBitesApp({super.key, required this.appLaunchTime});
 
   final DateTime appLaunchTime;
 
@@ -19,9 +17,7 @@ class MyApp extends StatelessWidget {
     final Brightness brightness =
         View.of(context).platformDispatcher.platformBrightness;
 
-    // Use with Google Fonts package to use downloadable fonts
     final TextTheme textTheme = createTextTheme(context, 'Roboto', 'Roboto');
-
     final MaterialTheme theme = MaterialTheme(textTheme);
 
     SystemChrome.setSystemUIOverlayStyle(
@@ -40,18 +36,21 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Eco Bites',
-      theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-      initialRoute: '/',
-      routes: <String, WidgetBuilder>{
-        '/': (BuildContext context) => SplashScreen(appLaunchTime: appLaunchTime),
-        '/main': (BuildContext context) => MainLayout(appLaunchTime: appLaunchTime),
-        '/login': (BuildContext context) => const LoginScreen(),
-        '/register': (BuildContext context) => const RegisterScreen(),
-        '/address': (BuildContext context) => const AddressScreen(),
-      },
+    return BlocProvider(
+      create: (_) => serviceLocator<AuthBloc>(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Eco Bites',
+        theme: brightness == Brightness.light ? theme.light() : theme.dark(),
+        supportedLocales: const [
+          Locale('en'),
+        ],
+        initialRoute: RouteGenerator.splashScreen,
+        onGenerateRoute: (settings) => RouteGenerator.generateRoute(
+          settings,
+          appLaunchTime: appLaunchTime,
+        ),
+      ),
     );
   }
 }

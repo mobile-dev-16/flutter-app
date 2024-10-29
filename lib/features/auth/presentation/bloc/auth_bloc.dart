@@ -1,147 +1,125 @@
+import 'package:eco_bites/features/auth/domain/usecases/sign_in_usecase.dart';
+import 'package:eco_bites/features/auth/domain/usecases/sign_up_usecase.dart';
+import 'package:eco_bites/features/auth/domain/usecases/sign_in_with_google_usecase.dart';
+import 'package:eco_bites/features/auth/domain/usecases/sign_up_with_google_usecase.dart';
+import 'package:eco_bites/features/auth/domain/usecases/sign_out_usecase.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_event.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_state.dart';
-import 'package:eco_bites/features/auth/repository/auth_repository.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  AuthBloc({required this.authRepository}) : super(AuthInitial()) {
+  final SignInUseCase _signInUseCase;
+  final SignUpUseCase _signUpUseCase;
+  final SignInWithGoogleUseCase _signInWithGoogleUseCase;
+  final SignUpWithGoogleUseCase _signUpWithGoogleUseCase;
+  final SignOutUseCase _signOutUseCase;
+
+  AuthBloc({
+    required SignInUseCase signInUseCase,
+    required SignUpUseCase signUpUseCase,
+    required SignInWithGoogleUseCase signInWithGoogleUseCase,
+    required SignUpWithGoogleUseCase signUpWithGoogleUseCase,
+    required SignOutUseCase signOutUseCase,
+  })  : _signInUseCase = signInUseCase,
+        _signUpUseCase = signUpUseCase,
+        _signInWithGoogleUseCase = signInWithGoogleUseCase,
+        _signUpWithGoogleUseCase = signUpWithGoogleUseCase,
+        _signOutUseCase = signOutUseCase,
+        super(AuthInitial()) {
     on<SignInRequested>(_onSignInRequested);
     on<SignUpRequested>(_onSignUpRequested);
-    on<SignUpWithGoogleRequested>(
-      _onSignUpWithGoogleRequested,
-    );
-    on<SignInWithGoogleRequested>(
-      _onSignInWithGoogleRequested,
-    );
+    on<SignUpWithGoogleRequested>(_onSignUpWithGoogleRequested);
+    on<SignInWithGoogleRequested>(_onSignInWithGoogleRequested);
     on<SignOutRequested>(_onSignOutRequested);
   }
 
-  final AuthRepository authRepository;
-
-  // Handle sign-in request with email and password
   Future<void> _onSignInRequested(
     SignInRequested event,
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    try {
-      final User? user = await authRepository.signIn(
+
+    final result = await _signInUseCase(
+      SignInParams(
         email: event.email,
         password: event.password,
-      );
-      if (user != null) {
-        await _saveUserId(user.uid);
-        emit(AuthAuthenticated(user));
-      } else {
-        emit(AuthError('Sign in failed'));
-      }
-    } catch (e) {
-      if (e is FirebaseAuthException) {
-        emit(AuthError(e.message ?? 'An authentication error occurred'));
-      } else {
-        emit(AuthError('An unexpected error occurred'));
-      }
-    }
+      ),
+    );
+
+    emit(
+      result.fold(
+        (failure) => AuthError(failure.message),
+        (user) => AuthAuthenticated(user),
+      ),
+    );
   }
 
-  // Handle sign-up request with email and password
   Future<void> _onSignUpRequested(
     SignUpRequested event,
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    try {
-      final User? user = await authRepository.signUp(
+
+    final result = await _signUpUseCase(
+      SignUpParams(
         email: event.email,
         password: event.password,
-      );
-      if (user != null) {
-        await _saveUserId(user.uid);
-        emit(AuthAuthenticated(user));
-      } else {
-        emit(AuthError('Sign up failed'));
-      }
-    } catch (e) {
-      if (e is FirebaseAuthException) {
-        emit(AuthError(e.message ?? 'An authentication error occurred'));
-      } else {
-        emit(AuthError('An unexpected error occurred'));
-      }
-    }
+      ),
+    );
+
+    emit(
+      result.fold(
+        (failure) => AuthError(failure.message),
+        (user) => AuthAuthenticated(user),
+      ),
+    );
   }
 
-  // Handle sign-up with Google (forces account selection)
   Future<void> _onSignUpWithGoogleRequested(
     SignUpWithGoogleRequested event,
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    try {
-      final User? user =
-          await authRepository.signUpWithGoogle(); // Forces account chooser
-      if (user != null) {
-        await _saveUserId(user.uid);
-        emit(AuthAuthenticated(user));
-      } else {
-        emit(AuthError('Sign up with Google failed'));
-      }
-    } catch (e) {
-      if (e is FirebaseAuthException) {
-        emit(AuthError(e.message ?? 'An authentication error occurred'));
-      } else {
-        emit(AuthError('An unexpected error occurred'));
-      }
-    }
+
+    final result = await _signUpWithGoogleUseCase();
+
+    emit(
+      result.fold(
+        (failure) => AuthError(failure.message),
+        (user) => AuthAuthenticated(user),
+      ),
+    );
   }
 
-  // Handle sign-in with Google (remembers the account or tries silent login)
   Future<void> _onSignInWithGoogleRequested(
     SignInWithGoogleRequested event,
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    try {
-      final User? user =
-          await authRepository.signInWithGoogle(); // Silent sign-in or recall
-      if (user != null) {
-        await _saveUserId(user.uid);
-        emit(AuthAuthenticated(user));
-      } else {
-        emit(AuthError('Sign in with Google failed'));
-      }
-    } catch (e) {
-      if (e is FirebaseAuthException) {
-        emit(AuthError(e.message ?? 'An authentication error occurred'));
-      } else {
-        emit(AuthError('An unexpected error occurred'));
-      }
-    }
+
+    final result = await _signInWithGoogleUseCase();
+
+    emit(
+      result.fold(
+        (failure) => AuthError(failure.message),
+        (user) => AuthAuthenticated(user),
+      ),
+    );
   }
 
-  // Handle sign-out request
   Future<void> _onSignOutRequested(
     SignOutRequested event,
     Emitter<AuthState> emit,
   ) async {
     emit(AuthLoading());
-    try {
-      await authRepository.signOut();
-      await _removeUserId();
-      emit(AuthUnauthenticated());
-    } catch (e) {
-      emit(AuthError('Failed to sign out'));
-    }
-  }
 
-  Future<void> _saveUserId(String userId) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('userId', userId);
-  }
+    final result = await _signOutUseCase();
 
-  Future<void> _removeUserId() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('userId');
+    emit(
+      result.fold(
+        (failure) => AuthError(failure.message),
+        (_) => AuthUnauthenticated(),
+      ),
+    );
   }
 }
