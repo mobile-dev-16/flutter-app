@@ -71,7 +71,9 @@ Future<void> setupServiceLocator() async {
   );
 
   // Features - Address
-  serviceLocator.registerFactory(() => AddressBloc());
+  serviceLocator.registerFactory(
+    () => AddressBloc(addressRepository: serviceLocator()),
+  );
 
   // Features - Orders
   serviceLocator.registerFactory(() => OrderBloc());
