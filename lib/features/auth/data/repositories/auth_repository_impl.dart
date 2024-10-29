@@ -4,6 +4,7 @@ import 'package:eco_bites/core/error/failures.dart';
 import 'package:eco_bites/core/network/network_info.dart';
 import 'package:eco_bites/features/auth/data/datasources/user_local_data_source.dart';
 import 'package:eco_bites/features/auth/data/datasources/user_remote_data_source.dart';
+import 'package:eco_bites/features/auth/data/models/user_model.dart';
 import 'package:eco_bites/features/auth/domain/entities/user.dart';
 import 'package:eco_bites/features/auth/domain/repositories/auth_repository.dart';
 
@@ -25,17 +26,20 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     if (await networkInfo.isConnected) {
       try {
-        final user = await remoteDataSource.signInWithEmailAndPassword(
+        final UserModel user =
+            await remoteDataSource.signInWithEmailAndPassword(
           email: email,
           password: password,
         );
         await localDataSource.cacheUser(user);
-        return Right(user);
+        return Right<Failure, User>(user);
       } on AuthException catch (e) {
-        return Left(AuthFailure(e.message));
+        return Left<Failure, User>(AuthFailure(e.message));
       }
     } else {
-      return const Left(NetworkFailure('No internet connection'));
+      return const Left<Failure, User>(
+        NetworkFailure('No internet connection'),
+      );
     }
   }
 
@@ -46,18 +50,21 @@ class AuthRepositoryImpl implements AuthRepository {
   }) async {
     if (await networkInfo.isConnected) {
       try {
-        final user = await remoteDataSource.signUpWithEmailAndPassword(
+        final UserModel user =
+            await remoteDataSource.signUpWithEmailAndPassword(
           email: email,
           password: password,
         );
         await localDataSource.cacheUser(user);
         await localDataSource.cacheUserId(user.id);
-        return Right(user);
+        return Right<Failure, User>(user);
       } on AuthException catch (e) {
-        return Left(AuthFailure(e.message));
+        return Left<Failure, User>(AuthFailure(e.message));
       }
     } else {
-      return const Left(NetworkFailure('No internet connection'));
+      return const Left<Failure, User>(
+        NetworkFailure('No internet connection'),
+      );
     }
   }
 
@@ -65,15 +72,17 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, User>> signInWithGoogle() async {
     if (await networkInfo.isConnected) {
       try {
-        final user = await remoteDataSource.signInWithGoogle();
+        final UserModel user = await remoteDataSource.signInWithGoogle();
         await localDataSource.cacheUser(user);
         await localDataSource.cacheUserId(user.id);
-        return Right(user);
+        return Right<Failure, User>(user);
       } on AuthException catch (e) {
-        return Left(AuthFailure(e.message));
+        return Left<Failure, User>(AuthFailure(e.message));
       }
     } else {
-      return const Left(NetworkFailure('No internet connection'));
+      return const Left<Failure, User>(
+        NetworkFailure('No internet connection'),
+      );
     }
   }
 
@@ -81,15 +90,17 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, User>> signUpWithGoogle() async {
     if (await networkInfo.isConnected) {
       try {
-        final user = await remoteDataSource.signUpWithGoogle();
+        final UserModel user = await remoteDataSource.signUpWithGoogle();
         await localDataSource.cacheUser(user);
         await localDataSource.cacheUserId(user.id);
-        return Right(user);
+        return Right<Failure, User>(user);
       } on AuthException catch (e) {
-        return Left(AuthFailure(e.message));
+        return Left<Failure, User>(AuthFailure(e.message));
       }
     } else {
-      return const Left(NetworkFailure('No internet connection'));
+      return const Left<Failure, User>(
+        NetworkFailure('No internet connection'),
+      );
     }
   }
 
@@ -99,9 +110,9 @@ class AuthRepositoryImpl implements AuthRepository {
       await remoteDataSource.signOut();
       await localDataSource.clearUserCache();
       await localDataSource.clearUserId();
-      return const Right(null);
+      return const Right<Failure, void>(null);
     } on AuthException catch (e) {
-      return Left(AuthFailure(e.message));
+      return Left<Failure, void>(AuthFailure(e.message));
     }
   }
 }

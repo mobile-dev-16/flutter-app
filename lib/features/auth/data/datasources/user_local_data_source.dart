@@ -1,7 +1,8 @@
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:eco_bites/core/error/exceptions.dart';
 import 'package:eco_bites/features/auth/data/models/user_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class UserLocalDataSource {
   /// Gets the cached [UserModel] which was gotten the last time
@@ -36,7 +37,8 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
     final String? jsonString = sharedPreferences.getString(cachedUserKey);
     if (jsonString != null) {
       return UserModel.fromJson(
-          json.decode(jsonString) as Map<String, dynamic>);
+        json.decode(jsonString) as Map<String, dynamic>,
+      );
     }
     return null;
   }

@@ -16,19 +16,19 @@ class RouteGenerator {
   }) {
     switch (settings.name) {
       case splashScreen:
-        return MaterialPageRoute(
+        return MaterialPageRoute<void>(
           builder: (_) => SplashScreen(appLaunchTime: appLaunchTime),
         );
       case loginScreen:
-        return MaterialPageRoute(builder: (_) => const LoginScreen());
+        return MaterialPageRoute<void>(builder: (_) => const LoginScreen());
       case registerScreen:
-        return MaterialPageRoute(builder: (_) => const RegisterScreen());
+        return MaterialPageRoute<void>(builder: (_) => const RegisterScreen());
       case mainScreen:
-        return MaterialPageRoute(
+        return MaterialPageRoute<void>(
           builder: (_) => MainLayout(appLaunchTime: appLaunchTime),
         );
       default:
-        return MaterialPageRoute(
+        return MaterialPageRoute<void>(
           builder: (_) => const Scaffold(
             body: Center(
               child: Text('Route not found'),

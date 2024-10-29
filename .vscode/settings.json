@@ -4,7 +4,10 @@
     "cSpell.words": [
         "appbar",
         "dartz",
+        "datasources",
         "dotenv",
-        "Geolocator"
+        "Geolocator",
+        "usecase",
+        "usecases"
     ]
 }

@@ -1,19 +1,16 @@
+import 'package:dartz/dartz.dart';
+import 'package:eco_bites/core/error/failures.dart';
+import 'package:eco_bites/features/auth/domain/entities/user.dart';
 import 'package:eco_bites/features/auth/domain/usecases/sign_in_usecase.dart';
-import 'package:eco_bites/features/auth/domain/usecases/sign_up_usecase.dart';
 import 'package:eco_bites/features/auth/domain/usecases/sign_in_with_google_usecase.dart';
-import 'package:eco_bites/features/auth/domain/usecases/sign_up_with_google_usecase.dart';
 import 'package:eco_bites/features/auth/domain/usecases/sign_out_usecase.dart';
+import 'package:eco_bites/features/auth/domain/usecases/sign_up_usecase.dart';
+import 'package:eco_bites/features/auth/domain/usecases/sign_up_with_google_usecase.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_event.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
-  final SignInUseCase _signInUseCase;
-  final SignUpUseCase _signUpUseCase;
-  final SignInWithGoogleUseCase _signInWithGoogleUseCase;
-  final SignUpWithGoogleUseCase _signUpWithGoogleUseCase;
-  final SignOutUseCase _signOutUseCase;
-
   AuthBloc({
     required SignInUseCase signInUseCase,
     required SignUpUseCase signUpUseCase,
@@ -32,6 +29,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignInWithGoogleRequested>(_onSignInWithGoogleRequested);
     on<SignOutRequested>(_onSignOutRequested);
   }
+  final SignInUseCase _signInUseCase;
+  final SignUpUseCase _signUpUseCase;
+  final SignInWithGoogleUseCase _signInWithGoogleUseCase;
+  final SignUpWithGoogleUseCase _signUpWithGoogleUseCase;
+  final SignOutUseCase _signOutUseCase;
 
   Future<void> _onSignInRequested(
     SignInRequested event,
@@ -39,7 +41,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
 
-    final result = await _signInUseCase(
+    final Either<Failure, User> result = await _signInUseCase(
       SignInParams(
         email: event.email,
         password: event.password,
@@ -48,8 +50,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     emit(
       result.fold(
-        (failure) => AuthError(failure.message),
-        (user) => AuthAuthenticated(user),
+        (Failure failure) => AuthError(failure.message),
+        (User user) => AuthAuthenticated(user),
       ),
     );
   }
@@ -60,7 +62,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
 
-    final result = await _signUpUseCase(
+    final Either<Failure, User> result = await _signUpUseCase(
       SignUpParams(
         email: event.email,
         password: event.password,
@@ -69,8 +71,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     emit(
       result.fold(
-        (failure) => AuthError(failure.message),
-        (user) => AuthAuthenticated(user),
+        (Failure failure) => AuthError(failure.message),
+        (User user) => AuthAuthenticated(user),
       ),
     );
   }
@@ -81,12 +83,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
 
-    final result = await _signUpWithGoogleUseCase();
+    final Either<Failure, User> result = await _signUpWithGoogleUseCase();
 
     emit(
       result.fold(
-        (failure) => AuthError(failure.message),
-        (user) => AuthAuthenticated(user),
+        (Failure failure) => AuthError(failure.message),
+        (User user) => AuthAuthenticated(user),
       ),
     );
   }
@@ -97,12 +99,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
 
-    final result = await _signInWithGoogleUseCase();
+    final Either<Failure, User> result = await _signInWithGoogleUseCase();
 
     emit(
       result.fold(
-        (failure) => AuthError(failure.message),
-        (user) => AuthAuthenticated(user),
+        (Failure failure) => AuthError(failure.message),
+        (User user) => AuthAuthenticated(user),
       ),
     );
   }
@@ -113,11 +115,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
 
-    final result = await _signOutUseCase();
+    final Either<Failure, void> result = await _signOutUseCase();
 
     emit(
       result.fold(
-        (failure) => AuthError(failure.message),
+        (Failure failure) => AuthError(failure.message),
         (_) => AuthUnauthenticated(),
       ),
     );

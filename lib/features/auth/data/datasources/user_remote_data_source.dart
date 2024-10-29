@@ -1,7 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:eco_bites/core/error/exceptions.dart';
 import 'package:eco_bites/features/auth/data/models/user_model.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:google_sign_in/google_sign_in.dart';
 
 abstract class UserRemoteDataSource {
   Future<UserModel> signInWithEmailAndPassword({
@@ -143,7 +143,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   @override
   Future<void> signOut() async {
     try {
-      await Future.wait([
+      await Future.wait(<Future<void>>[
         _firebaseAuth.signOut(),
         _googleSignIn.signOut(),
       ]);
