@@ -10,3 +10,8 @@ class AuthFailure extends Failure {
 class NetworkFailure extends Failure {
   const NetworkFailure(super.message);
 }
+
+class FirebaseFailure extends Failure {
+  const FirebaseFailure(String? message)
+      : super(message ?? 'Firebase error occurred');
+}

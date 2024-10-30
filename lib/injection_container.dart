@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:eco_bites/core/blocs/internet_connection/internet_connection_bloc.dart';
 import 'package:eco_bites/core/network/network_info.dart';
@@ -15,8 +16,11 @@ import 'package:eco_bites/features/auth/domain/usecases/sign_up_with_google_usec
 import 'package:eco_bites/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:eco_bites/features/cart/domain/models/cart_item_data.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_bloc.dart';
+import 'package:eco_bites/features/food/data/datasources/food_business_remote_data_source.dart';
+import 'package:eco_bites/features/food/data/repositories/food_business_repository_impl.dart';
+import 'package:eco_bites/features/food/domain/repositories/food_business_repository.dart';
+import 'package:eco_bites/features/food/domain/usecases/fetch_nearby_surplus_food_businesses.dart';
 import 'package:eco_bites/features/food/presentation/bloc/food_business_bloc.dart';
-import 'package:eco_bites/features/food/repository/food_business_repository.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
@@ -55,7 +59,12 @@ Future<void> setupServiceLocator() async {
       networkInfo: serviceLocator(),
     ),
   );
-  serviceLocator.registerLazySingleton(() => FoodBusinessRepository());
+  serviceLocator.registerLazySingleton<FoodBusinessRepository>(
+    () => FoodBusinessRepositoryImpl(
+      remoteDataSource: serviceLocator(),
+      networkInfo: serviceLocator(),
+    ),
+  );
 
   // Data sources
   serviceLocator.registerLazySingleton<UserRemoteDataSource>(
@@ -112,10 +121,21 @@ Future<void> setupServiceLocator() async {
   // Features - Food
   serviceLocator.registerFactory(
     () => FoodBusinessBloc(
-      foodBusinessRepository: serviceLocator(),
-      addressBloc: serviceLocator(),
+      fetchNearbySurplusFoodBusinesses: serviceLocator(),
     ),
   );
+
+  serviceLocator.registerLazySingleton(
+    () => FetchNearbySurplusFoodBusinesses(serviceLocator()),
+  );
+
+  serviceLocator.registerLazySingleton<FoodBusinessRemoteDataSource>(
+    () => FoodBusinessRemoteDataSourceImpl(
+      firestore: serviceLocator(),
+    ),
+  );
+
+  serviceLocator.registerLazySingleton(() => FirebaseFirestore.instance);
 
   // Core
   serviceLocator.registerLazySingleton<NetworkInfo>(

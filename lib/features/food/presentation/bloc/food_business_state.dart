@@ -1,4 +1,4 @@
-import 'package:eco_bites/features/food/domain/models/food_business.dart';
+import 'package:eco_bites/features/food/data/models/food_business_model.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class FoodBusinessState extends Equatable {
@@ -14,7 +14,7 @@ class FoodBusinessLoading extends FoodBusinessState {}
 
 class FoodBusinessLoaded extends FoodBusinessState {
   const FoodBusinessLoaded({required this.foodBusinesses});
-  final List<FoodBusiness> foodBusinesses;
+  final List<FoodBusinessModel> foodBusinesses;
 
   @override
   List<Object?> get props => <Object?>[foodBusinesses];

@@ -3,6 +3,7 @@ import 'package:eco_bites/features/address/presentation/bloc/address_event.dart'
 import 'package:eco_bites/features/address/presentation/bloc/address_state.dart';
 import 'package:eco_bites/features/address/repository/address_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddressBloc extends Bloc<AddressEvent, AddressState> {
@@ -60,10 +61,14 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
       final List<Address> addresses =
           await addressRepository.fetchUserAddresses(userId);
 
+      Logger().i('==> Addresses: $addresses');
+
       if (addresses.isNotEmpty) {
+        Logger().i('==> AddressLoaded because addresses is not empty');
         emit(AddressLoaded(addresses.first));
       } else {
         emit(AddressInitial());
+        Logger().i('==> AddressInitial because addresses is empty');
       }
     } catch (e) {
       emit(AddressError(e.toString()));
