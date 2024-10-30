@@ -30,36 +30,44 @@ class FoodBusinessRemoteDataSourceImpl implements FoodBusinessRemoteDataSource {
   }) async {
     try {
       Logger().d('Fetching nearby surplus food businesses');
-      final collectionRef = _firestore.collection('foddBusiness');
+      final CollectionReference<Map<String, dynamic>> collectionRef =
+          _firestore.collection('foddBusiness');
 
       final QuerySnapshot<Map<String, dynamic>> foodBusinessSnapshot =
           await collectionRef
               .where('cuisineType', isEqualTo: favoriteCuisine.name)
               .get();
 
-      final List<FoodBusinessModel> nearbyFoodBusinesses = [];
+      final List<FoodBusinessModel> nearbyFoodBusinesses =
+          <FoodBusinessModel>[];
 
       Logger().d(
-          'Food business snapshot: ${foodBusinessSnapshot.docs.map((doc) => doc.data())}');
-      for (final doc in foodBusinessSnapshot.docs) {
-        final offersSnapshot = await _firestore
-            .collection('foddBusiness')
-            .doc(doc.id)
-            .collection('offers')
-            .where('availableQuantity', isGreaterThan: 0)
-            .where('validUntil', isGreaterThanOrEqualTo: Timestamp.now())
-            .get();
+        'Food business snapshot: ${foodBusinessSnapshot.docs.map((QueryDocumentSnapshot<Map<String, dynamic>> doc) => doc.data())}',
+      );
+      for (final QueryDocumentSnapshot<Map<String, dynamic>> doc
+          in foodBusinessSnapshot.docs) {
+        final QuerySnapshot<Map<String, dynamic>> offersSnapshot =
+            await _firestore
+                .collection('foddBusiness')
+                .doc(doc.id)
+                .collection('offers')
+                .where('availableQuantity', isGreaterThan: 0)
+                .where('validUntil', isGreaterThanOrEqualTo: Timestamp.now())
+                .get();
 
         Logger().d(
-            'Offers snapshot: ${offersSnapshot.docs.map((doc) => doc.data())}');
-        final surplusOffers = offersSnapshot.docs
-            .map((offerDoc) =>
-                OfferModel.fromMap(offerDoc.data(), offerDoc.id, doc.id))
+          'Offers snapshot: ${offersSnapshot.docs.map((QueryDocumentSnapshot<Map<String, dynamic>> doc) => doc.data())}',
+        );
+        final List<OfferModel> surplusOffers = offersSnapshot.docs
+            .map(
+              (QueryDocumentSnapshot<Map<String, dynamic>> offerDoc) =>
+                  OfferModel.fromMap(offerDoc.data(), offerDoc.id, doc.id),
+            )
             .toList();
 
         Logger().d('Surplus offers: $surplusOffers');
         if (surplusOffers.isNotEmpty) {
-          final distance = calculateDistance(
+          final double distance = calculateDistance(
             userLocation.latitude,
             userLocation.longitude,
             (doc.data()['latitude'] as num?)?.toDouble() ?? 0.0,
@@ -71,7 +79,7 @@ class FoodBusinessRemoteDataSourceImpl implements FoodBusinessRemoteDataSource {
             Logger().d('Food business: ${doc.data()}');
             Logger().d('Surplus offers: $surplusOffers');
             Logger().d('id: ${doc.id}');
-            final foodBusiness = FoodBusinessModel.fromMap(
+            final FoodBusinessModel foodBusiness = FoodBusinessModel.fromMap(
               doc.data(),
               doc.id,
               surplusOffers,
@@ -84,8 +92,10 @@ class FoodBusinessRemoteDataSourceImpl implements FoodBusinessRemoteDataSource {
       Logger().d('Nearby food businesses: $nearbyFoodBusinesses');
       return nearbyFoodBusinesses;
     } catch (e) {
-      Logger().e('Error fetching food businesses: $e',
-          stackTrace: StackTrace.current);
+      Logger().e(
+        'Error fetching food businesses: $e',
+        stackTrace: StackTrace.current,
+      );
       throw AuthException('Error fetching food businesses: $e');
     }
   }

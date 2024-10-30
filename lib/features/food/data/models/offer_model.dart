@@ -33,7 +33,7 @@ class OfferModel extends Offer {
   }
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       // 'title': title,
       'description': description,
       'imageUrl': imageUrl,

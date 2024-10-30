@@ -15,7 +15,7 @@ class ForYouTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<AddressBloc, AddressState>(
-      listener: (context, addressState) {
+      listener: (BuildContext context, AddressState addressState) {
         if (addressState is AddressLoaded) {
           context.read<FoodBusinessBloc>().add(
                 FetchSurplusFoodBusinesses(
@@ -26,7 +26,7 @@ class ForYouTab extends StatelessWidget {
         }
       },
       child: BlocBuilder<FoodBusinessBloc, FoodBusinessState>(
-        builder: (context, state) {
+        builder: (BuildContext context, FoodBusinessState state) {
           if (state is FoodBusinessLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is FoodBusinessLoaded) {

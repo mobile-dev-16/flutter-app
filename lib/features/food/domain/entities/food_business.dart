@@ -1,6 +1,6 @@
-import 'package:equatable/equatable.dart';
 import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';
 import 'package:eco_bites/features/food/domain/entities/offer.dart';
+import 'package:equatable/equatable.dart';
 
 class FoodBusiness extends Equatable {
   const FoodBusiness({
@@ -26,7 +26,7 @@ class FoodBusiness extends Equatable {
   final List<Offer> offers;
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         id,
         name,
         // description,

@@ -36,5 +36,9 @@ class FetchNearbySurplusFoodBusinessesParams extends Equatable {
   final double distanceInKm;
 
   @override
-  List<Object?> get props => [userLocation, favoriteCuisine, distanceInKm];
+  List<Object?> get props => <Object?>[
+        userLocation,
+        favoriteCuisine,
+        distanceInKm,
+      ];
 }

@@ -45,7 +45,7 @@ enum CuisineType {
 extension CuisineTypeExtension on CuisineType {
   static CuisineType fromString(String value) {
     return CuisineType.values.firstWhere(
-      (type) => type.name.toLowerCase() == value.toLowerCase(),
+      (CuisineType type) => type.name.toLowerCase() == value.toLowerCase(),
       orElse: () => CuisineType.other,
     );
   }

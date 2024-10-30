@@ -1,6 +1,7 @@
 import 'package:eco_bites/features/food/data/models/offer_model.dart';
 import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';
 import 'package:eco_bites/features/food/domain/entities/food_business.dart';
+import 'package:eco_bites/features/food/domain/entities/offer.dart';
 
 class FoodBusinessModel extends FoodBusiness {
   const FoodBusinessModel({
@@ -26,7 +27,7 @@ class FoodBusinessModel extends FoodBusiness {
       // description: map['description'] as String,
       imageUrl: map['imageUrl'] as String?,
       cuisineType: CuisineType.values.firstWhere(
-        (type) => type.name == (map['cuisineType'] as String),
+        (CuisineType type) => type.name == (map['cuisineType'] as String),
         orElse: () => CuisineType.other,
       ),
       // rating: (map['rating'] as num).toDouble(),
@@ -37,7 +38,7 @@ class FoodBusinessModel extends FoodBusiness {
   }
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'name': name,
       // 'description': description,
       'imageUrl': imageUrl,
@@ -58,8 +59,9 @@ class FoodBusinessModel extends FoodBusiness {
       // rating: entity.rating,
       latitude: entity.latitude,
       longitude: entity.longitude,
-      offers:
-          entity.offers.map((offer) => OfferModel.fromEntity(offer)).toList(),
+      offers: entity.offers
+          .map((Offer offer) => OfferModel.fromEntity(offer))
+          .toList(),
     );
   }
 }
