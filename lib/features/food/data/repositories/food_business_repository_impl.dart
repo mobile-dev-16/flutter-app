@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:eco_bites/core/error/failures.dart';
 import 'package:eco_bites/core/network/network_info.dart';
-import 'package:eco_bites/features/address/domain/models/address.dart';
+import 'package:eco_bites/features/address/domain/entities/address.dart';
 import 'package:eco_bites/features/food/data/datasources/food_business_remote_data_source.dart';
 import 'package:eco_bites/features/food/data/models/food_business_model.dart';
 import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';

@@ -1,19 +1,26 @@
-import 'package:eco_bites/features/address/domain/models/address.dart';
+import 'package:dartz/dartz.dart';
+import 'package:eco_bites/core/error/failures.dart';
+import 'package:eco_bites/features/address/domain/entities/address.dart';
+import 'package:eco_bites/features/address/domain/usecases/fetch_user_addresses_usecase.dart';
+import 'package:eco_bites/features/address/domain/usecases/save_address_usecase.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_event.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_state.dart';
-import 'package:eco_bites/features/address/repository/address_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddressBloc extends Bloc<AddressEvent, AddressState> {
-  AddressBloc({required this.addressRepository}) : super(AddressInitial()) {
+  AddressBloc({
+    required this.saveAddressUseCase,
+    required this.fetchUserAddressesUseCase,
+  }) : super(AddressInitial()) {
     on<SaveAddress>(_onSaveAddress);
     on<LoadAddress>(_onLoadAddress);
     on<UpdateCurrentLocation>(_onUpdateCurrentLocation);
     on<ClearAddress>(_onClearAddress);
   }
-  final AddressRepository addressRepository;
+  final SaveAddressUseCase saveAddressUseCase;
+  final FetchUserAddressesUseCase fetchUserAddressesUseCase;
 
   Future<String?> _getUserId() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -30,7 +37,12 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
       if (userId == null) {
         throw Exception('User not authenticated');
       }
-      await addressRepository.saveAddress(userId, event.address);
+      await saveAddressUseCase(
+        SaveAddressParams(
+          userId: userId,
+          address: event.address,
+        ),
+      );
 
       final AddressState currentState = state;
       if (currentState is AddressLoaded) {
@@ -58,18 +70,24 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
       if (userId == null) {
         throw Exception('User not authenticated');
       }
-      final List<Address> addresses =
-          await addressRepository.fetchUserAddresses(userId);
 
-      Logger().i('==> Addresses: $addresses');
-
-      if (addresses.isNotEmpty) {
-        Logger().i('==> AddressLoaded because addresses is not empty');
-        emit(AddressLoaded(addresses.first));
-      } else {
-        emit(AddressInitial());
-        Logger().i('==> AddressInitial because addresses is empty');
-      }
+      final Either<Failure, List<Address>> result =
+          await fetchUserAddressesUseCase(
+        FetchUserAddressesParams(userId: userId),
+      );
+      result.fold(
+        (Failure failure) => emit(AddressError(failure.toString())),
+        (List<Address> addresses) {
+          Logger().i('==> Addresses: $addresses');
+          if (addresses.isNotEmpty) {
+            Logger().i('==> AddressLoaded because addresses is not empty');
+            emit(AddressLoaded(addresses.first));
+          } else {
+            Logger().i('==> AddressInitial because addresses is empty');
+            emit(AddressInitial());
+          }
+        },
+      );
     } catch (e) {
       emit(AddressError(e.toString()));
     }

@@ -1,4 +1,4 @@
-import 'package:eco_bites/features/address/domain/models/address.dart';
+import 'package:eco_bites/features/address/domain/entities/address.dart';
 
 abstract class AddressEvent {}
 

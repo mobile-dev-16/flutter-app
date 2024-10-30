@@ -1,7 +1,7 @@
 // ignore_for_file: deprecated_member_use
 import 'package:eco_bites/core/ui/widgets/custom_appbar.dart';
 import 'package:eco_bites/core/utils/reverse_geocoding.dart';
-import 'package:eco_bites/features/address/domain/models/address.dart';
+import 'package:eco_bites/features/address/domain/entities/address.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_event.dart';
 import 'package:flutter/material.dart';

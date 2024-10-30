@@ -2,8 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:eco_bites/core/blocs/internet_connection/internet_connection_bloc.dart';
 import 'package:eco_bites/core/network/network_info.dart';
+import 'package:eco_bites/features/address/data/datasources/address_remote_data_source.dart';
+import 'package:eco_bites/features/address/data/repositories/address_repository_impl.dart';
+import 'package:eco_bites/features/address/domain/repositories/address_repository.dart';
+import 'package:eco_bites/features/address/domain/usecases/fetch_user_addresses_usecase.dart';
+import 'package:eco_bites/features/address/domain/usecases/save_address_usecase.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
-import 'package:eco_bites/features/address/repository/address_repository.dart';
 import 'package:eco_bites/features/auth/data/datasources/user_local_data_source.dart';
 import 'package:eco_bites/features/auth/data/datasources/user_remote_data_source.dart';
 import 'package:eco_bites/features/auth/data/repositories/auth_repository_impl.dart';
@@ -82,12 +86,31 @@ Future<void> setupServiceLocator() async {
 
   // Features - Address
   serviceLocator.registerFactory(
-    () => AddressBloc(addressRepository: serviceLocator()),
+    () => AddressBloc(
+      saveAddressUseCase: serviceLocator(),
+      fetchUserAddressesUseCase: serviceLocator(),
+    ),
   );
 
-  // Repositories
+  // Use cases
+  serviceLocator
+      .registerLazySingleton(() => SaveAddressUseCase(serviceLocator()));
+  serviceLocator
+      .registerLazySingleton(() => FetchUserAddressesUseCase(serviceLocator()));
+
+  // Repository
   serviceLocator.registerLazySingleton<AddressRepository>(
-    () => AddressRepository(),
+    () => AddressRepositoryImpl(
+      remoteDataSource: serviceLocator(),
+      networkInfo: serviceLocator(),
+    ),
+  );
+
+  // Data sources
+  serviceLocator.registerLazySingleton<AddressRemoteDataSource>(
+    () => AddressRemoteDataSourceImpl(
+      firestore: serviceLocator(),
+    ),
   );
 
   // Features - Orders

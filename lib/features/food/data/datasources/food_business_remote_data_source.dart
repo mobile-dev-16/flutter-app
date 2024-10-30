@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_bites/core/error/exceptions.dart';
 import 'package:eco_bites/core/utils/distance.dart';
-import 'package:eco_bites/features/address/domain/models/address.dart';
+import 'package:eco_bites/features/address/domain/entities/address.dart';
 import 'package:eco_bites/features/food/data/models/food_business_model.dart';
 import 'package:eco_bites/features/food/data/models/offer_model.dart';
 import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';
