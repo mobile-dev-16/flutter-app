@@ -1,4 +1,5 @@
-import 'package:eco_bites/features/food/domain/models/cuisine_type.dart';
+import 'package:eco_bites/features/address/domain/entities/address.dart';
+import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class FoodBusinessEvent extends Equatable {
@@ -9,8 +10,12 @@ abstract class FoodBusinessEvent extends Equatable {
 }
 
 class FetchSurplusFoodBusinesses extends FoodBusinessEvent {
-  const FetchSurplusFoodBusinesses({required this.favoriteCuisine});
+  const FetchSurplusFoodBusinesses({
+    required this.favoriteCuisine,
+    required this.userLocation,
+  });
   final CuisineType favoriteCuisine;
+  final Address userLocation;
 
   @override
   List<Object?> get props => <Object?>[favoriteCuisine];

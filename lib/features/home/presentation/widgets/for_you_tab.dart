@@ -1,6 +1,10 @@
-import 'package:eco_bites/features/food/domain/models/food_business.dart';
-import 'package:eco_bites/features/food/domain/models/offer.dart';
+import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
+import 'package:eco_bites/features/address/presentation/bloc/address_state.dart';
+import 'package:eco_bites/features/food/data/models/food_business_model.dart';
+import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';
+import 'package:eco_bites/features/food/domain/entities/offer.dart';
 import 'package:eco_bites/features/food/presentation/bloc/food_business_bloc.dart';
+import 'package:eco_bites/features/food/presentation/bloc/food_business_event.dart';
 import 'package:eco_bites/features/food/presentation/bloc/food_business_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,36 +14,49 @@ class ForYouTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<FoodBusinessBloc, FoodBusinessState>(
-      builder: (BuildContext context, FoodBusinessState state) {
-        if (state is FoodBusinessLoading) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (state is FoodBusinessLoaded) {
-          return ListView.builder(
-            itemCount: state.foodBusinesses.length,
-            itemBuilder: (BuildContext context, int index) {
-              final FoodBusiness foodBusiness = state.foodBusinesses[index];
-              return ExpansionTile(
-                leading: CircleAvatar(
-                  backgroundImage: foodBusiness.imageUrl != null
-                      ? NetworkImage(foodBusiness.imageUrl!)
-                      : null,
-                  child: foodBusiness.imageUrl == null
-                      ? Text(foodBusiness.name[0])
-                      : null,
+    return BlocListener<AddressBloc, AddressState>(
+      listener: (BuildContext context, AddressState addressState) {
+        if (addressState is AddressLoaded) {
+          context.read<FoodBusinessBloc>().add(
+                FetchSurplusFoodBusinesses(
+                  userLocation: addressState.savedAddress,
+                  favoriteCuisine: CuisineType.local,
                 ),
-                title: Text(foodBusiness.name),
-                children: foodBusiness.offers
-                    .map((Offer offer) => OfferCard(offer: offer))
-                    .toList(),
               );
-            },
-          );
-        } else if (state is FoodBusinessError) {
-          return Center(child: Text(state.message));
         }
-        return const Center(child: Text('No offers available'));
       },
+      child: BlocBuilder<FoodBusinessBloc, FoodBusinessState>(
+        builder: (BuildContext context, FoodBusinessState state) {
+          if (state is FoodBusinessLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is FoodBusinessLoaded) {
+            return ListView.builder(
+              itemCount: state.foodBusinesses.length,
+              itemBuilder: (BuildContext context, int index) {
+                final FoodBusinessModel foodBusiness =
+                    state.foodBusinesses[index];
+                return ExpansionTile(
+                  leading: CircleAvatar(
+                    backgroundImage: foodBusiness.imageUrl != null
+                        ? NetworkImage(foodBusiness.imageUrl!)
+                        : null,
+                    child: foodBusiness.imageUrl == null
+                        ? Text(foodBusiness.name[0])
+                        : null,
+                  ),
+                  title: Text(foodBusiness.name),
+                  children: foodBusiness.offers
+                      .map<Widget>((Offer offer) => OfferCard(offer: offer))
+                      .toList(),
+                );
+              },
+            );
+          } else if (state is FoodBusinessError) {
+            return Center(child: Text(state.message));
+          }
+          return const Center(child: Text('No offers available'));
+        },
+      ),
     );
   }
 }

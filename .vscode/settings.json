@@ -1,9 +1,14 @@
 {
-    "files.trimTrailingWhitespace": true,
-    "editor.formatOnSave": true,
-    "cSpell.words": [
-        "appbar",
-        "dotenv",
-        "Geolocator"
-    ]
+  "files.trimTrailingWhitespace": true,
+  "editor.formatOnSave": true,
+  "cSpell.words": [
+    "appbar",
+    "dartz",
+    "datasources",
+    "dotenv",
+    "firestore",
+    "Geolocator",
+    "usecase",
+    "usecases"
+  ]
 }

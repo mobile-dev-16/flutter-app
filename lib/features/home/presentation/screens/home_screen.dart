@@ -1,14 +1,11 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_bites/core/utils/distance.dart';
-import 'package:eco_bites/features/address/domain/models/address.dart';
+import 'package:eco_bites/features/address/domain/entities/address.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_event.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_state.dart';
 import 'package:eco_bites/features/address/presentation/screens/address_screen.dart';
-import 'package:eco_bites/features/food/domain/models/cuisine_type.dart';
-import 'package:eco_bites/features/food/presentation/bloc/food_business_bloc.dart';
-import 'package:eco_bites/features/food/presentation/bloc/food_business_event.dart';
 import 'package:eco_bites/features/home/presentation/bloc/home_bloc.dart';
 import 'package:eco_bites/features/home/presentation/widgets/for_you_tab.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +13,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:material_symbols_icons/symbols.dart';
 
-class HomeScreen extends StatefulWidget { // Pass appLaunchTime from splash screen
+class HomeScreen extends StatefulWidget {
+  // Pass appLaunchTime from splash screen
 
   const HomeScreen({super.key, required this.appLaunchTime});
   final DateTime appLaunchTime;
@@ -34,7 +32,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-class HomeScreenContent extends StatefulWidget { // Get the app launch time
+
+class HomeScreenContent extends StatefulWidget {
+  // Get the app launch time
 
   const HomeScreenContent({super.key, required this.appLaunchTime});
 
@@ -43,6 +43,7 @@ class HomeScreenContent extends StatefulWidget { // Get the app launch time
   @override
   State<HomeScreenContent> createState() => _HomeScreenContentState();
 }
+
 class _HomeScreenContentState extends State<HomeScreenContent>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
@@ -60,7 +61,8 @@ class _HomeScreenContentState extends State<HomeScreenContent>
     // Measure and log loading time after UI is rendered
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final DateTime homePageRenderedTime = DateTime.now();
-      final Duration loadTime = homePageRenderedTime.difference(widget.appLaunchTime);
+      final Duration loadTime =
+          homePageRenderedTime.difference(widget.appLaunchTime);
       logEvent('Home page loaded in ${loadTime.inMilliseconds}ms');
     });
 
@@ -75,11 +77,12 @@ class _HomeScreenContentState extends State<HomeScreenContent>
       // Assuming you have a way to get the user's favorite cuisine
       // TODO(abel): Implement a method to get the user's favorite cuisine
       // For now, we'll use a default value
-      context.read<FoodBusinessBloc>().add(
-            const FetchSurplusFoodBusinesses(
-              favoriteCuisine: CuisineType.local,
-            ),
-          );
+      // context.read<FoodBusinessBloc>().add(
+      //       const FetchSurplusFoodBusinesses(
+      //         favoriteCuisine: CuisineType.other,
+      //         userLocation: addressState.savedAddress,
+      //       ),
+      //     );
     });
   }
 
@@ -190,9 +193,20 @@ class _HomeScreenContentState extends State<HomeScreenContent>
                     }
                     return GestureDetector(
                       onTap: _navigateToAddressScreen,
-                      child: Text(
-                        'Add an address',
-                        style: theme.textTheme.titleMedium,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Icon(
+                            Symbols.location_on_rounded,
+                            fill: 1,
+                            color: theme.colorScheme.primary,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Add an address',
+                            style: theme.textTheme.titleMedium,
+                          ),
+                        ],
                       ),
                     );
                   },
