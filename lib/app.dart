@@ -6,6 +6,7 @@ import 'package:eco_bites/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:eco_bites/features/food/presentation/bloc/food_business_bloc.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_bloc.dart';
+import 'package:eco_bites/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:eco_bites/injection_container.dart';
 import 'package:eco_bites/route_generator.dart';
 import 'package:flutter/material.dart';
@@ -52,6 +53,9 @@ class EcoBitesApp extends StatelessWidget {
         ),
         BlocProvider<InternetConnectionBloc>(
           create: (_) => serviceLocator<InternetConnectionBloc>(),
+        ),
+        BlocProvider<ProfileBloc>(
+          create: (_) => serviceLocator<ProfileBloc>(),
         ),
       ],
       child: MaterialApp(
