@@ -3,7 +3,7 @@ import 'package:eco_bites/features/address/data/models/address_model.dart';
 
 abstract class AddressRemoteDataSource {
   Future<void> saveAddress(String userId, AddressModel address);
-  Future<List<AddressModel>> fetchUserAddresses(String userId);
+  Future<AddressModel?> fetchUserAddress(String userId);
 }
 
 class AddressRemoteDataSourceImpl implements AddressRemoteDataSource {
@@ -16,11 +16,14 @@ class AddressRemoteDataSourceImpl implements AddressRemoteDataSource {
   @override
   Future<void> saveAddress(String userId, AddressModel address) async {
     try {
+      // Aquí aseguramos que el UID sea el mismo que el del usuario registrado
       await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection('addresses')
-          .add(address.toMap());
+          .collection('profiles')
+          .doc(userId) // Usamos el UID del usuario para referenciar el mismo documento
+          .set(
+            <String, dynamic>{'address': address.toMap()},
+            SetOptions(merge: true), // Esto solo agrega/actualiza el campo "address"
+          );
     } catch (e) {
       throw FirebaseException(
         message: 'Failed to save address: $e',
@@ -30,23 +33,18 @@ class AddressRemoteDataSourceImpl implements AddressRemoteDataSource {
   }
 
   @override
-  Future<List<AddressModel>> fetchUserAddresses(String userId) async {
+  Future<AddressModel?> fetchUserAddress(String userId) async {
     try {
-      final QuerySnapshot<Map<String, dynamic>> querySnapshot = await _firestore
-          .collection('users')
-          .doc(userId)
-          .collection('addresses')
-          .get();
+      final DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await _firestore.collection('profiles').doc(userId).get();
 
-      return querySnapshot.docs
-          .map(
-            (QueryDocumentSnapshot<Map<String, dynamic>> doc) =>
-                AddressModel.fromMap(doc.data()),
-          )
-          .toList();
+      if (snapshot.exists && snapshot.data()?['address'] != null) {
+        return AddressModel.fromMap(snapshot.data()!['address']);
+      }
+      return null;
     } catch (e) {
       throw FirebaseException(
-        message: 'Failed to fetch addresses: $e',
+        message: 'Failed to fetch address: $e',
         plugin: 'cloud_firestore',
       );
     }
