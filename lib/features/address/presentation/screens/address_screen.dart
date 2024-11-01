@@ -7,8 +7,9 @@ import 'package:eco_bites/features/address/presentation/bloc/address_event.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:geolocator/geolocator.dart'; // GPS
-import 'package:google_maps_flutter/google_maps_flutter.dart'; //GOOGLE MAPS EXTERNAL SERVICE
+import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddressScreen extends StatefulWidget {
   const AddressScreen({super.key});
@@ -36,6 +37,10 @@ class AddressScreenState extends State<AddressScreen> {
   void dispose() {
     _deliveryDetailsController.dispose();
     super.dispose();
+  }
+  Future<String?> _getUserId() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+     return prefs.getString('userId');
   }
 
   Future<void> _getCurrentLocation() async {
@@ -199,8 +204,24 @@ class AddressScreenState extends State<AddressScreen> {
                         longitude: selectedPosition!.longitude,
                         deliveryDetails: _deliveryDetailsController.text,
                       );
-                      context.read<AddressBloc>().add(SaveAddress(address));
-                      Navigator.pop(context, address);
+
+                      final String? userId = await _getUserId();
+                      if (userId != null) {
+                        if (!mounted) {
+                          return;
+                        }
+                        context.read<AddressBloc>().add(SaveAddress(address, userId: userId));
+                        if (mounted) {
+                          Navigator.pop(context);
+                        }
+                      } else {
+                        // ignore: use_build_context_synchronously
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('User not authenticated'),
+                          ),
+                        );
+                      }
                     }
                   : null,
               child: const Text('Confirm Address'),
