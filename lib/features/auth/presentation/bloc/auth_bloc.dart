@@ -1,3 +1,4 @@
+// auth_bloc.dart
 import 'package:dartz/dartz.dart';
 import 'package:eco_bites/core/error/failures.dart';
 import 'package:eco_bites/features/auth/domain/entities/user.dart';
@@ -29,6 +30,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignInWithGoogleRequested>(_onSignInWithGoogleRequested);
     on<SignOutRequested>(_onSignOutRequested);
   }
+
   final SignInUseCase _signInUseCase;
   final SignUpUseCase _signUpUseCase;
   final SignInWithGoogleUseCase _signInWithGoogleUseCase;
@@ -66,6 +68,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       SignUpParams(
         email: event.email,
         password: event.password,
+        name: event.name,
+        surname: event.surname,
+        citizenId: event.citizenId,
+        phone: event.phone,
+        birthDate: event.birthDate,
+        favoriteCuisine: event.favoriteCuisine,
       ),
     );
 
