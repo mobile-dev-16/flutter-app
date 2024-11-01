@@ -20,7 +20,7 @@ class ProfileRepositoryImpl implements UserProfileRepository {
 
   @override
   Future<void> updateUserProfile(UserProfile profile) async {
-    await firestore.collection('profiles').doc(profile.userId).update({
+    await firestore.collection('profiles').doc(profile.userId).update(<Object, Object?>{
       'favoriteCuisine': profile.favoriteCuisine.name,
       'dietType': profile.dietType,
     });

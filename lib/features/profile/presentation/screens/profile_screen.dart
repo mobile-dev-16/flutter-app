@@ -62,7 +62,6 @@ class ProfileScreenState extends State<ProfileScreen> {
             }
 
             return Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 Text(
                   '¡Hi, ${_nameController.text}!',
