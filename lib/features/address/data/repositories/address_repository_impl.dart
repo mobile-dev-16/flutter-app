@@ -38,7 +38,7 @@ class AddressRepositoryImpl implements AddressRepository {
         if (addressModel == null) {
           return const Right<Failure, Address?>(null);
         }
-        return Right<Failure, Address>(addressModel);
+        return Right<Failure, Address?>(addressModel);
       } on FirebaseException catch (e) {
         return Left<Failure, Address?>(FirebaseFailure(e.message));
       }

@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use
+// ignore_for_file: deprecated_member_use, use_build_context_synchronously
 import 'package:eco_bites/core/ui/widgets/custom_appbar.dart';
 import 'package:eco_bites/core/utils/reverse_geocoding.dart';
 import 'package:eco_bites/features/address/domain/entities/address.dart';
@@ -39,8 +39,15 @@ class AddressScreenState extends State<AddressScreen> {
     super.dispose();
   }
   Future<String?> _getUserId() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-     return prefs.getString('userId');
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? userId = prefs.getString('userId');
+      // ignore: use_if_null_to_convert_nulls_to_bools
+      return userId?.isNotEmpty == true ? userId : null;
+    } catch (e) {
+      debugPrint('Failed to get user ID: $e');
+      return null;
+    }
   }
 
   Future<void> _getCurrentLocation() async {
@@ -198,6 +205,7 @@ class AddressScreenState extends State<AddressScreen> {
             ElevatedButton(
               onPressed: selectedPosition != null
                   ? () async {
+                      setState(() => isLoading = true);
                       final Address address = Address(
                         fullAddress: selectedAddress,
                         latitude: selectedPosition!.latitude,
@@ -206,25 +214,27 @@ class AddressScreenState extends State<AddressScreen> {
                       );
 
                       final String? userId = await _getUserId();
+                      final BuildContext currentContext = context;
                       if (userId != null) {
-                        if (!mounted) {
-                          return;
-                        }
                         context.read<AddressBloc>().add(SaveAddress(address, userId: userId));
                         if (mounted) {
                           Navigator.pop(context);
                         }
                       } else {
-                        // ignore: use_build_context_synchronously
-                        ScaffoldMessenger.of(context).showSnackBar(
+                        ScaffoldMessenger.of(currentContext).showSnackBar(
                           const SnackBar(
-                            content: Text('User not authenticated'),
+                            content: Text('Please sign in to save your address'),
                           ),
                         );
                       }
+                      if (mounted) {
+                        setState(() => isLoading = false);
+                      }
                     }
                   : null,
-              child: const Text('Confirm Address'),
+              child: isLoading
+                ? const CircularProgressIndicator()
+                : const Text('Confirm Address'),
             ),
             const SizedBox(height: 10),
           ],

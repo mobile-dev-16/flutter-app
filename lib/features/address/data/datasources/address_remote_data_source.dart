@@ -34,6 +34,9 @@ class AddressRemoteDataSourceImpl implements AddressRemoteDataSource {
 
   @override
   Future<AddressModel?> fetchUserAddress(String userId) async {
+    if (userId.isEmpty) {
+      throw ArgumentError('userId cannot be empty');
+    }
     try {
       final DocumentSnapshot<Map<String, dynamic>> snapshot =
           await _firestore.collection('profiles').doc(userId).get();
@@ -43,6 +46,13 @@ class AddressRemoteDataSourceImpl implements AddressRemoteDataSource {
       }
       return null;
     } catch (e) {
+      if (e is FirebaseException) {
+        throw FirebaseException(
+          message: 'Failed to fetch address: ${e.message}',
+          plugin: 'cloud_firestore',
+          code: e.code,
+        );
+      }
       throw FirebaseException(
         message: 'Failed to fetch address: $e',
         plugin: 'cloud_firestore',

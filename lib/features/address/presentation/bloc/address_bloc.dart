@@ -48,7 +48,13 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
 
       emit(AddressLoaded(event.address));
     } catch (e) {
-      emit(AddressError(e.toString()));
+      if (e is ServerFailure) {
+        emit(AddressError('Failed to save address: Server Error'));
+      } else if (e is NetworkFailure) {
+        emit(AddressError('Failed to save address: Network Error'));
+      } else {
+        emit(AddressError('Failed to save address: $e'));
+      }
     }
   }
 
@@ -66,7 +72,15 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
       final Either<Failure, Address?> result =
           await fetchUserAddressUseCase(FetchUserAddressParams(userId: userId));
       result.fold(
-        (Failure failure) => emit(AddressError(failure.toString())),
+        (Failure failure) {
+          if (Failure is ServerFailure) {
+            emit(AddressError('Failed to load address: Server Error'));
+          } else if (Failure is NetworkFailure) {
+            emit(AddressError('Failed to load address: Network Error'));
+          } else {
+            emit(AddressError('Failed to load address: $failure'));
+          }
+        },
         (Address? address) {
           if (address != null) {
             emit(AddressLoaded(address));

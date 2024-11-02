@@ -12,7 +12,14 @@ class NetworkFailure extends Failure {
 }
 
 class ServerFailure extends Failure {
-  const ServerFailure(super.message);
+  const ServerFailure(
+    super.message, {
+    this.statusCode,
+    this.errorType,
+  });
+
+  final int? statusCode;
+  final String? errorType;
 }
 
 class FirebaseFailure extends Failure {
