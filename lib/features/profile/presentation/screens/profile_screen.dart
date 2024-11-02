@@ -100,7 +100,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                           dietType: _dietType ?? 'Unknown',
                         );
 
-                        context.read<ProfileBloc>().add(UpdateProfileEvent(userId, updatedProfile));
+                        context.read<ProfileBloc>().add(UpdateProfileEvent(userId: userId, updatedProfile: updatedProfile));
                       }
                     },
                     child: const Text('Save'),
