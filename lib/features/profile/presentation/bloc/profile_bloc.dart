@@ -28,18 +28,19 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     try {
       final String? userId = await _getUserId();
       if (userId == null) {
-        throw Exception('Usuario no autenticado');
+        emit(ProfileError('User not authenticated'));
+        return;
       }
 
       final UserProfile? userProfile = await fetchUserProfileUseCase(userId);
 
       if (userProfile != null) {
-        emit(ProfileLoaded(userProfile)); // Emite estado de perfil cargado
+        emit(ProfileLoaded(userProfile));
       } else {
-        emit(ProfileError('No se encontró el perfil')); // Manejo de error
+        emit(ProfileError('Profile not found'));
       }
     } catch (e) {
-      emit(ProfileError('Error al cargar el perfil: $e')); // Emite un error
+      emit(ProfileError('Failed to load profile'));
     }
   }
 
@@ -54,11 +55,26 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     Emitter<ProfileState> emit,
   ) async {
     emit(ProfileLoading());
+    final String? userId = await _getUserId();
+    if (userId == null) {
+      emit(ProfileError('User not authenticated'));
+      return;
+    }
     try {
       await updateUserProfileUseCase(event.updatedProfile);
-      emit(ProfileLoaded(event.updatedProfile));
+      final String? userId = await _getUserId();
+      if (userId != null) {
+        final UserProfile? updatedProfile = await fetchUserProfileUseCase(userId);
+        if (updatedProfile != null) {
+          emit(ProfileLoaded(updatedProfile));
+        } else {
+          emit(ProfileError('Failed to retrieve updated profile'));
+        }
+      } else {
+        emit(ProfileError('User not authenticated'));
+      }
     } catch (e) {
-      emit(ProfileError('Error al actualizar el perfil: $e'));
+      emit(ProfileError('Failed to update profile'));
     }
   }
 }

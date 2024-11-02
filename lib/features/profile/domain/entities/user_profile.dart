@@ -15,8 +15,13 @@ class UserProfile extends Equatable {
     required this.dietType,
   });
 
-  // Método fromMap con manejo de Timestamp para birthDate
   factory UserProfile.fromMap(Map<String, dynamic> data) {
+    if (data['citizenId'] == null || (data['citizenId'] as String).isEmpty) {
+      throw const FormatException('citizenId is required');
+    }
+    if (data['email'] == null || (data['email'] as String).isEmpty) {
+      throw const FormatException('email is required');
+    }
     return UserProfile(
       userId: data['userId'] as String? ?? '',
       name: data['name'] as String? ?? '',
@@ -50,7 +55,7 @@ class UserProfile extends Equatable {
       'citizenId': citizenId,
       'email': email,
       'phone': phone,
-      'birthDate': birthDate,
+      'birthDate': Timestamp.fromDate(birthDate),
       'favoriteCuisine': favoriteCuisine.name,
       'dietType': dietType,
     };

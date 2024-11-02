@@ -8,13 +8,23 @@ class ProfileRepository {
   final FirebaseFirestore firestore;
 
   Future<UserProfile?> getUserProfile(String userId) async {
-    final DocumentSnapshot<Map<String, dynamic>> snapshot =
-        await firestore.collection('profiles').doc(userId).get();
+    try {
+      final DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await firestore.collection('profiles').doc(userId).get();
 
-    if (snapshot.exists && snapshot.data() != null) {
-      return UserProfile.fromMap(snapshot.data()!);
+      if (snapshot.exists && snapshot.data() != null) {
+        final Map<String, dynamic>? data = snapshot.data();
+        if (!data!.containsKey('favoriteCuisine') || !data.containsKey('dietType')) {
+          throw const FormatException('Missing required fields in profile data');
+        }
+        return UserProfile.fromMap(snapshot.data()!);
+      }
+      return null;
+    } on FirebaseException catch (e) {
+      throw Exception('Failed to fetch profile: $e');
+    } catch (e) {
+      throw Exception('Error processing profile data: $e');
     }
-    return null;
   }
 
   Future<void> saveUserProfile(UserProfile profile) async {
@@ -28,16 +38,23 @@ class ProfileRepository {
         SetOptions(merge: true),
       );
     } catch (e) {
-      throw Exception('Error al guardar datos de perfil en Firebase.');
+      if (e is FirebaseException) {
+        throw Exception('Failed to save profile: ${e.message}');
+      }
+      throw Exception('Unexpected error while saving profile: $e');
     }
   }
 
   Future<void> saveUserAddress(String userId, AddressModel address) async {
-    await firestore
-        .collection('profiles')
-        .doc(userId)
-        .collection('addresses')
-        .add(address.toMap());
+    try {
+      await firestore
+          .collection('profiles')
+          .doc(userId)
+          .collection('addresses')
+          .add(address.toMap());
+    } on FirebaseException catch (e) {
+      throw Exception('Failed to save address: $e');
+    }
   }
 
   Future<List<AddressModel>> getUserAddresses(String userId) async {
@@ -47,16 +64,28 @@ class ProfileRepository {
         .collection('addresses')
         .get();
 
-    return snapshot.docs.map((QueryDocumentSnapshot<Map<String, dynamic>> doc) => AddressModel.fromMap(doc.data())).toList();
+    try {
+      return await Future.wait(
+        snapshot.docs.map((QueryDocumentSnapshot<Map<String, dynamic>> doc) async {
+          final Map<String, dynamic> data = doc.data();
+          return AddressModel.fromMap(data);
+        }),
+      );
+    } on FirebaseException catch (e) {
+      throw Exception('Failed to retrieve addresses: $e');
+    }
   }
-
-    Future<void> updateProfile(UserProfile profile) async {
-    await firestore
-        .collection('profiles')
-        .doc(profile.userId)
-        .update(<Object, Object?>{
-      'favoriteCuisine': profile.favoriteCuisine.toString(),
+  Future<void> updateProfile(UserProfile profile) async {
+    try{
+      await firestore
+          .collection('profiles')
+          .doc(profile.userId)
+          .update(<Object, Object?>{
+      'favoriteCuisine': profile.favoriteCuisine.name,
       'dietType': profile.dietType,
     });
+  } on FirebaseException catch (e) {
+    throw Exception('Failed to update profile: $e');
+  }
   }
 }
