@@ -24,10 +24,10 @@ class SplashScreen extends StatelessWidget {
           final Duration loadTime = mainPageRenderedTime.difference(appLaunchTime);
 
           if (state is Authenticated) {
-            await logEvent('Main page loaded in ${loadTime.inMilliseconds}ms (Authenticated)');
+            await logEvent(milliseconds: loadTime.inMilliseconds, authenticated: true);
             Navigator.pushReplacementNamed(context, '/main');
           } else if (state is Unauthenticated) {
-            await logEvent('Main page loaded in ${loadTime.inMilliseconds}ms (Unauthenticated)');
+            await logEvent(milliseconds: loadTime.inMilliseconds, authenticated: false);
             Navigator.pushReplacementNamed(context, '/login');
           }
         },
@@ -53,10 +53,10 @@ class SplashScreen extends StatelessWidget {
     );
   }
 
-  // Function to log events and save them to Firestore
-  Future<void> logEvent(String message) async {
+  Future<void> logEvent({ required int milliseconds, required bool authenticated}) async {
     await FirebaseFirestore.instance.collection('logs').add(<String, dynamic>{
-      'message': message,
+      'milliseconds': milliseconds,
+      'authenticated': authenticated,
       'timestamp': FieldValue.serverTimestamp(),
     });
   }
