@@ -9,14 +9,16 @@ import 'package:eco_bites/features/orders/presentation/bloc/order_bloc.dart';
 import 'package:eco_bites/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:eco_bites/injection_container.dart';
 import 'package:eco_bites/route_generator.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EcoBitesApp extends StatelessWidget {
-  const EcoBitesApp({super.key, required this.appLaunchTime});
+  const EcoBitesApp({super.key, required this.appLaunchTime, required this.analytics});
 
   final DateTime appLaunchTime;
+  final FirebaseAnalytics analytics;
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +61,9 @@ class EcoBitesApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        navigatorObservers: [
+          FirebaseAnalyticsObserver(analytics: analytics),
+        ],
         debugShowCheckedModeBanner: false,
         title: 'Eco Bites',
         theme: brightness == Brightness.light ? theme.light() : theme.dark(),

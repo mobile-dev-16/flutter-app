@@ -61,9 +61,8 @@ class _HomeScreenContentState extends State<HomeScreenContent>
     // Measure and log loading time after UI is rendered
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final DateTime homePageRenderedTime = DateTime.now();
-      final Duration loadTime =
-          homePageRenderedTime.difference(widget.appLaunchTime);
-      logEvent('Home page loaded in ${loadTime.inMilliseconds}ms');
+      final Duration loadTime = homePageRenderedTime.difference(widget.appLaunchTime);
+      logEvent(milliseconds: loadTime.inMilliseconds, eventName: 'homePageLoaded');
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -86,9 +85,10 @@ class _HomeScreenContentState extends State<HomeScreenContent>
     });
   }
 
-  Future<void> logEvent(String message) async {
+  Future<void> logEvent({required int milliseconds, required String eventName}) async {
     await FirebaseFirestore.instance.collection('logs').add(<String, dynamic>{
-      'message': message,
+      'milliseconds': milliseconds,
+      'eventName': eventName,
       'timestamp': FieldValue.serverTimestamp(),
     });
   }
