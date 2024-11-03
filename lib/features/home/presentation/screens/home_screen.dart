@@ -8,10 +8,22 @@ import 'package:eco_bites/features/address/presentation/bloc/address_state.dart'
 import 'package:eco_bites/features/address/presentation/screens/address_screen.dart';
 import 'package:eco_bites/features/home/presentation/bloc/home_bloc.dart';
 import 'package:eco_bites/features/home/presentation/widgets/for_you_tab.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:material_symbols_icons/symbols.dart';
+
+final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
+Future<void> logUserSession() async {
+  await analytics.logEvent(
+    name: 'user_session',
+    parameters: <String, Object>{
+      'timestamp': DateTime.now().toIso8601String(),
+    },
+  );
+}
 
 class HomeScreen extends StatefulWidget {
   // Pass appLaunchTime from splash screen
@@ -63,6 +75,7 @@ class _HomeScreenContentState extends State<HomeScreenContent>
       final DateTime homePageRenderedTime = DateTime.now();
       final Duration loadTime = homePageRenderedTime.difference(widget.appLaunchTime);
       logEvent(milliseconds: loadTime.inMilliseconds, eventName: 'homePageLoaded');
+      logLoadingTime('home_screen', loadTime.inMilliseconds);
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -91,6 +104,16 @@ class _HomeScreenContentState extends State<HomeScreenContent>
       'eventName': eventName,
       'timestamp': FieldValue.serverTimestamp(),
     });
+  }
+
+  Future<void> logLoadingTime(String screenName, int milliseconds) async {
+    await FirebaseAnalytics.instance.logEvent(
+      name: 'loading_time',
+      parameters: <String, Object>{
+        'screen_name': screenName,
+        'milliseconds': milliseconds,
+      },
+    );
   }
 
   void _startListeningToLocationChanges() {
