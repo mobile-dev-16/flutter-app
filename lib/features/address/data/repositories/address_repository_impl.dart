@@ -17,43 +17,33 @@ class AddressRepositoryImpl implements AddressRepository {
   final NetworkInfo networkInfo;
 
   @override
-  Future<Either<Failure, void>> saveAddress(
-    String userId,
-    Address address,
-  ) async {
+  Future<Either<Failure, void>> saveAddress(String userId, Address address) async {
     if (await networkInfo.isConnected) {
       try {
-        await remoteDataSource.saveAddress(
-          userId,
-          AddressModel.fromEntity(address),
-        );
+        await remoteDataSource.saveAddress(userId, AddressModel.fromEntity(address));
         return const Right<Failure, void>(null);
       } on FirebaseException catch (e) {
         return Left<Failure, void>(FirebaseFailure(e.message));
       }
     } else {
-      return const Left<Failure, void>(
-        NetworkFailure('No internet connection'),
-      );
+      return const Left<Failure, void>(NetworkFailure('No internet connection'));
     }
   }
 
   @override
-  Future<Either<Failure, List<Address>>> fetchUserAddresses(
-    String userId,
-  ) async {
+  Future<Either<Failure, Address?>> fetchUserAddress(String userId) async {
     if (await networkInfo.isConnected) {
       try {
-        final List<Address> addresses =
-            await remoteDataSource.fetchUserAddresses(userId);
-        return Right<Failure, List<Address>>(addresses);
+        final AddressModel? addressModel = await remoteDataSource.fetchUserAddress(userId);
+        if (addressModel == null) {
+          return const Right<Failure, Address?>(null);
+        }
+        return Right<Failure, Address?>(addressModel);
       } on FirebaseException catch (e) {
-        return Left<Failure, List<Address>>(FirebaseFailure(e.message));
+        return Left<Failure, Address?>(FirebaseFailure(e.message));
       }
     } else {
-      return const Left<Failure, List<Address>>(
-        NetworkFailure('No internet connection'),
-      );
+      return const Left<Failure, Address?>(NetworkFailure('No internet connection'));
     }
   }
 }

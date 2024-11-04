@@ -26,6 +26,11 @@ import 'package:eco_bites/features/food/domain/repositories/food_business_reposi
 import 'package:eco_bites/features/food/domain/usecases/fetch_nearby_surplus_food_businesses.dart';
 import 'package:eco_bites/features/food/presentation/bloc/food_business_bloc.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_bloc.dart';
+import 'package:eco_bites/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:eco_bites/features/profile/domain/repositories/user_profile_repository.dart';
+import 'package:eco_bites/features/profile/domain/usecases/fetch_user_profile_usecase.dart';
+import 'package:eco_bites/features/profile/domain/usecases/update_user_profile_usecase.dart';
+import 'package:eco_bites/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -34,7 +39,39 @@ import 'package:shared_preferences/shared_preferences.dart';
 final GetIt serviceLocator = GetIt.instance;
 
 Future<void> setupServiceLocator() async {
-  // Features - Auth
+  await _setupCoreDependencies();
+  await _setupExternalDependencies();
+
+  // Features
+  _setupAuthFeature();
+  _setupProfileFeature();
+  _setupAddressFeature();
+  _setupOrderFeature();
+  _setupCartFeature();
+  _setupFoodFeature();
+}
+
+Future<void> _setupCoreDependencies() async {
+  // Core
+  serviceLocator.registerLazySingleton<NetworkInfo>(
+    () => NetworkInfoImpl(serviceLocator()),
+  );
+
+  // Core Blocs
+  serviceLocator.registerFactory(() => InternetConnectionBloc());
+}
+
+Future<void> _setupExternalDependencies() async {
+  final SharedPreferences sharedPreferences =
+      await SharedPreferences.getInstance();
+  serviceLocator.registerLazySingleton(() => sharedPreferences);
+  serviceLocator.registerLazySingleton(() => FirebaseFirestore.instance);
+  serviceLocator.registerLazySingleton(() => FirebaseAuth.instance);
+  serviceLocator.registerLazySingleton(() => GoogleSignIn());
+  serviceLocator.registerLazySingleton(() => Connectivity());
+}
+
+void _setupAuthFeature() {
   // Bloc
   serviceLocator.registerFactory(
     () => AuthBloc(
@@ -55,18 +92,13 @@ Future<void> setupServiceLocator() async {
       .registerLazySingleton(() => SignUpWithGoogleUseCase(serviceLocator()));
   serviceLocator.registerLazySingleton(() => SignOutUseCase(serviceLocator()));
 
-  // Repositories
+  // Repository
   serviceLocator.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
       remoteDataSource: serviceLocator(),
       localDataSource: serviceLocator(),
       networkInfo: serviceLocator(),
-    ),
-  );
-  serviceLocator.registerLazySingleton<FoodBusinessRepository>(
-    () => FoodBusinessRepositoryImpl(
-      remoteDataSource: serviceLocator(),
-      networkInfo: serviceLocator(),
+      firestore: serviceLocator(),
     ),
   );
 
@@ -77,18 +109,40 @@ Future<void> setupServiceLocator() async {
       googleSignIn: serviceLocator(),
     ),
   );
-
   serviceLocator.registerLazySingleton<UserLocalDataSource>(
     () => UserLocalDataSourceImpl(
       sharedPreferences: serviceLocator(),
     ),
   );
+}
 
-  // Features - Address
+void _setupProfileFeature() {
+  // Bloc
+  serviceLocator.registerFactory(
+    () => ProfileBloc(
+      fetchUserProfileUseCase: serviceLocator(),
+      updateUserProfileUseCase: serviceLocator(),
+    ),
+  );
+
+  // Use cases
+  serviceLocator
+      .registerLazySingleton(() => FetchUserProfileUseCase(serviceLocator()));
+  serviceLocator
+      .registerLazySingleton(() => UpdateUserProfileUseCase(serviceLocator()));
+
+  // Repository
+  serviceLocator.registerLazySingleton<UserProfileRepository>(
+    () => ProfileRepositoryImpl(firestore: serviceLocator()),
+  );
+}
+
+void _setupAddressFeature() {
+  // Bloc
   serviceLocator.registerFactory(
     () => AddressBloc(
       saveAddressUseCase: serviceLocator(),
-      fetchUserAddressesUseCase: serviceLocator(),
+      fetchUserAddressUseCase: serviceLocator(),
     ),
   );
 
@@ -96,63 +150,53 @@ Future<void> setupServiceLocator() async {
   serviceLocator
       .registerLazySingleton(() => SaveAddressUseCase(serviceLocator()));
   serviceLocator
-      .registerLazySingleton(() => FetchUserAddressesUseCase(serviceLocator()));
+      .registerLazySingleton(() => FetchUserAddressUseCase(serviceLocator()));
 
-  // Repository
+  // Repository and Data Source
   serviceLocator.registerLazySingleton<AddressRepository>(
     () => AddressRepositoryImpl(
       remoteDataSource: serviceLocator(),
       networkInfo: serviceLocator(),
     ),
   );
-
-  // Data sources
   serviceLocator.registerLazySingleton<AddressRemoteDataSource>(
-    () => AddressRemoteDataSourceImpl(
-      firestore: serviceLocator(),
-    ),
+    () => AddressRemoteDataSourceImpl(firestore: serviceLocator()),
   );
+}
 
-  // Features - Orders
+void _setupOrderFeature() {
   serviceLocator.registerFactory(() => OrderBloc());
+}
 
-  // Features - Cart
+void _setupCartFeature() {
   serviceLocator.registerFactory(
     () => CartBloc(<CartItemData>[]),
   );
+}
 
-  // Features - Food
+void _setupFoodFeature() {
+  // Bloc
   serviceLocator.registerFactory(
     () => FoodBusinessBloc(
       fetchNearbySurplusFoodBusinesses: serviceLocator(),
     ),
   );
 
+  // Use case
   serviceLocator.registerLazySingleton(
     () => FetchNearbySurplusFoodBusinesses(serviceLocator()),
   );
 
+  // Repository and Data Source
+  serviceLocator.registerLazySingleton<FoodBusinessRepository>(
+    () => FoodBusinessRepositoryImpl(
+      remoteDataSource: serviceLocator(),
+      networkInfo: serviceLocator(),
+    ),
+  );
   serviceLocator.registerLazySingleton<FoodBusinessRemoteDataSource>(
     () => FoodBusinessRemoteDataSourceImpl(
       firestore: serviceLocator(),
     ),
   );
-
-  serviceLocator.registerLazySingleton(() => FirebaseFirestore.instance);
-
-  // Core
-  serviceLocator.registerLazySingleton<NetworkInfo>(
-    () => NetworkInfoImpl(serviceLocator()),
-  );
-
-  // External
-  final SharedPreferences sharedPreferences =
-      await SharedPreferences.getInstance();
-  serviceLocator.registerLazySingleton(() => sharedPreferences);
-  serviceLocator.registerLazySingleton(() => FirebaseAuth.instance);
-  serviceLocator.registerLazySingleton(() => GoogleSignIn());
-  serviceLocator.registerLazySingleton(() => Connectivity());
-
-  // Core Blocs
-  serviceLocator.registerFactory(() => InternetConnectionBloc());
 }

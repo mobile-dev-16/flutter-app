@@ -11,6 +11,17 @@ class NetworkFailure extends Failure {
   const NetworkFailure(super.message);
 }
 
+class ServerFailure extends Failure {
+  const ServerFailure(
+    super.message, {
+    this.statusCode,
+    this.errorType,
+  });
+
+  final int? statusCode;
+  final String? errorType;
+}
+
 class FirebaseFailure extends Failure {
   const FirebaseFailure(String? message)
       : super(message ?? 'Firebase error occurred');

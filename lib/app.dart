@@ -1,3 +1,4 @@
+import 'package:eco_bites/core/blocs/bloc_resetter.dart';
 import 'package:eco_bites/core/blocs/internet_connection/internet_connection_bloc.dart';
 import 'package:eco_bites/core/config/theme.dart';
 import 'package:eco_bites/core/utils/create_text_theme.dart';
@@ -6,6 +7,7 @@ import 'package:eco_bites/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:eco_bites/features/food/presentation/bloc/food_business_bloc.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_bloc.dart';
+import 'package:eco_bites/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:eco_bites/injection_container.dart';
 import 'package:eco_bites/route_generator.dart';
 import 'package:flutter/material.dart';
@@ -53,19 +55,24 @@ class EcoBitesApp extends StatelessWidget {
         BlocProvider<InternetConnectionBloc>(
           create: (_) => serviceLocator<InternetConnectionBloc>(),
         ),
+        BlocProvider<ProfileBloc>(
+          create: (_) => serviceLocator<ProfileBloc>(),
+        ),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Eco Bites',
-        theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-        supportedLocales: const <Locale>[
-          Locale('en'),
-        ],
-        initialRoute: RouteGenerator.splashScreen,
-        onGenerateRoute: (RouteSettings settings) =>
-            RouteGenerator.generateRoute(
-          settings,
-          appLaunchTime: appLaunchTime,
+      child: BlocResetter(
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Eco Bites',
+          theme: brightness == Brightness.light ? theme.light() : theme.dark(),
+          supportedLocales: const <Locale>[
+            Locale('en'),
+          ],
+          initialRoute: RouteGenerator.splashScreen,
+          onGenerateRoute: (RouteSettings settings) =>
+              RouteGenerator.generateRoute(
+            settings,
+            appLaunchTime: appLaunchTime,
+          ),
         ),
       ),
     );

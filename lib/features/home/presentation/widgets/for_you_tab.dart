@@ -6,6 +6,8 @@ import 'package:eco_bites/features/food/domain/entities/offer.dart';
 import 'package:eco_bites/features/food/presentation/bloc/food_business_bloc.dart';
 import 'package:eco_bites/features/food/presentation/bloc/food_business_event.dart';
 import 'package:eco_bites/features/food/presentation/bloc/food_business_state.dart';
+import 'package:eco_bites/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:eco_bites/features/profile/presentation/bloc/profile_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_bloc.dart';
@@ -19,10 +21,15 @@ class ForYouTab extends StatelessWidget {
     return BlocListener<AddressBloc, AddressState>(
       listener: (BuildContext context, AddressState addressState) {
         if (addressState is AddressLoaded) {
+          final ProfileState profileState = context.read<ProfileBloc>().state;
+          final CuisineType favoriteCuisine = profileState is ProfileLoaded
+              ? profileState.profile.favoriteCuisine
+              : CuisineType.local;
+
           context.read<FoodBusinessBloc>().add(
                 FetchSurplusFoodBusinesses(
                   userLocation: addressState.savedAddress,
-                  favoriteCuisine: CuisineType.local,
+                  favoriteCuisine: favoriteCuisine,
                 ),
               );
         }
