@@ -2,29 +2,30 @@ import 'package:dartz/dartz.dart';
 import 'package:eco_bites/core/error/failures.dart';
 import 'package:eco_bites/features/address/domain/entities/address.dart';
 import 'package:eco_bites/features/address/domain/usecases/fetch_user_addresses_usecase.dart';
+
 import 'package:eco_bites/features/address/domain/usecases/save_address_usecase.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_event.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_state.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logger/logger.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AddressBloc extends Bloc<AddressEvent, AddressState> {
   AddressBloc({
     required this.saveAddressUseCase,
-    required this.fetchUserAddressesUseCase,
+    required this.fetchUserAddressUseCase,
   }) : super(AddressInitial()) {
     on<SaveAddress>(_onSaveAddress);
     on<LoadAddress>(_onLoadAddress);
     on<UpdateCurrentLocation>(_onUpdateCurrentLocation);
     on<ClearAddress>(_onClearAddress);
   }
+
   final SaveAddressUseCase saveAddressUseCase;
-  final FetchUserAddressesUseCase fetchUserAddressesUseCase;
+  final FetchUserAddressUseCase fetchUserAddressUseCase;
 
   Future<String?> _getUserId() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('userId');
+    final User? user = FirebaseAuth.instance.currentUser;
+    return user?.uid;
   }
 
   Future<void> _onSaveAddress(
@@ -37,6 +38,7 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
       if (userId == null) {
         throw Exception('User not authenticated');
       }
+
       await saveAddressUseCase(
         SaveAddressParams(
           userId: userId,
@@ -44,19 +46,15 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
         ),
       );
 
-      final AddressState currentState = state;
-      if (currentState is AddressLoaded) {
-        emit(
-          AddressLoaded(
-            event.address,
-            currentLocation: currentState.currentLocation,
-          ),
-        );
-      } else {
-        emit(AddressLoaded(event.address));
-      }
+      emit(AddressLoaded(event.address));
     } catch (e) {
-      emit(AddressError(e.toString()));
+      if (e is ServerFailure) {
+        emit(AddressError('Failed to save address: Server Error'));
+      } else if (e is NetworkFailure) {
+        emit(AddressError('Failed to save address: Network Error'));
+      } else {
+        emit(AddressError('Failed to save address: $e'));
+      }
     }
   }
 
@@ -71,19 +69,22 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
         throw Exception('User not authenticated');
       }
 
-      final Either<Failure, List<Address>> result =
-          await fetchUserAddressesUseCase(
-        FetchUserAddressesParams(userId: userId),
-      );
+      final Either<Failure, Address?> result =
+          await fetchUserAddressUseCase(FetchUserAddressParams(userId: userId));
       result.fold(
-        (Failure failure) => emit(AddressError(failure.toString())),
-        (List<Address> addresses) {
-          Logger().i('==> Addresses: $addresses');
-          if (addresses.isNotEmpty) {
-            Logger().i('==> AddressLoaded because addresses is not empty');
-            emit(AddressLoaded(addresses.first));
+        (Failure failure) {
+          if (Failure is ServerFailure) {
+            emit(AddressError('Failed to load address: Server Error'));
+          } else if (Failure is NetworkFailure) {
+            emit(AddressError('Failed to load address: Network Error'));
           } else {
-            Logger().i('==> AddressInitial because addresses is empty');
+            emit(AddressError('Failed to load address: $failure'));
+          }
+        },
+        (Address? address) {
+          if (address != null) {
+            emit(AddressLoaded(address));
+          } else {
             emit(AddressInitial());
           }
         },
