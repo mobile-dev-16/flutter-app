@@ -1,3 +1,4 @@
+import 'package:eco_bites/features/food/domain/entities/category.dart';
 import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';
 import 'package:eco_bites/features/food/domain/entities/offer.dart';
 import 'package:equatable/equatable.dart';
@@ -8,6 +9,7 @@ class FoodBusiness extends Equatable {
     required this.name,
     // required this.description,
     this.imageUrl,
+    required this.category,
     required this.cuisineType,
     // required this.rating,
     required this.latitude,
@@ -19,6 +21,7 @@ class FoodBusiness extends Equatable {
   final String name;
   // final String description;
   final String? imageUrl;
+  final Category category;
   final CuisineType cuisineType;
   // final double rating;
   final double latitude;
@@ -31,6 +34,7 @@ class FoodBusiness extends Equatable {
         name,
         // description,
         imageUrl,
+        category,
         cuisineType,
         // rating,
         latitude,
