@@ -10,19 +10,20 @@ class ProfileInitial extends ProfileState {}
 class ProfileLoading extends ProfileState {}
 
 class ProfileLoaded extends ProfileState {
-
-  ProfileLoaded(this.profile);
+  ProfileLoaded(this.profile, {this.isUpdated = false});
   final UserProfile profile;
+  final bool isUpdated;
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ProfileLoaded &&
           runtimeType == other.runtimeType &&
-          profile == other.profile;
+          profile == other.profile &&
+          isUpdated == other.isUpdated;
 
   @override
-  int get hashCode => profile.hashCode;
+  int get hashCode => profile.hashCode ^ isUpdated.hashCode;
 }
 
 class ProfileError extends ProfileState {
@@ -38,5 +39,5 @@ class ProfileError extends ProfileState {
           message == other.message;
 
   @override
-  int get hashCode => message.hashCode;  
+  int get hashCode => message.hashCode;
 }

@@ -1,3 +1,7 @@
+// ignore_for_file: unrelated_type_equality_checks
+
+import 'dart:convert';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:eco_bites/features/profile/domain/entities/user_profile.dart';
 import 'package:eco_bites/features/profile/domain/usecases/fetch_user_profile_usecase.dart';
 import 'package:eco_bites/features/profile/domain/usecases/update_user_profile_usecase.dart';
@@ -5,6 +9,7 @@ import 'package:eco_bites/features/profile/presentation/bloc/profile_event.dart'
 import 'package:eco_bites/features/profile/presentation/bloc/profile_state.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   ProfileBloc({
@@ -42,6 +47,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     } catch (e) {
       emit(ProfileError('Failed to load profile'));
     }
+    await _checkAndSaveCachedProfile();
   }
 
   // Método auxiliar para obtener el UID del usuario
@@ -61,20 +67,37 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       return;
     }
     try {
-      await updateUserProfileUseCase(event.updatedProfile);
-      final String? userId = await _getUserId();
-      if (userId != null) {
+      final List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
+      if (connectivityResult == ConnectivityResult.none) {
+        // Save to cache
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('cachedProfile', event.updatedProfile.toMap().toString());
+        emit(ProfileError('No internet connection. Your data will be saved when you are online.'));
+      } else {
+        await updateUserProfileUseCase(event.updatedProfile);
         final UserProfile? updatedProfile = await fetchUserProfileUseCase(userId);
         if (updatedProfile != null) {
-          emit(ProfileLoaded(updatedProfile));
+          emit(ProfileLoaded(updatedProfile, isUpdated: true));
         } else {
           emit(ProfileError('Failed to retrieve updated profile'));
         }
-      } else {
-        emit(ProfileError('User not authenticated'));
       }
     } catch (e) {
       emit(ProfileError('Failed to update profile'));
+    }
+  }
+
+  Future<void> _checkAndSaveCachedProfile() async {
+    final List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult != ConnectivityResult.none) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? cachedProfileString = prefs.getString('cachedProfile');
+      if (cachedProfileString != null) {
+        final Map<String, dynamic> cachedProfileMap = jsonDecode(cachedProfileString);
+        final UserProfile cachedProfile = UserProfile.fromMap(cachedProfileMap);
+        await updateUserProfileUseCase(cachedProfile);
+        await prefs.remove('cachedProfile');
+      }
     }
   }
 }
