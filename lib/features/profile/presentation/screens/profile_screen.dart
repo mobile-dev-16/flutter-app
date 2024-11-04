@@ -1,3 +1,5 @@
+import 'package:eco_bites/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:eco_bites/features/auth/presentation/bloc/auth_event.dart';
 import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';
 import 'package:eco_bites/features/profile/domain/entities/user_profile.dart';
 import 'package:eco_bites/features/profile/presentation/bloc/profile_bloc.dart';
@@ -55,7 +57,8 @@ class ProfileScreenState extends State<ProfileScreen> {
               _citizenIdController.text = profile.citizenId;
               _emailController.text = profile.email;
               _phoneController.text = profile.phone;
-              _birthDateController.text = DateFormat('MM/dd/yyyy').format(profile.birthDate);
+              _birthDateController.text =
+                  DateFormat('MM/dd/yyyy').format(profile.birthDate);
               _favoriteCuisine = profile.favoriteCuisine;
               _dietType = profile.dietType;
               _isInitialized = true;
@@ -86,7 +89,8 @@ class ProfileScreenState extends State<ProfileScreen> {
                 Center(
                   child: ElevatedButton(
                     onPressed: () {
-                      final String? userId = FirebaseAuth.instance.currentUser?.uid;
+                      final String? userId =
+                          FirebaseAuth.instance.currentUser?.uid;
                       if (userId != null) {
                         final UserProfile updatedProfile = UserProfile(
                           userId: userId,
@@ -95,17 +99,37 @@ class ProfileScreenState extends State<ProfileScreen> {
                           citizenId: _citizenIdController.text,
                           email: _emailController.text,
                           phone: _phoneController.text,
-                          birthDate: DateFormat('MM/dd/yyyy').parse(_birthDateController.text),
-                          favoriteCuisine: _favoriteCuisine ?? CuisineType.other,
+                          birthDate: DateFormat('MM/dd/yyyy')
+                              .parse(_birthDateController.text),
+                          favoriteCuisine:
+                              _favoriteCuisine ?? CuisineType.other,
                           dietType: _dietType ?? 'Unknown',
                         );
 
-                        context.read<ProfileBloc>().add(UpdateProfileEvent(userId: userId, updatedProfile: updatedProfile));
+                        context.read<ProfileBloc>().add(
+                              UpdateProfileEvent(
+                                userId: userId,
+                                updatedProfile: updatedProfile,
+                              ),
+                            );
                       }
                     },
                     child: const Text('Save'),
                   ),
                 ),
+                const SizedBox(height: 16),
+                TextButton.icon(
+                  onPressed: () async {
+                    context.read<AuthBloc>().add(SignOutRequested());
+                    if (mounted) {
+                      Navigator.pushReplacementNamed(context, '/login');
+                    }
+                  },
+                  icon: const Icon(Icons.logout, color: Colors.red),
+                  label:
+                      const Text('Logout', style: TextStyle(color: Colors.red)),
+                ),
+                const SizedBox(height: 24),
               ],
             );
           },
@@ -114,7 +138,10 @@ class ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildReadOnlyTextField(String label, TextEditingController controller) {
+  Widget _buildReadOnlyTextField(
+    String label,
+    TextEditingController controller,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextField(
@@ -130,7 +157,10 @@ class ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildReadOnlyDateField(String label, TextEditingController controller) {
+  Widget _buildReadOnlyDateField(
+    String label,
+    TextEditingController controller,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextField(

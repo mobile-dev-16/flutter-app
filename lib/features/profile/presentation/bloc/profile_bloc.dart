@@ -1,3 +1,4 @@
+import 'package:eco_bites/core/blocs/resettable_mixin.dart';
 import 'package:eco_bites/features/profile/domain/entities/user_profile.dart';
 import 'package:eco_bites/features/profile/domain/usecases/fetch_user_profile_usecase.dart';
 import 'package:eco_bites/features/profile/domain/usecases/update_user_profile_usecase.dart';
@@ -6,7 +7,8 @@ import 'package:eco_bites/features/profile/presentation/bloc/profile_state.dart'
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
+class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
+    with ResettableMixin<ProfileEvent, ProfileState> {
   ProfileBloc({
     required this.fetchUserProfileUseCase,
     required this.updateUserProfileUseCase,
@@ -64,7 +66,8 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       await updateUserProfileUseCase(event.updatedProfile);
       final String? userId = await _getUserId();
       if (userId != null) {
-        final UserProfile? updatedProfile = await fetchUserProfileUseCase(userId);
+        final UserProfile? updatedProfile =
+            await fetchUserProfileUseCase(userId);
         if (updatedProfile != null) {
           emit(ProfileLoaded(updatedProfile));
         } else {
@@ -76,5 +79,11 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     } catch (e) {
       emit(ProfileError('Failed to update profile'));
     }
+  }
+
+  @override
+  void reset() {
+    // ignore: invalid_use_of_visible_for_testing_member
+    emit(ProfileInitial());
   }
 }

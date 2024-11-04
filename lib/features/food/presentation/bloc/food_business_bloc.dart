@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:eco_bites/core/blocs/resettable_mixin.dart';
 import 'package:eco_bites/core/error/failures.dart';
 import 'package:eco_bites/features/food/data/models/food_business_model.dart';
 import 'package:eco_bites/features/food/domain/entities/food_business.dart';
@@ -8,7 +9,8 @@ import 'package:eco_bites/features/food/presentation/bloc/food_business_state.da
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
 
-class FoodBusinessBloc extends Bloc<FoodBusinessEvent, FoodBusinessState> {
+class FoodBusinessBloc extends Bloc<FoodBusinessEvent, FoodBusinessState>
+    with ResettableMixin<FoodBusinessEvent, FoodBusinessState> {
   FoodBusinessBloc({
     required FetchNearbySurplusFoodBusinesses fetchNearbySurplusFoodBusinesses,
   })  : _fetchNearbySurplusFoodBusinesses = fetchNearbySurplusFoodBusinesses,
@@ -51,5 +53,11 @@ class FoodBusinessBloc extends Bloc<FoodBusinessEvent, FoodBusinessState> {
         ),
       ),
     );
+  }
+
+  @override
+  void reset() {
+    // ignore: invalid_use_of_visible_for_testing_member
+    emit(FoodBusinessInitial());
   }
 }
