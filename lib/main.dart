@@ -10,16 +10,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
-Future<void> logLoadingTime(String screenName, int milliseconds) async {
-  await analytics.logEvent(
-    name: 'loading_time',
-    parameters: <String, Object>{
-      'screen_name': screenName,
-      'milliseconds': milliseconds,
-    },
-  );
-}
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
