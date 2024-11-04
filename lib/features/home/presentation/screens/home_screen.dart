@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_bites/core/utils/analytics_service.dart';
 import 'package:eco_bites/core/utils/distance.dart';
 import 'package:eco_bites/features/address/domain/entities/address.dart';
