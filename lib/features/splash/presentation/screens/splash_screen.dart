@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eco_bites/core/utils/analytics_service.dart';
 import 'package:eco_bites/features/splash/presentation/bloc/splash_bloc.dart';
 import 'package:eco_bites/features/splash/presentation/bloc/splash_event.dart';
 import 'package:eco_bites/features/splash/presentation/bloc/splash_state.dart';
@@ -24,18 +25,11 @@ class SplashScreen extends StatelessWidget {
           final Duration loadTime = mainPageRenderedTime.difference(appLaunchTime);
 
           if (state is Authenticated) {
-            await logEvent(
-              milliseconds: loadTime.inMilliseconds,
-              authenticated: true,
-              eventName: 'splashScreenAuthenticated',
-            );
+            await logLoadingTime('splash_screen', loadTime.inMilliseconds);
+            await logUserSessionStart();
             Navigator.pushReplacementNamed(context, '/main');
           } else if (state is Unauthenticated) {
-            await logEvent(
-              milliseconds: loadTime.inMilliseconds,
-              authenticated: false,
-              eventName: 'splashScreenUnauthenticated',
-            );
+            await logLoadingTime('splash_screen', loadTime.inMilliseconds);
             Navigator.pushReplacementNamed(context, '/login');
           }
         },
