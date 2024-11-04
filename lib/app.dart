@@ -61,7 +61,7 @@ class EcoBitesApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        navigatorObservers: [
+        navigatorObservers: <NavigatorObserver>[
           FirebaseAnalyticsObserver(analytics: analytics),
         ],
         debugShowCheckedModeBanner: false,
