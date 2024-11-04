@@ -8,27 +8,7 @@ import 'package:eco_bites/features/cart/presentation/screens/cart_screen.dart';
 @widgetbook.UseCase(name: 'Default', type: CartScreen)
 Widget buildCartScreenUseCase(BuildContext context) {
   return BlocProvider<CartBloc>(
-    create: (context) => CartBloc([
-      CartItemData(
-        id: '1',
-        title: 'Pineapple Pizza',
-        normalPrice: 32000,
-        offerPrice: 28000,
-      ),
-      CartItemData(
-        id: '2',
-        title: 'Donut',
-        normalPrice: 21000,
-        offerPrice: 12000,
-        quantity: 2,
-      ),
-      CartItemData(
-        id: '3',
-        title: 'Chesseburger',
-        normalPrice: 15000,
-        offerPrice: 12000,
-      ),
-    ]),
+    create: (context) => CartBloc([]),
     child: const CartScreen(),
   );
 }

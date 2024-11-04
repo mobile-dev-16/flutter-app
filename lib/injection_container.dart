@@ -118,27 +118,7 @@ Future<void> setupServiceLocator() async {
 
   // Features - Cart
   serviceLocator.registerFactory(
-    () => CartBloc(<CartItemData>[
-      CartItemData(
-        id: '1',
-        title: 'Pineapple Pizza',
-        normalPrice: 32000,
-        offerPrice: 28000,
-      ),
-      CartItemData(
-        id: '2',
-        title: 'Donut',
-        normalPrice: 21000,
-        offerPrice: 11000,
-        quantity: 2,
-      ),
-      CartItemData(
-        id: '3',
-        title: 'Cheeseburger',
-        normalPrice: 15000,
-        offerPrice: 12000,
-      ),
-    ]),
+    () => CartBloc(<CartItemData>[]),
   );
 
   // Features - Food
