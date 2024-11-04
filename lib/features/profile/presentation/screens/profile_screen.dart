@@ -1,3 +1,4 @@
+import 'package:eco_bites/core/utils/analytics_service.dart';
 import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';
 import 'package:eco_bites/features/profile/domain/entities/user_profile.dart';
 import 'package:eco_bites/features/profile/presentation/bloc/profile_bloc.dart';
@@ -32,6 +33,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     final String? userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId != null) {
       context.read<ProfileBloc>().add(LoadProfileEvent(userId));
+      logUserRetention(userId, 0); // Log user retention with 0 days since last visit
     }
   }
 
