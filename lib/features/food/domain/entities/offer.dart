@@ -1,10 +1,10 @@
+import 'package:eco_bites/features/cart/domain/models/cart_item_data.dart';
 import 'package:equatable/equatable.dart';
 
 class Offer extends Equatable {
   const Offer({
     required this.id,
     required this.businessId,
-    // required this.title,
     required this.description,
     this.imageUrl,
     required this.normalPrice,
@@ -15,7 +15,6 @@ class Offer extends Equatable {
 
   final String id;
   final String businessId;
-  // final String title;
   final String description;
   final String? imageUrl;
   final double normalPrice;
@@ -27,7 +26,6 @@ class Offer extends Equatable {
   List<Object?> get props => <Object?>[
         id,
         businessId,
-        // title,
         description,
         imageUrl,
         normalPrice,
@@ -35,4 +33,18 @@ class Offer extends Equatable {
         availableQuantity,
         validUntil,
       ];
+}
+
+// Extension to convert Offer to CartItemData
+extension OfferExtensions on Offer {
+  CartItemData toCartItem() {
+    return CartItemData(
+      id: id,
+      title: description,
+      normalPrice: normalPrice,
+      offerPrice: offerPrice,
+      imageUrl: imageUrl,
+      quantity: 1, // Default quantity when adding to cart
+    );
+  }
 }

@@ -8,6 +8,8 @@ import 'package:eco_bites/features/food/presentation/bloc/food_business_event.da
 import 'package:eco_bites/features/food/presentation/bloc/food_business_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:eco_bites/features/cart/presentation/bloc/cart_bloc.dart';
+import 'package:eco_bites/features/cart/presentation/bloc/cart_event.dart';
 
 class ForYouTab extends StatelessWidget {
   const ForYouTab({super.key});
@@ -85,8 +87,8 @@ class OfferCard extends StatelessWidget {
         trailing: ElevatedButton(
           child: const Text('Add to Cart'),
           onPressed: () {
-            // TODO(abel): Implement add to cart functionality
-            // You can use the offer.toCartItem() method here
+            final cartItem = offer.toCartItem();
+            context.read<CartBloc>().add(AddToCart(cartItem));
           },
         ),
       ),

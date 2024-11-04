@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:eco_bites/features/cart/domain/models/cart_item_data.dart';
 
 abstract class CartEvent extends Equatable {
   const CartEvent();
@@ -22,4 +23,12 @@ class CartItemRemoved extends CartEvent {
 
   @override
   List<Object?> get props => <Object>[itemId];
+}
+
+class AddToCart extends CartEvent {
+  const AddToCart(this.item);
+  final CartItemData item;
+
+  @override
+  List<Object?> get props => <Object>[item];
 }
