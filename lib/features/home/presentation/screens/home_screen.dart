@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eco_bites/core/utils/analytics_service.dart';
 import 'package:eco_bites/core/utils/distance.dart';
 import 'package:eco_bites/features/address/domain/entities/address.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
@@ -74,7 +75,6 @@ class _HomeScreenContentState extends State<HomeScreenContent>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final DateTime homePageRenderedTime = DateTime.now();
       final Duration loadTime = homePageRenderedTime.difference(widget.appLaunchTime);
-      logEvent(milliseconds: loadTime.inMilliseconds, eventName: 'homePageLoaded');
       logLoadingTime('home_screen', loadTime.inMilliseconds);
     });
 
@@ -98,23 +98,6 @@ class _HomeScreenContentState extends State<HomeScreenContent>
     });
   }
 
-  Future<void> logEvent({required int milliseconds, required String eventName}) async {
-    await FirebaseFirestore.instance.collection('logs').add(<String, dynamic>{
-      'milliseconds': milliseconds,
-      'eventName': eventName,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
-  }
-
-  Future<void> logLoadingTime(String screenName, int milliseconds) async {
-    await FirebaseAnalytics.instance.logEvent(
-      name: 'loading_time',
-      parameters: <String, Object>{
-        'screen_name': screenName,
-        'milliseconds': milliseconds,
-      },
-    );
-  }
 
   void _startListeningToLocationChanges() {
     _positionStreamSubscription = Geolocator.getPositionStream(
