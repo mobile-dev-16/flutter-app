@@ -26,7 +26,7 @@ class FoodBusinessRemoteDataSourceImpl implements FoodBusinessRemoteDataSource {
   Future<List<FoodBusinessModel>> fetchNearbySurplusFoodBusinesses({
     required Address userLocation,
     required CuisineType favoriteCuisine,
-    double distanceInKm = 5.0,
+    double distanceInKm = 99999.0,
   }) async {
     try {
       Logger().d('Fetching nearby surplus food businesses');
