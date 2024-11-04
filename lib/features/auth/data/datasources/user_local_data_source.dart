@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:eco_bites/core/constants/storage_keys.dart';
 import 'package:eco_bites/core/error/exceptions.dart';
 import 'package:eco_bites/features/auth/data/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,9 +23,6 @@ abstract class UserLocalDataSource {
   Future<void> clearUserId();
 }
 
-const String cachedUserKey = 'CACHED_USER';
-const String cachedUserIdKey = 'CACHED_USER_ID';
-
 class UserLocalDataSourceImpl implements UserLocalDataSource {
   const UserLocalDataSourceImpl({
     required this.sharedPreferences,
@@ -34,7 +32,7 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
 
   @override
   Future<UserModel?> getCachedUser() async {
-    final String? jsonString = sharedPreferences.getString(cachedUserKey);
+    final String? jsonString = sharedPreferences.getString(StorageKeys.user);
     if (jsonString != null) {
       return UserModel.fromJson(
         json.decode(jsonString) as Map<String, dynamic>,
@@ -46,28 +44,28 @@ class UserLocalDataSourceImpl implements UserLocalDataSource {
   @override
   Future<void> cacheUser(UserModel userToCache) async {
     await sharedPreferences.setString(
-      cachedUserKey,
+      StorageKeys.user,
       json.encode(userToCache.toJson()),
     );
   }
 
   @override
   Future<void> clearUserCache() async {
-    await sharedPreferences.remove(cachedUserKey);
+    await sharedPreferences.remove(StorageKeys.user);
   }
 
   @override
   Future<String?> getCachedUserId() async {
-    return sharedPreferences.getString(cachedUserIdKey);
+    return sharedPreferences.getString(StorageKeys.userId);
   }
 
   @override
   Future<void> cacheUserId(String userId) async {
-    await sharedPreferences.setString(cachedUserIdKey, userId);
+    await sharedPreferences.setString(StorageKeys.userId, userId);
   }
 
   @override
   Future<void> clearUserId() async {
-    await sharedPreferences.remove(cachedUserIdKey);
+    await sharedPreferences.remove(StorageKeys.userId);
   }
 }

@@ -1,5 +1,6 @@
 // auth_bloc.dart
 import 'package:dartz/dartz.dart';
+import 'package:eco_bites/core/blocs/resettable_mixin.dart';
 import 'package:eco_bites/core/error/failures.dart';
 import 'package:eco_bites/features/auth/domain/entities/user.dart';
 import 'package:eco_bites/features/auth/domain/usecases/sign_in_usecase.dart';
@@ -11,7 +12,8 @@ import 'package:eco_bites/features/auth/presentation/bloc/auth_event.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AuthBloc extends Bloc<AuthEvent, AuthState> {
+class AuthBloc extends Bloc<AuthEvent, AuthState>
+    with ResettableMixin<AuthEvent, AuthState> {
   AuthBloc({
     required SignInUseCase signInUseCase,
     required SignUpUseCase signUpUseCase,
@@ -131,5 +133,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         (_) => AuthUnauthenticated(),
       ),
     );
+  }
+
+  @override
+  void reset() {
+    // ignore: invalid_use_of_visible_for_testing_member
+    emit(AuthInitial());
   }
 }

@@ -1,3 +1,4 @@
+import 'package:eco_bites/core/blocs/bloc_resetter.dart';
 import 'package:eco_bites/core/blocs/internet_connection/internet_connection_bloc.dart';
 import 'package:eco_bites/core/config/theme.dart';
 import 'package:eco_bites/core/utils/create_text_theme.dart';
@@ -58,18 +59,20 @@ class EcoBitesApp extends StatelessWidget {
           create: (_) => serviceLocator<ProfileBloc>(),
         ),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Eco Bites',
-        theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-        supportedLocales: const <Locale>[
-          Locale('en'),
-        ],
-        initialRoute: RouteGenerator.splashScreen,
-        onGenerateRoute: (RouteSettings settings) =>
-            RouteGenerator.generateRoute(
-          settings,
-          appLaunchTime: appLaunchTime,
+      child: BlocResetter(
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Eco Bites',
+          theme: brightness == Brightness.light ? theme.light() : theme.dark(),
+          supportedLocales: const <Locale>[
+            Locale('en'),
+          ],
+          initialRoute: RouteGenerator.splashScreen,
+          onGenerateRoute: (RouteSettings settings) =>
+              RouteGenerator.generateRoute(
+            settings,
+            appLaunchTime: appLaunchTime,
+          ),
         ),
       ),
     );

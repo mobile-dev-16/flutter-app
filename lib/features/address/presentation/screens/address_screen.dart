@@ -1,4 +1,4 @@
-// ignore_for_file: deprecated_member_use, use_build_context_synchronously
+import 'package:eco_bites/core/constants/storage_keys.dart';
 import 'package:eco_bites/core/ui/widgets/custom_appbar.dart';
 import 'package:eco_bites/core/utils/reverse_geocoding.dart';
 import 'package:eco_bites/features/address/domain/entities/address.dart';
@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddressScreen extends StatefulWidget {
@@ -38,14 +39,16 @@ class AddressScreenState extends State<AddressScreen> {
     _deliveryDetailsController.dispose();
     super.dispose();
   }
+
   Future<String?> _getUserId() async {
     try {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String? userId = prefs.getString('userId');
+      final String? userId = prefs.getString(StorageKeys.userId);
+      Logger().d('userId: $userId');
       // ignore: use_if_null_to_convert_nulls_to_bools
       return userId?.isNotEmpty == true ? userId : null;
     } catch (e) {
-      debugPrint('Failed to get user ID: $e');
+      Logger().e('Failed to get user ID: $e');
       return null;
     }
   }
@@ -84,7 +87,9 @@ class AddressScreenState extends State<AddressScreen> {
 
     // Get the current position of the user
     final Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+      ),
     );
 
     final LatLng userPosition = LatLng(position.latitude, position.longitude);
@@ -214,27 +219,27 @@ class AddressScreenState extends State<AddressScreen> {
                       );
 
                       final String? userId = await _getUserId();
-                      final BuildContext currentContext = context;
-                      if (userId != null) {
-                        context.read<AddressBloc>().add(SaveAddress(address, userId: userId));
-                        if (mounted) {
-                          Navigator.pop(context);
-                        }
-                      } else {
-                        ScaffoldMessenger.of(currentContext).showSnackBar(
-                          const SnackBar(
-                            content: Text('Please sign in to save your address'),
-                          ),
-                        );
-                      }
                       if (mounted) {
+                        if (userId != null) {
+                          final AddressBloc addressBloc =
+                              context.read<AddressBloc>();
+                          addressBloc.add(SaveAddress(address, userId: userId));
+                          Navigator.pop(context);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content:
+                                  Text('Please sign in to save your address'),
+                            ),
+                          );
+                        }
                         setState(() => isLoading = false);
                       }
                     }
                   : null,
               child: isLoading
-                ? const CircularProgressIndicator()
-                : const Text('Confirm Address'),
+                  ? const CircularProgressIndicator()
+                  : const Text('Confirm Address'),
             ),
             const SizedBox(height: 10),
           ],
@@ -280,7 +285,9 @@ class AddressScreenState extends State<AddressScreen> {
 
   Future<void> _onMyLocationButtonPressed() async {
     final Position position = await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+      ),
     );
     final LatLng userPosition = LatLng(position.latitude, position.longitude);
 

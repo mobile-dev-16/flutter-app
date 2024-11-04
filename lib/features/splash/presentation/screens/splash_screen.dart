@@ -21,13 +21,20 @@ class SplashScreen extends StatelessWidget {
       child: BlocListener<SplashBloc, SplashState>(
         listener: (BuildContext context, SplashState state) async {
           final DateTime mainPageRenderedTime = DateTime.now();
-          final Duration loadTime = mainPageRenderedTime.difference(appLaunchTime);
+          final Duration loadTime =
+              mainPageRenderedTime.difference(appLaunchTime);
 
           if (state is Authenticated) {
-            await logEvent(milliseconds: loadTime.inMilliseconds, authenticated: true);
+            await logEvent(
+              milliseconds: loadTime.inMilliseconds,
+              authenticated: true,
+            );
             Navigator.pushReplacementNamed(context, '/main');
           } else if (state is Unauthenticated) {
-            await logEvent(milliseconds: loadTime.inMilliseconds, authenticated: false);
+            await logEvent(
+              milliseconds: loadTime.inMilliseconds,
+              authenticated: false,
+            );
             Navigator.pushReplacementNamed(context, '/login');
           }
         },
@@ -53,7 +60,10 @@ class SplashScreen extends StatelessWidget {
     );
   }
 
-  Future<void> logEvent({ required int milliseconds, required bool authenticated}) async {
+  Future<void> logEvent({
+    required int milliseconds,
+    required bool authenticated,
+  }) async {
     await FirebaseFirestore.instance.collection('logs').add(<String, dynamic>{
       'milliseconds': milliseconds,
       'authenticated': authenticated,
