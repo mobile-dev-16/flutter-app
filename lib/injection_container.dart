@@ -54,7 +54,10 @@ Future<void> setupServiceLocator() async {
 Future<void> _setupCoreDependencies() async {
   // Core
   serviceLocator.registerLazySingleton<NetworkInfo>(
-    () => NetworkInfoImpl(serviceLocator()),
+    () => NetworkInfoImpl(
+      serviceLocator<Connectivity>(),
+      serviceLocator<InternetConnectionBloc>(),
+    ),
   );
 
   // Core Blocs

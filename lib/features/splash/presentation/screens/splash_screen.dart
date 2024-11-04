@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eco_bites/core/network/network_info.dart';
 import 'package:eco_bites/features/splash/presentation/bloc/splash_bloc.dart';
 import 'package:eco_bites/features/splash/presentation/bloc/splash_event.dart';
 import 'package:eco_bites/features/splash/presentation/bloc/splash_state.dart';
@@ -8,9 +9,14 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SplashScreen extends StatelessWidget {
-  const SplashScreen({super.key, required this.appLaunchTime});
+  const SplashScreen({
+    super.key,
+    required this.appLaunchTime,
+    required this.networkInfo,
+  });
 
   final DateTime appLaunchTime;
+  final NetworkInfo networkInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -25,16 +31,28 @@ class SplashScreen extends StatelessWidget {
               mainPageRenderedTime.difference(appLaunchTime);
 
           if (state is Authenticated) {
-            await logEvent(
-              milliseconds: loadTime.inMilliseconds,
-              authenticated: true,
-            );
+            try {
+              if (await networkInfo.isConnected) {
+                await logEvent(
+                  milliseconds: loadTime.inMilliseconds,
+                  authenticated: true,
+                );
+              }
+            } catch (e) {
+              // Ignore logging errors when offline
+            }
             Navigator.pushReplacementNamed(context, '/main');
           } else if (state is Unauthenticated) {
-            await logEvent(
-              milliseconds: loadTime.inMilliseconds,
-              authenticated: false,
-            );
+            try {
+              if (await networkInfo.isConnected) {
+                await logEvent(
+                  milliseconds: loadTime.inMilliseconds,
+                  authenticated: false,
+                );
+              }
+            } catch (e) {
+              // Ignore logging errors when offline
+            }
             Navigator.pushReplacementNamed(context, '/login');
           }
         },
@@ -64,10 +82,14 @@ class SplashScreen extends StatelessWidget {
     required int milliseconds,
     required bool authenticated,
   }) async {
-    await FirebaseFirestore.instance.collection('logs').add(<String, dynamic>{
-      'milliseconds': milliseconds,
-      'authenticated': authenticated,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
+    try {
+      await FirebaseFirestore.instance.collection('logs').add(<String, dynamic>{
+        'milliseconds': milliseconds,
+        'authenticated': authenticated,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      // Silently fail if logging fails
+    }
   }
 }
