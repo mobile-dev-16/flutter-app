@@ -83,6 +83,7 @@ Future<void> setupServiceLocator() async {
   // Features - Profile
   serviceLocator.registerFactory(
     () => ProfileBloc(
+      internetConnectionBloc: serviceLocator(),
       fetchUserProfileUseCase: serviceLocator(),
       updateUserProfileUseCase: serviceLocator(),
     ),

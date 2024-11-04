@@ -1,5 +1,5 @@
 // ignore_for_file: use_build_context_synchronously, unrelated_type_equality_checks
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:eco_bites/core/blocs/internet_connection/internet_connection_bloc.dart';
 import 'package:eco_bites/core/utils/analytics_service.dart';
 import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';
 import 'package:eco_bites/features/profile/domain/entities/user_profile.dart';
@@ -41,13 +41,15 @@ class ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _saveProfile(UserProfile updatedProfile) async {
-    final List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
-    if (connectivityResult == ConnectivityResult.none) {
+    final InternetConnectionBloc internetConnectionBloc = context.read<InternetConnectionBloc>();
+    if (internetConnectionBloc.state is DisconnectedInternet) {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('cachedProfile', updatedProfile.toMap().toString());
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No internet connection. Your data will be saved when you are online.')),
+          const SnackBar(
+            content: Text('No internet connection. Your data will be saved when you are online.'),
+          ),
         );
       }
     } else {
