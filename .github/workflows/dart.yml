@@ -26,13 +26,9 @@ jobs:
       - name: Install dependencies
         run: |
           flutter pub get
-          cd widgetbook
-          flutter pub get
 
       - name: Analyze
         run: |
-          flutter analyze
-          cd widgetbook
           flutter analyze
 
       # Uncomment these steps when you're ready to run tests and build
