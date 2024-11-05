@@ -1,6 +1,7 @@
 import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_state.dart';
 import 'package:eco_bites/features/food/data/models/food_business_model.dart';
+import 'package:eco_bites/features/food/domain/entities/diet_type.dart';
 import 'package:eco_bites/features/food/domain/entities/offer.dart';
 import 'package:eco_bites/features/food/presentation/bloc/food_business_bloc.dart';
 import 'package:eco_bites/features/food/presentation/bloc/food_business_event.dart';
@@ -23,7 +24,8 @@ class DietaryTab extends StatelessWidget {
           final ProfileState profileState = context.read<ProfileBloc>().state;
           if (profileState is ProfileLoaded) {
             Logger().d(
-                'Fetching dietary offers with diet type: ${profileState.profile.dietType}');
+              'Fetching dietary offers with diet type: ${profileState.profile.dietType}',
+            );
             context.read<FoodBusinessBloc>().add(
                   FetchSurplusFoodBusinesses(
                     userLocation: addressState.savedAddress,
@@ -39,7 +41,7 @@ class DietaryTab extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           } else if (state is FoodBusinessLoaded) {
             final ProfileState profileState = context.read<ProfileBloc>().state;
-            final dietType = profileState is ProfileLoaded
+            final DietType? dietType = profileState is ProfileLoaded
                 ? profileState.profile.dietType
                 : null;
 
@@ -48,23 +50,25 @@ class DietaryTab extends StatelessWidget {
 
             // Filter businesses that have offers matching user's diet
             final List<FoodBusinessModel> businessesWithDietaryOffers =
-                state.foodBusinesses.where((business) {
+                state.foodBusinesses.where((FoodBusinessModel business) {
               final List<Offer> dietaryOffers = business.offers
-                  .where((offer) => offer.suitableFor.contains(dietType))
+                  .where((Offer offer) => offer.suitableFor.contains(dietType))
                   .toList();
               return dietaryOffers.isNotEmpty;
             }).toList();
 
             Logger().d(
-                'all offers: ${state.foodBusinesses.map((e) => e.offers.map((e) => e.suitableFor))}');
+              'all offers: ${state.foodBusinesses.map((FoodBusinessModel e) => e.offers.map((Offer e) => e.suitableFor))}',
+            );
             Logger().d(
-                'Businesses with dietary offers: ${businessesWithDietaryOffers.length}');
+              'Businesses with dietary offers: ${businessesWithDietaryOffers.length}',
+            );
 
             if (businessesWithDietaryOffers.isEmpty) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
+                  children: <Widget>[
                     Text(
                       'No offers available for ${dietType?.displayName ?? 'your diet'}',
                       textAlign: TextAlign.center,
@@ -91,7 +95,7 @@ class DietaryTab extends StatelessWidget {
             }
 
             return Column(
-              children: [
+              children: <Widget>[
                 TextButton(
                   onPressed: () {
                     final AddressState addressState =
@@ -115,7 +119,9 @@ class DietaryTab extends StatelessWidget {
                           businessesWithDietaryOffers[index];
                       final List<Offer> dietaryOffers = foodBusiness.offers
                           .where(
-                              (offer) => offer.suitableFor.contains(dietType))
+                            (Offer offer) =>
+                                offer.suitableFor.contains(dietType),
+                          )
                           .toList();
 
                       return ExpansionTile(
@@ -134,7 +140,8 @@ class DietaryTab extends StatelessWidget {
                         ),
                         children: dietaryOffers
                             .map<Widget>(
-                                (Offer offer) => OfferCard(offer: offer))
+                              (Offer offer) => OfferCard(offer: offer),
+                            )
                             .toList(),
                       );
                     },
@@ -146,7 +153,7 @@ class DietaryTab extends StatelessWidget {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
+                children: <Widget>[
                   Text(state.message),
                   const SizedBox(height: 8),
                   TextButton(

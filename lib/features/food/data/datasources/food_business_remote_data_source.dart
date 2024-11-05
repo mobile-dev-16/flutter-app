@@ -76,7 +76,7 @@ class FoodBusinessRemoteDataSourceImpl implements FoodBusinessRemoteDataSource {
             .map((QueryDocumentSnapshot<Map<String, dynamic>> offerDoc) {
           final Map<String, dynamic> data = offerDoc.data();
           if (!data.containsKey('dietTypes')) {
-            data['suitableFor'] = [DietType.none.name];
+            data['suitableFor'] = <String>[DietType.none.name];
           }
           return OfferModel.fromMap(data, offerDoc.id, doc.id);
         }).toList();

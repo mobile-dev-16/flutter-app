@@ -45,7 +45,9 @@ class FoodBusinessRepositoryImpl implements FoodBusinessRepository {
           distanceInKm: distanceInKm,
         );
 
-        Logger().d('Businesses: ${businesses.map((e) => e.toMap())}');
+        Logger().d(
+          'Businesses: ${businesses.map((FoodBusinessModel e) => e.toMap())}',
+        );
 
         if (dietType != null) {
           // Filter businesses with offers suitable for the diet type
@@ -59,7 +61,7 @@ class FoodBusinessRepositoryImpl implements FoodBusinessRepository {
         }
 
         Logger().d(
-          'Businesses WITH DIET TYPE: ${businesses.map((e) => e.toMap())}',
+          'Businesses WITH DIET TYPE: ${businesses.map((FoodBusinessModel e) => e.toMap())}',
         );
 
         return Right<Failure, List<FoodBusiness>>(businesses);
