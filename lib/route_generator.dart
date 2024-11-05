@@ -1,3 +1,4 @@
+import 'package:eco_bites/core/network/network_info.dart';
 import 'package:eco_bites/core/ui/layouts/main_layout.dart';
 import 'package:eco_bites/features/auth/presentation/screens/login_screen.dart';
 import 'package:eco_bites/features/auth/presentation/screens/register_screen.dart';
@@ -13,11 +14,15 @@ class RouteGenerator {
   static Route<dynamic> generateRoute(
     RouteSettings settings, {
     required DateTime appLaunchTime,
+    required NetworkInfo networkInfo,
   }) {
     switch (settings.name) {
       case splashScreen:
         return MaterialPageRoute<void>(
-          builder: (_) => SplashScreen(appLaunchTime: appLaunchTime),
+          builder: (_) => SplashScreen(
+            appLaunchTime: appLaunchTime,
+            networkInfo: networkInfo,
+          ),
         );
       case loginScreen:
         return MaterialPageRoute<void>(builder: (_) => const LoginScreen());

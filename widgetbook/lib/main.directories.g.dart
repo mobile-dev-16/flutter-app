@@ -29,8 +29,6 @@ import 'package:widgetbook_workspace/features/orders/presentation/screens/order_
     as _i12;
 import 'package:widgetbook_workspace/features/profile/presentation/screens/profile_screen.dart'
     as _i13;
-import 'package:widgetbook_workspace/features/splash/presentation/screens/splash_screen.dart'
-    as _i14;
 
 final directories = <_i1.WidgetbookNode>[
   _i1.WidgetbookFolder(
@@ -224,28 +222,6 @@ final directories = <_i1.WidgetbookNode>[
                     useCase: _i1.WidgetbookUseCase(
                       name: 'Default',
                       builder: _i13.buildProfileScreenUseCase,
-                    ),
-                  )
-                ],
-              )
-            ],
-          )
-        ],
-      ),
-      _i1.WidgetbookFolder(
-        name: 'splash',
-        children: [
-          _i1.WidgetbookFolder(
-            name: 'presentation',
-            children: [
-              _i1.WidgetbookFolder(
-                name: 'screens',
-                children: [
-                  _i1.WidgetbookLeafComponent(
-                    name: 'SplashScreen',
-                    useCase: _i1.WidgetbookUseCase(
-                      name: 'Default',
-                      builder: _i14.buildSplashScreenUseCase,
                     ),
                   )
                 ],
