@@ -8,14 +8,13 @@ class FoodBusinessModel extends FoodBusiness {
   const FoodBusinessModel({
     required super.id,
     required super.name,
-    // required super.description,
     super.imageUrl,
     required super.category,
     required super.cuisineType,
-    // required super.rating,
     required super.latitude,
     required super.longitude,
     required List<OfferModel> super.offers,
+    required super.isNew, // Pass isNew to the superclass
   });
 
   factory FoodBusinessModel.fromMap(
@@ -26,7 +25,6 @@ class FoodBusinessModel extends FoodBusiness {
     return FoodBusinessModel(
       id: id,
       name: map['name'] as String,
-      // description: map['description'] as String,
       imageUrl: map['imageUrl'] as String?,
       category: Category.values.firstWhere(
         (Category category) =>
@@ -37,23 +35,23 @@ class FoodBusinessModel extends FoodBusiness {
         (CuisineType type) => type.name == (map['cuisineType'] as String),
         orElse: () => CuisineType.other,
       ),
-      // rating: (map['rating'] as num).toDouble(),
       latitude: (map['latitude'] as num).toDouble(),
       longitude: (map['longitude'] as num).toDouble(),
       offers: offers,
+      isNew: map['isNew'] as bool? ??
+          false, // Pass the `isNew` field to the superclass
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'name': name,
-      // 'description': description,
       'imageUrl': imageUrl,
       'category': category.displayName,
       'cuisineType': cuisineType.name,
-      // 'rating': rating,
       'latitude': latitude,
       'longitude': longitude,
+      'isNew': isNew, // Include "isNew" attribute in the map
     };
   }
 
@@ -61,16 +59,15 @@ class FoodBusinessModel extends FoodBusiness {
     return FoodBusinessModel(
       id: entity.id,
       name: entity.name,
-      // description: entity.description,
       imageUrl: entity.imageUrl,
       category: entity.category,
       cuisineType: entity.cuisineType,
-      // rating: entity.rating,
       latitude: entity.latitude,
       longitude: entity.longitude,
       offers: entity.offers
           .map((Offer offer) => OfferModel.fromEntity(offer))
           .toList(),
+      isNew: (entity as FoodBusinessModel).isNew, // Cast to access isNew
     );
   }
 }

@@ -15,6 +15,7 @@ class FoodBusiness extends Equatable {
     required this.latitude,
     required this.longitude,
     required this.offers,
+    required this.isNew, // Add `isNew` field here
   });
 
   final String id;
@@ -27,6 +28,7 @@ class FoodBusiness extends Equatable {
   final double latitude;
   final double longitude;
   final List<Offer> offers;
+  final bool isNew; // New field to indicate if the business is new
 
   @override
   List<Object?> get props => <Object?>[
@@ -40,5 +42,6 @@ class FoodBusiness extends Equatable {
         latitude,
         longitude,
         offers,
+        isNew, // Include `isNew` in `props` for Equatable comparison
       ];
 }
