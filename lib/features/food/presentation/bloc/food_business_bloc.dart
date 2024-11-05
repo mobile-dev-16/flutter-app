@@ -48,16 +48,20 @@ class FoodBusinessBloc extends Bloc<FoodBusinessEvent, FoodBusinessState>
       },
       (List<FoodBusiness> businesses) {
         Logger().d('Number of businesses fetched: ${businesses.length}');
-        for (var business in businesses) {
+        for (final FoodBusiness business in businesses) {
           Logger().d('Fetched business: ${business.name}');
         }
 
-        emit(FoodBusinessLoaded(
-          foodBusinesses: businesses
-              .map((FoodBusiness business) =>
-                  FoodBusinessModel.fromEntity(business))
-              .toList(),
-        ));
+        emit(
+          FoodBusinessLoaded(
+            foodBusinesses: businesses
+                .map(
+                  (FoodBusiness business) =>
+                      FoodBusinessModel.fromEntity(business),
+                )
+                .toList(),
+          ),
+        );
       },
     );
   }

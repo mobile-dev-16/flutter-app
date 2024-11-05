@@ -9,7 +9,8 @@ class CartState extends Equatable {
   // Calculate subtotal as the sum of offer prices times quantity for each item
   double get subtotal => items.fold(
         0.0,
-        (sum, item) => sum + (item.offerPrice * item.quantity),
+        (double sum, CartItemData item) =>
+            sum + (item.offerPrice * item.quantity),
       );
 
   @override

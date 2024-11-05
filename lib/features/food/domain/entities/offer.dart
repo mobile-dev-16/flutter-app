@@ -44,7 +44,6 @@ extension OfferExtensions on Offer {
       normalPrice: normalPrice,
       offerPrice: offerPrice,
       imageUrl: imageUrl,
-      quantity: 1, // Default quantity when adding to cart
     );
   }
 }

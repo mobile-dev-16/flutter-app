@@ -24,7 +24,7 @@ class CartScreenContent extends StatelessWidget {
     return Scaffold(
       appBar: const CustomAppBar(title: 'Cart'),
       body: Column(
-        children: [
+        children: <Widget>[
           Expanded(
             child: BlocBuilder<CartBloc, CartState>(
               builder: (BuildContext context, CartState state) {
@@ -54,7 +54,7 @@ class CartScreenContent extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+            children: <Widget>[
               Text(
                 'Subtotal: \$${state.subtotal.toStringAsFixed(2)}',
                 style: Theme.of(context).textTheme.titleLarge,
@@ -62,7 +62,7 @@ class CartScreenContent extends StatelessWidget {
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   ElevatedButton(
                     onPressed: () {
                       context.read<CartBloc>().add(ClearCart());
