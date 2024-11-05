@@ -68,7 +68,9 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
       }
     } catch (e) {
       Logger().e('Failed to update profile: $e');
-      emit(ProfileError('Failed to update profile'));
+      emit(
+        ProfileError('Please connect to the internet to update your profile'),
+      );
     }
   }
 
