@@ -5,14 +5,16 @@ import 'package:dartz/dartz.dart';
 import 'package:eco_bites/core/error/failures.dart';
 import 'package:eco_bites/features/profile/domain/entities/user_profile.dart';
 import 'package:eco_bites/features/profile/domain/repositories/user_profile_repository.dart';
+import 'package:logger/logger.dart';
 
 class ProfileRepositoryImpl implements UserProfileRepository {
-
   ProfileRepositoryImpl({required this.firestore});
   final FirebaseFirestore firestore;
 
   @override
-  Future<Either<ServerFailure, UserProfile?>> fetchUserProfile(String userId) async {
+  Future<Either<ServerFailure, UserProfile?>> fetchUserProfile(
+    String userId,
+  ) async {
     final DocumentSnapshot<Map<String, dynamic>> snapshot =
         await firestore.collection('profiles').doc(userId).get();
 
@@ -23,14 +25,21 @@ class ProfileRepositoryImpl implements UserProfileRepository {
   }
 
   @override
-  Future<Either<ServerFailure, Unit>> updateUserProfile(UserProfile profile) async {
+  Future<Either<ServerFailure, Unit>> updateUserProfile(
+    UserProfile profile,
+  ) async {
     try {
-      await firestore.collection('profiles').doc(profile.userId).update(<Object, Object?>{
+      Logger().d('Updating profile: ${profile.toMap()}');
+      await firestore
+          .collection('profiles')
+          .doc(profile.userId)
+          .update(<Object, Object?>{
         'favoriteCuisine': profile.favoriteCuisine.name,
-        'dietType': profile.dietType,
+        'dietType': profile.dietType.name,
       });
       return const Right(unit);
     } catch (e) {
+      Logger().e('Failed to update user profile: $e');
       return const Left(ServerFailure('Failed to update user profile'));
     }
   }

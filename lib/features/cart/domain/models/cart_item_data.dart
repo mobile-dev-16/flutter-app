@@ -1,3 +1,5 @@
+import 'package:eco_bites/features/food/domain/entities/diet_type.dart';
+
 class CartItemData {
   CartItemData({
     required this.id,
@@ -5,6 +7,7 @@ class CartItemData {
     required this.title,
     required this.normalPrice,
     required this.offerPrice,
+    required this.suitableFor,
     this.quantity = 1,
   });
   final String id;
@@ -12,9 +15,13 @@ class CartItemData {
   final String title;
   final double normalPrice;
   final double offerPrice;
+  final List<DietType> suitableFor;
   int quantity;
 
-  CartItemData copyWith({int? quantity}) {
+  CartItemData copyWith({
+    int? quantity,
+    List<DietType>? suitableFor,
+  }) {
     return CartItemData(
       id: id,
       imageUrl: imageUrl,
@@ -22,6 +29,7 @@ class CartItemData {
       normalPrice: normalPrice,
       offerPrice: offerPrice,
       quantity: quantity ?? this.quantity,
+      suitableFor: suitableFor ?? this.suitableFor,
     );
   }
 }

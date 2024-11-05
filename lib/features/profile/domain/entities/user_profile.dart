@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';
+import 'package:eco_bites/features/food/domain/entities/diet_type.dart';
 import 'package:equatable/equatable.dart';
+import 'package:logger/logger.dart';
 
 class UserProfile extends Equatable {
   const UserProfile({
@@ -22,6 +24,7 @@ class UserProfile extends Equatable {
     if (data['email'] == null || (data['email'] as String).isEmpty) {
       throw const FormatException('email is required');
     }
+    Logger().d('Diet type: ${data['dietType']}');
     return UserProfile(
       userId: data['userId'] as String? ?? '',
       name: data['name'] as String? ?? '',
@@ -32,8 +35,12 @@ class UserProfile extends Equatable {
       birthDate: (data['birthDate'] is Timestamp)
           ? (data['birthDate'] as Timestamp).toDate()
           : DateTime.now(),
-      favoriteCuisine: CuisineTypeExtension.fromString(data['favoriteCuisine'] as String? ?? 'other'),
-      dietType: data['dietType'] as String? ?? 'Unknown',
+      favoriteCuisine: CuisineTypeExtension.fromString(
+        data['favoriteCuisine'] as String? ?? 'other',
+      ),
+      dietType: DietTypeExtension.fromString(
+        data['dietType'] as String? ?? 'none',
+      ),
     );
   }
 
@@ -45,7 +52,7 @@ class UserProfile extends Equatable {
   final String phone;
   final DateTime birthDate;
   final CuisineType favoriteCuisine;
-  final String dietType;
+  final DietType dietType;
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{

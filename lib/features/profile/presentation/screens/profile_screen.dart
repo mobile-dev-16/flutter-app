@@ -3,6 +3,7 @@ import 'package:eco_bites/core/utils/analytics_service.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_event.dart';
 import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';
+import 'package:eco_bites/features/food/domain/entities/diet_type.dart';
 import 'package:eco_bites/features/profile/domain/entities/user_profile.dart';
 import 'package:eco_bites/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:eco_bites/features/profile/presentation/bloc/profile_event.dart';
@@ -28,7 +29,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _birthDateController = TextEditingController();
   CuisineType? _favoriteCuisine;
-  String? _dietType;
+  DietType? _dietType;
   bool _isInitialized = false;
 
   @override
@@ -156,7 +157,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                               .parse(_birthDateController.text),
                           favoriteCuisine:
                               _favoriteCuisine ?? CuisineType.other,
-                          dietType: _dietType ?? 'Unknown',
+                          dietType: _dietType ?? DietType.none,
                         );
 
                         context.read<ProfileBloc>().add(
@@ -255,31 +256,21 @@ class ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildDietDropdown() {
-    const List<String> dietOptions = <String>[
-      'Vegetarian',
-      'Vegan',
-      'Pescatarian',
-      'Gluten-Free',
-      'Keto',
-      'None',
-      'Unknown',
-    ];
-
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: DropdownButtonFormField<String>(
+      child: DropdownButtonFormField<DietType>(
         value: _dietType,
         decoration: const InputDecoration(
           labelText: 'Diet Type',
           border: OutlineInputBorder(),
         ),
-        items: dietOptions.map((String diet) {
-          return DropdownMenuItem<String>(
-            value: diet,
-            child: Text(diet),
+        items: DietType.values.map((DietType type) {
+          return DropdownMenuItem<DietType>(
+            value: type,
+            child: Text(type.displayName),
           );
         }).toList(),
-        onChanged: (String? newValue) {
+        onChanged: (DietType? newValue) {
           setState(() {
             _dietType = newValue;
           });

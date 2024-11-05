@@ -7,6 +7,7 @@ import 'package:eco_bites/features/address/presentation/bloc/address_event.dart'
 import 'package:eco_bites/features/address/presentation/bloc/address_state.dart';
 import 'package:eco_bites/features/address/presentation/screens/address_screen.dart';
 import 'package:eco_bites/features/home/presentation/bloc/home_bloc.dart';
+import 'package:eco_bites/features/home/presentation/widgets/dietary_tab.dart';
 import 'package:eco_bites/features/home/presentation/widgets/for_you_tab.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +66,7 @@ class _HomeScreenContentState extends State<HomeScreenContent>
   void initState() {
     super.initState();
     _tabController = TabController(
-      length: 6,
+      length: 7,
       vsync: this,
     );
     _tabController.addListener(_handleTabSelection);
@@ -73,7 +74,8 @@ class _HomeScreenContentState extends State<HomeScreenContent>
     // Measure and log loading time after UI is rendered
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final DateTime homePageRenderedTime = DateTime.now();
-      final Duration loadTime = homePageRenderedTime.difference(widget.appLaunchTime);
+      final Duration loadTime =
+          homePageRenderedTime.difference(widget.appLaunchTime);
       logLoadingTime('home_screen', loadTime.inMilliseconds);
     });
 
@@ -83,20 +85,8 @@ class _HomeScreenContentState extends State<HomeScreenContent>
         context.read<AddressBloc>().add(LoadAddress());
       }
       _startListeningToLocationChanges();
-
-      // Fetch offers for the user's favorite cuisine when the screen loads
-      // Assuming you have a way to get the user's favorite cuisine
-      // TODO(abel): Implement a method to get the user's favorite cuisine
-      // For now, we'll use a default value
-      // context.read<FoodBusinessBloc>().add(
-      //       const FetchSurplusFoodBusinesses(
-      //         favoriteCuisine: CuisineType.other,
-      //         userLocation: addressState.savedAddress,
-      //       ),
-      //     );
     });
   }
-
 
   void _startListeningToLocationChanges() {
     _positionStreamSubscription = Geolocator.getPositionStream(
@@ -273,6 +263,12 @@ class _HomeScreenContentState extends State<HomeScreenContent>
                             state.selectedTabIndex,
                           ),
                           _buildTab(
+                            Symbols.local_cafe_rounded,
+                            'Dietary',
+                            1,
+                            state.selectedTabIndex,
+                          ),
+                          _buildTab(
                             Symbols.fastfood_rounded,
                             'Restaurant',
                             1,
@@ -310,6 +306,7 @@ class _HomeScreenContentState extends State<HomeScreenContent>
                           controller: _tabController,
                           children: const <Widget>[
                             ForYouTab(),
+                            DietaryTab(),
                             Center(child: Text('Restaurant Content')),
                             Center(child: Text('Ingredients Content')),
                             Center(child: Text('Store Content')),

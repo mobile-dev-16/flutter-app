@@ -6,12 +6,14 @@ import 'package:eco_bites/features/food/data/models/food_business_model.dart';
 import 'package:eco_bites/features/food/data/models/offer_model.dart';
 import 'package:eco_bites/features/food/domain/entities/category.dart';
 import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';
+import 'package:eco_bites/features/food/domain/entities/diet_type.dart';
 import 'package:logger/logger.dart';
 
 abstract class FoodBusinessRemoteDataSource {
   Future<List<FoodBusinessModel>> fetchNearbySurplusFoodBusinesses({
     required Address userLocation,
     CuisineType? favoriteCuisine,
+    DietType? dietType,
     Category? category,
     double distanceInKm = 5.0,
   });
@@ -28,6 +30,7 @@ class FoodBusinessRemoteDataSourceImpl implements FoodBusinessRemoteDataSource {
   Future<List<FoodBusinessModel>> fetchNearbySurplusFoodBusinesses({
     required Address userLocation,
     CuisineType? favoriteCuisine,
+    DietType? dietType,
     Category? category,
     double distanceInKm = 5,
   }) async {
@@ -70,11 +73,13 @@ class FoodBusinessRemoteDataSourceImpl implements FoodBusinessRemoteDataSource {
           'Offers snapshot: ${offersSnapshot.docs.map((QueryDocumentSnapshot<Map<String, dynamic>> doc) => doc.data())}',
         );
         final List<OfferModel> surplusOffers = offersSnapshot.docs
-            .map(
-              (QueryDocumentSnapshot<Map<String, dynamic>> offerDoc) =>
-                  OfferModel.fromMap(offerDoc.data(), offerDoc.id, doc.id),
-            )
-            .toList();
+            .map((QueryDocumentSnapshot<Map<String, dynamic>> offerDoc) {
+          final Map<String, dynamic> data = offerDoc.data();
+          if (!data.containsKey('dietTypes')) {
+            data['suitableFor'] = <String>[DietType.none.name];
+          }
+          return OfferModel.fromMap(data, offerDoc.id, doc.id);
+        }).toList();
 
         Logger().d('Surplus offers: $surplusOffers');
         if (surplusOffers.isNotEmpty) {

@@ -3,13 +3,14 @@
 import 'dart:convert';
 import 'package:eco_bites/core/blocs/internet_connection/internet_connection_bloc.dart';
 import 'package:eco_bites/core/blocs/resettable_mixin.dart';
+import 'package:eco_bites/core/constants/storage_keys.dart';
 import 'package:eco_bites/features/profile/domain/entities/user_profile.dart';
 import 'package:eco_bites/features/profile/domain/usecases/fetch_user_profile_usecase.dart';
 import 'package:eco_bites/features/profile/domain/usecases/update_user_profile_usecase.dart';
 import 'package:eco_bites/features/profile/presentation/bloc/profile_event.dart';
 import 'package:eco_bites/features/profile/presentation/bloc/profile_state.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
@@ -47,12 +48,15 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
           'cachedProfile',
           jsonEncode(event.updatedProfile.toMap()),
         );
+        Logger().d('Cached profile: ${event.updatedProfile.toMap()}');
+        Logger().d('Cached profile: ${prefs.getString('cachedProfile')}');
         emit(
           ProfileError(
             'No internet connection. Your data will be saved when you are online.',
           ),
         );
       } else {
+        Logger().d('Updating profile: ${event.updatedProfile.toMap()}');
         await updateUserProfileUseCase(event.updatedProfile);
         final UserProfile? updatedProfile =
             await fetchUserProfileUseCase(userId);
@@ -63,7 +67,10 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
         }
       }
     } catch (e) {
-      emit(ProfileError('Failed to update profile'));
+      Logger().e('Failed to update profile: $e');
+      emit(
+        ProfileError('Please connect to the internet to update your profile'),
+      );
     }
   }
 
@@ -115,8 +122,16 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
 
   // Método auxiliar para obtener el UID del usuario
   Future<String?> _getUserId() async {
-    final User? user = FirebaseAuth.instance.currentUser;
-    return user?.uid;
+    try {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? userId = prefs.getString(StorageKeys.userId);
+      Logger().d('userId: $userId');
+      // ignore: use_if_null_to_convert_nulls_to_bools
+      return userId?.isNotEmpty == true ? userId : null;
+    } catch (e) {
+      Logger().e('Failed to get user ID: $e');
+      return null;
+    }
   }
 
   @override

@@ -6,7 +6,9 @@ import 'package:eco_bites/features/food/data/datasources/food_business_remote_da
 import 'package:eco_bites/features/food/data/models/food_business_model.dart';
 import 'package:eco_bites/features/food/domain/entities/category.dart';
 import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';
+import 'package:eco_bites/features/food/domain/entities/diet_type.dart';
 import 'package:eco_bites/features/food/domain/entities/food_business.dart';
+import 'package:eco_bites/features/food/domain/entities/offer.dart';
 import 'package:eco_bites/features/food/domain/repositories/food_business_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:logger/logger.dart';
@@ -24,6 +26,7 @@ class FoodBusinessRepositoryImpl implements FoodBusinessRepository {
   Future<Either<Failure, List<FoodBusiness>>> fetchNearbySurplusFoodBusinesses({
     required Address userLocation,
     CuisineType? favoriteCuisine,
+    DietType? dietType,
     Category? category,
     double distanceInKm = 5.0,
   }) async {
@@ -37,9 +40,30 @@ class FoodBusinessRepositoryImpl implements FoodBusinessRepository {
             await remoteDataSource.fetchNearbySurplusFoodBusinesses(
           userLocation: userLocation,
           favoriteCuisine: favoriteCuisine,
+          dietType: dietType,
           category: category,
           distanceInKm: distanceInKm,
         );
+
+        Logger().d(
+          'Businesses: ${businesses.map((FoodBusinessModel e) => e.toMap())}',
+        );
+
+        if (dietType != null) {
+          // Filter businesses with offers suitable for the diet type
+          return Right<Failure, List<FoodBusiness>>(
+            businesses.where((FoodBusinessModel business) {
+              return business.offers.any(
+                (Offer offer) => offer.suitableFor.contains(dietType),
+              );
+            }).toList(),
+          );
+        }
+
+        Logger().d(
+          'Businesses WITH DIET TYPE: ${businesses.map((FoodBusinessModel e) => e.toMap())}',
+        );
+
         return Right<Failure, List<FoodBusiness>>(businesses);
       } on FirebaseException catch (e) {
         return Left<Failure, List<FoodBusiness>>(FirebaseFailure(e.message));

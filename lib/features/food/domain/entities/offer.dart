@@ -1,4 +1,5 @@
 import 'package:eco_bites/features/cart/domain/models/cart_item_data.dart';
+import 'package:eco_bites/features/food/domain/entities/diet_type.dart';
 import 'package:equatable/equatable.dart';
 
 class Offer extends Equatable {
@@ -11,6 +12,7 @@ class Offer extends Equatable {
     required this.offerPrice,
     required this.availableQuantity,
     required this.validUntil,
+    required this.suitableFor,
   });
 
   final String id;
@@ -21,6 +23,7 @@ class Offer extends Equatable {
   final double offerPrice;
   final int availableQuantity;
   final DateTime validUntil;
+  final List<DietType> suitableFor;
 
   @override
   List<Object?> get props => <Object?>[
@@ -32,6 +35,7 @@ class Offer extends Equatable {
         offerPrice,
         availableQuantity,
         validUntil,
+        suitableFor.map((DietType e) => e.name),
       ];
 }
 
@@ -44,6 +48,7 @@ extension OfferExtensions on Offer {
       normalPrice: normalPrice,
       offerPrice: offerPrice,
       imageUrl: imageUrl,
+      suitableFor: suitableFor,
     );
   }
 }
