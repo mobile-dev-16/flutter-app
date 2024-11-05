@@ -13,13 +13,21 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
     AppStarted event,
     Emitter<SplashState> emit,
   ) async {
-    // Retrieve authentication status and user ID from local storage
-    final SharedPreferences pref = await SharedPreferences.getInstance();
-    final String? userId = pref.getString(StorageKeys.userId);
+    try {
+      // Retrieve authentication status and user ID from local storage
+      final SharedPreferences pref = await SharedPreferences.getInstance();
+      final String? userId = pref.getString(StorageKeys.userId);
 
-    if (userId != null && userId.isNotEmpty) {
-      emit(Authenticated());
-    } else {
+      // Add a small delay to show the splash screen
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+
+      if (userId != null && userId.isNotEmpty) {
+        emit(Authenticated());
+      } else {
+        emit(Unauthenticated());
+      }
+    } catch (e) {
+      // If there's an error accessing SharedPreferences, default to unauthenticated
       emit(Unauthenticated());
     }
   }

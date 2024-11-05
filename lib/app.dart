@@ -1,6 +1,7 @@
 import 'package:eco_bites/core/blocs/bloc_resetter.dart';
 import 'package:eco_bites/core/blocs/internet_connection/internet_connection_bloc.dart';
 import 'package:eco_bites/core/config/theme.dart';
+import 'package:eco_bites/core/network/network_info.dart';
 import 'package:eco_bites/core/utils/create_text_theme.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_bloc.dart';
@@ -72,6 +73,7 @@ class EcoBitesApp extends StatelessWidget {
               RouteGenerator.generateRoute(
             settings,
             appLaunchTime: appLaunchTime,
+            networkInfo: serviceLocator<NetworkInfo>(),
           ),
         ),
       ),
