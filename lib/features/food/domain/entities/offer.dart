@@ -35,7 +35,7 @@ class Offer extends Equatable {
         offerPrice,
         availableQuantity,
         validUntil,
-        suitableFor,
+        suitableFor.map((e) => e.name),
       ];
 }
 

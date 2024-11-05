@@ -29,7 +29,7 @@ class OfferModel extends Offer {
       offerPrice: (map['offerPrice'] as num).toDouble(),
       availableQuantity: map['availableQuantity'] as int,
       validUntil: (map['validUntil'] as Timestamp).toDate(),
-      suitableFor: (map['suitableFor'] as List<dynamic>?)
+      suitableFor: (map['dietTypes'] as List<dynamic>?)
               ?.map(
                 (dynamic diet) => DietTypeExtension.fromString(diet as String),
               )
