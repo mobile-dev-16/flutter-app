@@ -1,3 +1,5 @@
+import 'package:eco_bites/core/blocs/internet_connection/internet_connection_bloc.dart';
+import 'package:eco_bites/core/utils/analytics_service.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_event.dart';
 import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';
@@ -9,6 +11,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -26,7 +29,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   final TextEditingController _birthDateController = TextEditingController();
   CuisineType? _favoriteCuisine;
   String? _dietType;
-  bool _isInitialized = false; // Control para inicialización de datos
+  bool _isInitialized = false;
 
   @override
   void initState() {
@@ -34,6 +37,38 @@ class ProfileScreenState extends State<ProfileScreen> {
     final String? userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId != null) {
       context.read<ProfileBloc>().add(LoadProfileEvent(userId));
+      logUserRetention(
+        userId,
+        0,
+      ); // Log user retention with 0 days since last visit
+    }
+  }
+
+  Future<void> _saveProfile(UserProfile updatedProfile) async {
+    final InternetConnectionBloc internetConnectionBloc =
+        context.read<InternetConnectionBloc>();
+    if (internetConnectionBloc.state is DisconnectedInternet) {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('cachedProfile', updatedProfile.toMap().toString());
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'No internet connection. Your data will be saved when you are online.',
+            ),
+          ),
+        );
+      }
+    } else {
+      final String? userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId != null) {
+        context.read<ProfileBloc>().add(
+              UpdateProfileEvent(
+                userId: userId,
+                updatedProfile: updatedProfile,
+              ),
+            );
+      }
     }
   }
 
@@ -46,7 +81,24 @@ class ProfileScreenState extends State<ProfileScreen> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
-        child: BlocBuilder<ProfileBloc, ProfileState>(
+        child: BlocConsumer<ProfileBloc, ProfileState>(
+          listener: (BuildContext context, ProfileState state) {
+            if (state is ProfileLoaded && state.isUpdated) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Your data has been saved successfully.'),
+                  ),
+                );
+              }
+            } else if (state is ProfileError) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(state.message)),
+                );
+              }
+            }
+          },
           builder: (BuildContext context, ProfileState state) {
             if (state is ProfileLoaded && !_isInitialized) {
               final UserProfile profile = state.profile;

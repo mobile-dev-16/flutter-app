@@ -36,6 +36,7 @@ class SplashScreen extends StatelessWidget {
                 await logEvent(
                   milliseconds: loadTime.inMilliseconds,
                   authenticated: true,
+                  eventName: 'splash_screen',
                 );
               }
             } catch (e) {
@@ -48,6 +49,7 @@ class SplashScreen extends StatelessWidget {
                 await logEvent(
                   milliseconds: loadTime.inMilliseconds,
                   authenticated: false,
+                  eventName: 'splash_screen',
                 );
               }
             } catch (e) {
@@ -81,11 +83,13 @@ class SplashScreen extends StatelessWidget {
   Future<void> logEvent({
     required int milliseconds,
     required bool authenticated,
+    required String eventName,
   }) async {
     try {
       await FirebaseFirestore.instance.collection('logs').add(<String, dynamic>{
         'milliseconds': milliseconds,
         'authenticated': authenticated,
+        'eventName': eventName,
         'timestamp': FieldValue.serverTimestamp(),
       });
     } catch (e) {
