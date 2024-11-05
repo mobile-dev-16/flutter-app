@@ -125,6 +125,7 @@ void _setupProfileFeature() {
     () => ProfileBloc(
       fetchUserProfileUseCase: serviceLocator(),
       updateUserProfileUseCase: serviceLocator(),
+      internetConnectionBloc: serviceLocator(),
     ),
   );
 
@@ -162,6 +163,8 @@ void _setupAddressFeature() {
       networkInfo: serviceLocator(),
     ),
   );
+
+  // Data sources
   serviceLocator.registerLazySingleton<AddressRemoteDataSource>(
     () => AddressRemoteDataSourceImpl(firestore: serviceLocator()),
   );

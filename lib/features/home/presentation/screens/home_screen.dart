@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eco_bites/core/utils/analytics_service.dart';
 import 'package:eco_bites/core/utils/distance.dart';
 import 'package:eco_bites/features/address/domain/entities/address.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
@@ -8,10 +8,22 @@ import 'package:eco_bites/features/address/presentation/bloc/address_state.dart'
 import 'package:eco_bites/features/address/presentation/screens/address_screen.dart';
 import 'package:eco_bites/features/home/presentation/bloc/home_bloc.dart';
 import 'package:eco_bites/features/home/presentation/widgets/for_you_tab.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:material_symbols_icons/symbols.dart';
+
+final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
+Future<void> logUserSession() async {
+  await analytics.logEvent(
+    name: 'user_session',
+    parameters: <String, Object>{
+      'timestamp': DateTime.now().toIso8601String(),
+    },
+  );
+}
 
 class HomeScreen extends StatefulWidget {
   // Pass appLaunchTime from splash screen
@@ -61,9 +73,8 @@ class _HomeScreenContentState extends State<HomeScreenContent>
     // Measure and log loading time after UI is rendered
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final DateTime homePageRenderedTime = DateTime.now();
-      final Duration loadTime =
-          homePageRenderedTime.difference(widget.appLaunchTime);
-      logEvent('Home page loaded in ${loadTime.inMilliseconds}ms');
+      final Duration loadTime = homePageRenderedTime.difference(widget.appLaunchTime);
+      logLoadingTime('home_screen', loadTime.inMilliseconds);
     });
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -86,12 +97,6 @@ class _HomeScreenContentState extends State<HomeScreenContent>
     });
   }
 
-  Future<void> logEvent(String message) async {
-    await FirebaseFirestore.instance.collection('logs').add(<String, dynamic>{
-      'message': message,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
-  }
 
   void _startListeningToLocationChanges() {
     _positionStreamSubscription = Geolocator.getPositionStream(

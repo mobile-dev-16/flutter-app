@@ -1,3 +1,4 @@
+import 'package:eco_bites/core/utils/analytics_service.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_event.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_state.dart';
@@ -26,6 +27,7 @@ class LoginScreenState extends State<LoginScreen> {
 
   void _submitForm() {
     if (_formKey.currentState!.validate()) {
+      final DateTime loginStartTime = DateTime.now();
       // Trigger the sign-in event if form is valid
       context.read<AuthBloc>().add(
         SignInRequested(
@@ -33,6 +35,9 @@ class LoginScreenState extends State<LoginScreen> {
           password: _passwordController.text,
         ),
       );
+      final DateTime loginEndTime = DateTime.now();
+      final Duration loginTime = loginEndTime.difference(loginStartTime);
+      logLoginTime(loginTime.inMilliseconds); // Log login time
     }
   }
 
