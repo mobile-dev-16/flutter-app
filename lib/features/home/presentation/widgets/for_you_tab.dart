@@ -56,7 +56,7 @@ class ForYouTab extends StatelessWidget {
                         : null,
                   ),
                   title: Row(
-                    children: [
+                    children: <Widget>[
                       Text(foodBusiness.name),
                       if (foodBusiness.isNew) // Check if the restaurant is new
                         Padding(

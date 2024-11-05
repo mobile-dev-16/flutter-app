@@ -43,7 +43,6 @@ class FoodBusinessModel extends FoodBusiness {
     );
   }
 
-  @override
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'name': name,
