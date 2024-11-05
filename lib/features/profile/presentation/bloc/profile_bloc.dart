@@ -1,3 +1,5 @@
+// ignore_for_file: unused_element
+
 import 'dart:convert';
 import 'package:eco_bites/core/blocs/internet_connection/internet_connection_bloc.dart';
 import 'package:eco_bites/core/blocs/resettable_mixin.dart';
