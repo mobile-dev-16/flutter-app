@@ -300,7 +300,7 @@ class _HomeScreenContentState extends State<HomeScreenContent>
                         ],
                       ),
                       SizedBox(
-                        height: 200,
+                        height: 500,
                         child: TabBarView(
                           controller: _tabController,
                           children: const <Widget>[

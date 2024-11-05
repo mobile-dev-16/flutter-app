@@ -40,18 +40,29 @@ class FoodBusinessBloc extends Bloc<FoodBusinessEvent, FoodBusinessState>
     );
 
     Logger().d('Result: $result');
-    emit(
-      result.fold(
-        (Failure failure) => FoodBusinessError(message: failure.message),
-        (List<FoodBusiness> businesses) => FoodBusinessLoaded(
-          foodBusinesses: businesses
-              .map(
-                (FoodBusiness business) =>
-                    FoodBusinessModel.fromEntity(business),
-              )
-              .toList(),
-        ),
-      ),
+
+    result.fold(
+      (Failure failure) {
+        Logger().e('Failed to fetch food businesses: ${failure.message}');
+        emit(FoodBusinessError(message: failure.message));
+      },
+      (List<FoodBusiness> businesses) {
+        Logger().d('Number of businesses fetched: ${businesses.length}');
+        for (final FoodBusiness business in businesses) {
+          Logger().d('Fetched business: ${business.name}');
+        }
+
+        emit(
+          FoodBusinessLoaded(
+            foodBusinesses: businesses
+                .map(
+                  (FoodBusiness business) =>
+                      FoodBusinessModel.fromEntity(business),
+                )
+                .toList(),
+          ),
+        );
+      },
     );
   }
 

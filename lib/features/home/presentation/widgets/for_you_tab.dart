@@ -1,5 +1,8 @@
 import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_state.dart';
+import 'package:eco_bites/features/cart/domain/models/cart_item_data.dart';
+import 'package:eco_bites/features/cart/presentation/bloc/cart_bloc.dart';
+import 'package:eco_bites/features/cart/presentation/bloc/cart_event.dart';
 import 'package:eco_bites/features/food/data/models/food_business_model.dart';
 import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';
 import 'package:eco_bites/features/food/domain/entities/offer.dart';
@@ -10,6 +13,7 @@ import 'package:eco_bites/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:eco_bites/features/profile/presentation/bloc/profile_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ForYouTab extends StatelessWidget {
   const ForYouTab({super.key});
@@ -92,8 +96,15 @@ class OfferCard extends StatelessWidget {
         trailing: ElevatedButton(
           child: const Text('Add to Cart'),
           onPressed: () {
-            // TODO(abel): Implement add to cart functionality
-            // You can use the offer.toCartItem() method here
+            final CartItemData cartItem = offer.toCartItem();
+            context.read<CartBloc>().add(AddToCart(cartItem));
+
+            // Show feedback toast for added item
+            Fluttertoast.showToast(
+              msg: '${offer.description} added to cart!',
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+            );
           },
         ),
       ),
