@@ -1,9 +1,11 @@
+import 'package:eco_bites/core/blocs/resettable_mixin.dart';
 import 'package:eco_bites/features/orders/domain/models/order.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_event.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class OrderBloc extends Bloc<OrderEvent, OrderState> {
+class OrderBloc extends Bloc<OrderEvent, OrderState>
+    with ResettableMixin<OrderEvent, OrderState> {
   OrderBloc() : super(OrdersLoading()) {
     on<LoadOrders>(_onLoadOrders);
   }
@@ -27,5 +29,11 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     ];
 
     emit(OrdersLoaded(orders));
+  }
+
+  @override
+  void reset() {
+    // ignore: invalid_use_of_visible_for_testing_member
+    emit(OrdersLoading());
   }
 }

@@ -1,6 +1,6 @@
-// ignore_for_file: invalid_use_of_visible_for_testing_member
 import 'dart:convert';
 import 'package:eco_bites/core/blocs/internet_connection/internet_connection_bloc.dart';
+import 'package:eco_bites/core/blocs/resettable_mixin.dart';
 import 'package:eco_bites/features/profile/domain/entities/user_profile.dart';
 import 'package:eco_bites/features/profile/domain/usecases/fetch_user_profile_usecase.dart';
 import 'package:eco_bites/features/profile/domain/usecases/update_user_profile_usecase.dart';
@@ -10,7 +10,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
+class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
+    with ResettableMixin<ProfileEvent, ProfileState> {
   ProfileBloc({
     required this.fetchUserProfileUseCase,
     required this.updateUserProfileUseCase,
@@ -19,7 +20,6 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
         super(ProfileInitial()) {
     on<LoadProfileEvent>(_onLoadProfile);
     on<UpdateProfileEvent>(_onUpdateProfile);
-
   }
 
   final InternetConnectionBloc _internetConnectionBloc;
@@ -41,11 +41,19 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
       if (_internetConnectionBloc.state is DisconnectedInternet) {
         // Save to cache
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('cachedProfile', jsonEncode(event.updatedProfile.toMap()));
-        emit(ProfileError('No internet connection. Your data will be saved when you are online.'));
+        await prefs.setString(
+          'cachedProfile',
+          jsonEncode(event.updatedProfile.toMap()),
+        );
+        emit(
+          ProfileError(
+            'No internet connection. Your data will be saved when you are online.',
+          ),
+        );
       } else {
         await updateUserProfileUseCase(event.updatedProfile);
-        final UserProfile? updatedProfile = await fetchUserProfileUseCase(userId);
+        final UserProfile? updatedProfile =
+            await fetchUserProfileUseCase(userId);
         if (updatedProfile != null) {
           emit(ProfileLoaded(updatedProfile, isUpdated: true));
         } else {
@@ -57,16 +65,18 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     }
   }
 
-  Future<void> _checkAndSaveCachedProfile() async {
+  Future<void> _checkAndSaveCachedProfile(Emitter<ProfileState> emit) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String? cachedProfileString = prefs.getString('cachedProfile');
     if (cachedProfileString != null) {
-      final Map<String, dynamic> cachedProfileMap = jsonDecode(cachedProfileString);
+      final Map<String, dynamic> cachedProfileMap =
+          jsonDecode(cachedProfileString);
       final UserProfile cachedProfile = UserProfile.fromMap(cachedProfileMap);
       try {
         await updateUserProfileUseCase(cachedProfile);
         await prefs.remove('cachedProfile');
-        final UserProfile? updatedProfile = await fetchUserProfileUseCase(cachedProfile.userId);
+        final UserProfile? updatedProfile =
+            await fetchUserProfileUseCase(cachedProfile.userId);
         if (updatedProfile != null) {
           emit(ProfileLoaded(updatedProfile, isUpdated: true));
         }
@@ -101,8 +111,15 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
     }
   }
 
+  // Método auxiliar para obtener el UID del usuario
   Future<String?> _getUserId() async {
     final User? user = FirebaseAuth.instance.currentUser;
     return user?.uid;
+  }
+
+  @override
+  void reset() {
+    // ignore: invalid_use_of_visible_for_testing_member
+    emit(ProfileInitial());
   }
 }

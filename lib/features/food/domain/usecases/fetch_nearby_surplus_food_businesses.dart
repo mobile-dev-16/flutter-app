@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:eco_bites/core/error/failures.dart';
 import 'package:eco_bites/features/address/domain/entities/address.dart';
+import 'package:eco_bites/features/food/domain/entities/category.dart';
 import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';
 import 'package:eco_bites/features/food/domain/entities/food_business.dart';
 import 'package:eco_bites/features/food/domain/repositories/food_business_repository.dart';
@@ -19,6 +20,7 @@ class FetchNearbySurplusFoodBusinesses {
     return repository.fetchNearbySurplusFoodBusinesses(
       userLocation: params.userLocation,
       favoriteCuisine: params.favoriteCuisine,
+      category: params.category,
       distanceInKm: params.distanceInKm,
     );
   }
@@ -27,18 +29,21 @@ class FetchNearbySurplusFoodBusinesses {
 class FetchNearbySurplusFoodBusinessesParams extends Equatable {
   const FetchNearbySurplusFoodBusinessesParams({
     required this.userLocation,
-    required this.favoriteCuisine,
+    this.favoriteCuisine,
+    this.category,
     this.distanceInKm = 5.0,
   });
 
   final Address userLocation;
-  final CuisineType favoriteCuisine;
+  final CuisineType? favoriteCuisine;
+  final Category? category;
   final double distanceInKm;
 
   @override
   List<Object?> get props => <Object?>[
         userLocation,
         favoriteCuisine,
+        category,
         distanceInKm,
       ];
 }

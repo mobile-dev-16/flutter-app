@@ -27,7 +27,6 @@ class ProfileLoaded extends ProfileState {
 }
 
 class ProfileError extends ProfileState {
-
   ProfileError(this.message);
   final String message;
 

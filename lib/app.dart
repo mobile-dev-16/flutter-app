@@ -1,5 +1,7 @@
+import 'package:eco_bites/core/blocs/bloc_resetter.dart';
 import 'package:eco_bites/core/blocs/internet_connection/internet_connection_bloc.dart';
 import 'package:eco_bites/core/config/theme.dart';
+import 'package:eco_bites/core/network/network_info.dart';
 import 'package:eco_bites/core/utils/create_text_theme.dart';
 import 'package:eco_bites/features/address/presentation/bloc/address_bloc.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_bloc.dart';
@@ -15,7 +17,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EcoBitesApp extends StatelessWidget {
-  const EcoBitesApp({super.key, required this.appLaunchTime, required this.analytics});
+  const EcoBitesApp({
+    super.key,
+    required this.appLaunchTime,
+    required this.analytics,
+  });
 
   final DateTime appLaunchTime;
   final FirebaseAnalytics analytics;
@@ -59,22 +65,28 @@ class EcoBitesApp extends StatelessWidget {
         BlocProvider<ProfileBloc>(
           create: (_) => serviceLocator<ProfileBloc>(),
         ),
+        BlocProvider<ProfileBloc>(
+          create: (_) => serviceLocator<ProfileBloc>(),
+        ),
       ],
-      child: MaterialApp(
-        navigatorObservers: <NavigatorObserver>[
-          FirebaseAnalyticsObserver(analytics: analytics),
-        ],
-        debugShowCheckedModeBanner: false,
-        title: 'Eco Bites',
-        theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-        supportedLocales: const <Locale>[
-          Locale('en'),
-        ],
-        initialRoute: RouteGenerator.splashScreen,
-        onGenerateRoute: (RouteSettings settings) =>
-            RouteGenerator.generateRoute(
-          settings,
-          appLaunchTime: appLaunchTime,
+      child: BlocResetter(
+        child: MaterialApp(
+          navigatorObservers: <NavigatorObserver>[
+            FirebaseAnalyticsObserver(analytics: analytics),
+          ],
+          debugShowCheckedModeBanner: false,
+          title: 'Eco Bites',
+          theme: brightness == Brightness.light ? theme.light() : theme.dark(),
+          supportedLocales: const <Locale>[
+            Locale('en'),
+          ],
+          initialRoute: RouteGenerator.splashScreen,
+          onGenerateRoute: (RouteSettings settings) =>
+              RouteGenerator.generateRoute(
+            settings,
+            appLaunchTime: appLaunchTime,
+            networkInfo: serviceLocator<NetworkInfo>(),
+          ),
         ),
       ),
     );

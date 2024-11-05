@@ -4,14 +4,16 @@ import 'package:eco_bites/core/utils/distance.dart';
 import 'package:eco_bites/features/address/domain/entities/address.dart';
 import 'package:eco_bites/features/food/data/models/food_business_model.dart';
 import 'package:eco_bites/features/food/data/models/offer_model.dart';
+import 'package:eco_bites/features/food/domain/entities/category.dart';
 import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';
 import 'package:logger/logger.dart';
 
 abstract class FoodBusinessRemoteDataSource {
   Future<List<FoodBusinessModel>> fetchNearbySurplusFoodBusinesses({
     required Address userLocation,
-    required CuisineType favoriteCuisine,
-    double distanceInKm,
+    CuisineType? favoriteCuisine,
+    Category? category,
+    double distanceInKm = 5.0,
   });
 }
 
@@ -25,18 +27,27 @@ class FoodBusinessRemoteDataSourceImpl implements FoodBusinessRemoteDataSource {
   @override
   Future<List<FoodBusinessModel>> fetchNearbySurplusFoodBusinesses({
     required Address userLocation,
-    required CuisineType favoriteCuisine,
+    CuisineType? favoriteCuisine,
+    Category? category,
     double distanceInKm = 5.0,
   }) async {
     try {
       Logger().d('Fetching nearby surplus food businesses');
       final CollectionReference<Map<String, dynamic>> collectionRef =
-          _firestore.collection('foddBusiness');
+          _firestore.collection('foodBusiness');
+
+      Query<Map<String, dynamic>> query = collectionRef;
+
+      if (favoriteCuisine != null) {
+        query = query.where('cuisineType', isEqualTo: favoriteCuisine.name);
+      }
+
+      if (category != null) {
+        query = query.where('category', isEqualTo: category.displayName);
+      }
 
       final QuerySnapshot<Map<String, dynamic>> foodBusinessSnapshot =
-          await collectionRef
-              .where('cuisineType', isEqualTo: favoriteCuisine.name)
-              .get();
+          await query.get();
 
       final List<FoodBusinessModel> nearbyFoodBusinesses =
           <FoodBusinessModel>[];
@@ -48,7 +59,7 @@ class FoodBusinessRemoteDataSourceImpl implements FoodBusinessRemoteDataSource {
           in foodBusinessSnapshot.docs) {
         final QuerySnapshot<Map<String, dynamic>> offersSnapshot =
             await _firestore
-                .collection('foddBusiness')
+                .collection('foodBusiness')
                 .doc(doc.id)
                 .collection('offers')
                 .where('availableQuantity', isGreaterThan: 0)

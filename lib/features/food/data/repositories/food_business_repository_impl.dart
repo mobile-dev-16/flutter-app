@@ -4,6 +4,7 @@ import 'package:eco_bites/core/network/network_info.dart';
 import 'package:eco_bites/features/address/domain/entities/address.dart';
 import 'package:eco_bites/features/food/data/datasources/food_business_remote_data_source.dart';
 import 'package:eco_bites/features/food/data/models/food_business_model.dart';
+import 'package:eco_bites/features/food/domain/entities/category.dart';
 import 'package:eco_bites/features/food/domain/entities/cuisine_type.dart';
 import 'package:eco_bites/features/food/domain/entities/food_business.dart';
 import 'package:eco_bites/features/food/domain/repositories/food_business_repository.dart';
@@ -22,11 +23,12 @@ class FoodBusinessRepositoryImpl implements FoodBusinessRepository {
   @override
   Future<Either<Failure, List<FoodBusiness>>> fetchNearbySurplusFoodBusinesses({
     required Address userLocation,
-    required CuisineType favoriteCuisine,
+    CuisineType? favoriteCuisine,
+    Category? category,
     double distanceInKm = 5.0,
   }) async {
     Logger().d(
-      'FetchNearbySurplusFoodBusinessesParams: $userLocation, $favoriteCuisine, $distanceInKm',
+      'FetchNearbySurplusFoodBusinessesParams: $userLocation, $favoriteCuisine, $category, $distanceInKm',
     );
     if (await networkInfo.isConnected) {
       Logger().d('Fetching nearby surplus food businesses');
@@ -35,6 +37,7 @@ class FoodBusinessRepositoryImpl implements FoodBusinessRepository {
             await remoteDataSource.fetchNearbySurplusFoodBusinesses(
           userLocation: userLocation,
           favoriteCuisine: favoriteCuisine,
+          category: category,
           distanceInKm: distanceInKm,
         );
         return Right<Failure, List<FoodBusiness>>(businesses);

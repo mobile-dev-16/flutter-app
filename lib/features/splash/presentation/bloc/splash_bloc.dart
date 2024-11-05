@@ -1,3 +1,4 @@
+import 'package:eco_bites/core/constants/storage_keys.dart';
 import 'package:eco_bites/features/splash/presentation/bloc/splash_event.dart';
 import 'package:eco_bites/features/splash/presentation/bloc/splash_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,16 +13,21 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
     AppStarted event,
     Emitter<SplashState> emit,
   ) async {
-    // Simulate a delay for the splash screen
-    await Future<void>.delayed(const Duration(milliseconds: 200));
+    try {
+      // Retrieve authentication status and user ID from local storage
+      final SharedPreferences pref = await SharedPreferences.getInstance();
+      final String? userId = pref.getString(StorageKeys.userId);
 
-    // Retrieve authentication status from local storage
-    final SharedPreferences pref = await SharedPreferences.getInstance();
-    final bool isAuthenticated = pref.getBool('isAuthenticated') ?? false;
+      // Add a small delay to show the splash screen
+      await Future<void>.delayed(const Duration(milliseconds: 500));
 
-    if (isAuthenticated) {
-      emit(Authenticated());
-    } else {
+      if (userId != null && userId.isNotEmpty) {
+        emit(Authenticated());
+      } else {
+        emit(Unauthenticated());
+      }
+    } catch (e) {
+      // If there's an error accessing SharedPreferences, default to unauthenticated
       emit(Unauthenticated());
     }
   }

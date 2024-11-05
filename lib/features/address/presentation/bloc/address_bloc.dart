@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:eco_bites/core/blocs/resettable_mixin.dart';
 import 'package:eco_bites/core/error/failures.dart';
 import 'package:eco_bites/features/address/domain/entities/address.dart';
 import 'package:eco_bites/features/address/domain/usecases/fetch_user_addresses_usecase.dart';
@@ -9,7 +10,8 @@ import 'package:eco_bites/features/address/presentation/bloc/address_state.dart'
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class AddressBloc extends Bloc<AddressEvent, AddressState> {
+class AddressBloc extends Bloc<AddressEvent, AddressState>
+    with ResettableMixin<AddressEvent, AddressState> {
   AddressBloc({
     required this.saveAddressUseCase,
     required this.fetchUserAddressUseCase,
@@ -110,6 +112,12 @@ class AddressBloc extends Bloc<AddressEvent, AddressState> {
   }
 
   void _onClearAddress(ClearAddress event, Emitter<AddressState> emit) {
+    emit(AddressInitial());
+  }
+
+  @override
+  void reset() {
+    // ignore: invalid_use_of_visible_for_testing_member
     emit(AddressInitial());
   }
 }

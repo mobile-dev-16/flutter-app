@@ -36,6 +36,7 @@ class AuthRepositoryImpl implements AuthRepository {
           password: password,
         );
         await localDataSource.cacheUser(user);
+        await localDataSource.cacheUserId(user.id);
         return Right<Failure, User>(user);
       } on AuthException catch (e) {
         return Left<Failure, User>(AuthFailure(e.message));
@@ -68,7 +69,10 @@ class AuthRepositoryImpl implements AuthRepository {
         );
 
         // Guardar datos adicionales en Firestore
-        await firestore.collection('profiles').doc(user.id).set(<String, dynamic>{
+        await firestore
+            .collection('profiles')
+            .doc(user.id)
+            .set(<String, dynamic>{
           'name': name,
           'surname': surname,
           'citizenId': citizenId,
@@ -85,7 +89,9 @@ class AuthRepositoryImpl implements AuthRepository {
       } on AuthException catch (e) {
         return Left<Failure, User>(AuthFailure(e.message));
       } catch (e) {
-        return const Left<Failure, User>(ServerFailure('Failed to save user profile'));
+        return const Left<Failure, User>(
+          ServerFailure('Failed to save user profile'),
+        );
       }
     } else {
       return const Left<Failure, User>(
@@ -136,6 +142,7 @@ class AuthRepositoryImpl implements AuthRepository {
       await remoteDataSource.signOut();
       await localDataSource.clearUserCache();
       await localDataSource.clearUserId();
+
       return const Right<Failure, void>(null);
     } on AuthException catch (e) {
       return Left<Failure, void>(AuthFailure(e.message));
