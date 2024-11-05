@@ -32,3 +32,7 @@ class AddToCart extends CartEvent {
   @override
   List<Object?> get props => <Object>[item];
 }
+
+class ClearCart extends CartEvent {}
+
+class CompletePurchase extends CartEvent {}

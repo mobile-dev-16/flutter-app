@@ -4,13 +4,24 @@ import 'package:eco_bites/features/cart/presentation/bloc/cart_event.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class CartBloc extends Bloc<CartEvent, CartState>
-    with ResettableMixin<CartEvent, CartState> {
-  CartBloc(final List<CartItemData> initialItems)
+class CartBloc extends Bloc<CartEvent, CartState> {
+  CartBloc(List<CartItemData> initialItems)
       : super(CartState(items: initialItems)) {
     on<AddToCart>(_onAddToCart);
     on<CartItemQuantityChanged>(_onCartItemQuantityChanged);
     on<CartItemRemoved>(_onCartItemRemoved);
+    on<ClearCart>(_onClearCart);
+    on<CompletePurchase>(_onCompletePurchase);
+  }
+
+  void _onClearCart(ClearCart event, Emitter<CartState> emit) {
+    emit(CartState(items: [])); // Set items to an empty list
+  }
+
+  void _onCompletePurchase(CompletePurchase event, Emitter<CartState> emit) {
+    // Here you could add logic to process the purchase
+    // For now, it clears the cart to simulate a completed purchase
+    emit(CartState(items: []));
   }
 
   void _onAddToCart(AddToCart event, Emitter<CartState> emit) {
