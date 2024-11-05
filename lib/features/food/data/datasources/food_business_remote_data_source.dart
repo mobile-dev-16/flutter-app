@@ -29,7 +29,7 @@ class FoodBusinessRemoteDataSourceImpl implements FoodBusinessRemoteDataSource {
     required Address userLocation,
     CuisineType? favoriteCuisine,
     Category? category,
-    double distanceInKm = 5.0,
+    double distanceInKm = 999.0,
   }) async {
     try {
       Logger().d('Fetching nearby surplus food businesses');
