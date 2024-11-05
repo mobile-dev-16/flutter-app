@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_event.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class ForYouTab extends StatelessWidget {
   const ForYouTab({super.key});
@@ -96,6 +97,15 @@ class OfferCard extends StatelessWidget {
           onPressed: () {
             final cartItem = offer.toCartItem();
             context.read<CartBloc>().add(AddToCart(cartItem));
+
+            // Show feedback toast for added item
+            Fluttertoast.showToast(
+              msg: '${offer.description} added to cart!',
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              backgroundColor: Colors.green,
+              textColor: Colors.white,
+            );
           },
         ),
       ),
