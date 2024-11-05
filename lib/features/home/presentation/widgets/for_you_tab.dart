@@ -55,7 +55,16 @@ class ForYouTab extends StatelessWidget {
                         ? Text(foodBusiness.name[0])
                         : null,
                   ),
-                  title: Text(foodBusiness.name),
+                  title: Row(
+                    children: [
+                      Text(foodBusiness.name),
+                      if (foodBusiness.isNew) // Check if the restaurant is new
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: _buildNewFlag(),
+                        ),
+                    ],
+                  ),
                   children: foodBusiness.offers
                       .map<Widget>((Offer offer) => OfferCard(offer: offer))
                       .toList(),
@@ -67,6 +76,25 @@ class ForYouTab extends StatelessWidget {
           }
           return const Center(child: Text('No offers available'));
         },
+      ),
+    );
+  }
+
+  // Method to build the "New" flag widget
+  Widget _buildNewFlag() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.red,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: const Text(
+        'New',
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+        ),
       ),
     );
   }
