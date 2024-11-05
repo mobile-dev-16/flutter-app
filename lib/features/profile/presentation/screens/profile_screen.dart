@@ -44,6 +44,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  // ignore: unused_element
   Future<void> _saveProfile(UserProfile updatedProfile) async {
     final InternetConnectionBloc internetConnectionBloc =
         context.read<InternetConnectionBloc>();
