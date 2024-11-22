@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:eco_bites/core/blocs/internet_connection/internet_connection_bloc.dart';
 import 'package:eco_bites/core/network/network_info.dart';
+import 'package:eco_bites/features/address/data/datasources/address_local_data_source.dart';
 import 'package:eco_bites/features/address/data/datasources/address_remote_data_source.dart';
 import 'package:eco_bites/features/address/data/repositories/address_repository_impl.dart';
 import 'package:eco_bites/features/address/domain/repositories/address_repository.dart';
@@ -20,6 +21,7 @@ import 'package:eco_bites/features/auth/domain/usecases/sign_up_with_google_usec
 import 'package:eco_bites/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:eco_bites/features/cart/domain/models/cart_item_data.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_bloc.dart';
+import 'package:eco_bites/features/food/data/datasources/food_business_local_data_source.dart';
 import 'package:eco_bites/features/food/data/datasources/food_business_remote_data_source.dart';
 import 'package:eco_bites/features/food/data/repositories/food_business_repository_impl.dart';
 import 'package:eco_bites/features/food/domain/repositories/food_business_repository.dart';
@@ -160,6 +162,7 @@ void _setupAddressFeature() {
   serviceLocator.registerLazySingleton<AddressRepository>(
     () => AddressRepositoryImpl(
       remoteDataSource: serviceLocator(),
+      localDataSource: serviceLocator(),
       networkInfo: serviceLocator(),
     ),
   );
@@ -167,6 +170,9 @@ void _setupAddressFeature() {
   // Data sources
   serviceLocator.registerLazySingleton<AddressRemoteDataSource>(
     () => AddressRemoteDataSourceImpl(firestore: serviceLocator()),
+  );
+  serviceLocator.registerLazySingleton<AddressLocalDataSource>(
+    () => AddressLocalDataSourceImpl(),
   );
 }
 
@@ -197,6 +203,7 @@ void _setupFoodFeature() {
   serviceLocator.registerLazySingleton<FoodBusinessRepository>(
     () => FoodBusinessRepositoryImpl(
       remoteDataSource: serviceLocator(),
+      localDataSource: serviceLocator(),
       networkInfo: serviceLocator(),
     ),
   );
@@ -204,5 +211,8 @@ void _setupFoodFeature() {
     () => FoodBusinessRemoteDataSourceImpl(
       firestore: serviceLocator(),
     ),
+  );
+  serviceLocator.registerLazySingleton<FoodBusinessLocalDataSource>(
+    () => FoodBusinessLocalDataSourceImpl(),
   );
 }
