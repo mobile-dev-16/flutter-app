@@ -26,3 +26,7 @@ class FirebaseFailure extends Failure {
   const FirebaseFailure(String? message)
       : super(message ?? 'Firebase error occurred');
 }
+
+class CacheFailure extends Failure {
+  const CacheFailure(super.message);
+}

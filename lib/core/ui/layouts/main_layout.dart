@@ -8,7 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class MainLayout extends StatefulWidget { // Pass the app launch time here
+class MainLayout extends StatefulWidget {
+  // Pass the app launch time here
 
   const MainLayout({super.key, required this.appLaunchTime});
 
@@ -29,7 +30,9 @@ class MainLayoutState extends State<MainLayout> {
     _screens = <Widget>[
       BlocProvider<HomeBloc>(
         create: (BuildContext context) => HomeBloc(),
-        child: HomeScreen(appLaunchTime: widget.appLaunchTime), // Pass appLaunchTime to HomeScreen
+        child: HomeScreen(
+          appLaunchTime: widget.appLaunchTime,
+        ), // Pass appLaunchTime to HomeScreen
       ),
       const CartScreen(),
       const OrderListScreen(),
