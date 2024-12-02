@@ -4,10 +4,10 @@ import 'package:eco_bites/features/orders/domain/entities/order.dart'
 import 'package:eco_bites/features/orders/presentation/bloc/order_bloc.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_event.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_state.dart';
+import 'package:eco_bites/features/orders/presentation/screens/order_details_screen.dart';
 import 'package:eco_bites/features/orders/presentation/widgets/order_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:eco_bites/features/orders/presentation/screens/order_details_screen.dart';
 
 class OrderListScreen extends StatelessWidget {
   const OrderListScreen({super.key});

@@ -24,5 +24,5 @@ class UpdateOrderStatusParams extends Equatable {
   final OrderStatus newStatus;
 
   @override
-  List<Object?> get props => [orderId, newStatus];
+  List<Object?> get props => <Object?>[orderId, newStatus];
 }

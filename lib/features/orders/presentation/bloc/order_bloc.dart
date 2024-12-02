@@ -43,7 +43,9 @@ class OrderBloc extends Bloc<OrderEvent, OrderState>
   }
 
   Future<void> _onUpdateOrder(
-      UpdateOrder event, Emitter<OrderState> emit) async {
+    UpdateOrder event,
+    Emitter<OrderState> emit,
+  ) async {
     final OrderState currentState = state;
     if (currentState is OrdersLoaded) {
       emit(OrdersLoading());

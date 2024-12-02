@@ -45,7 +45,7 @@ class Order extends Equatable {
   final DateTime? completedAt;
 
   @override
-  List<Object?> get props => [
+  List<Object?> get props => <Object?>[
         id,
         businessId,
         businessName,
@@ -71,5 +71,5 @@ class OrderItem extends Equatable {
   final double price;
 
   @override
-  List<Object?> get props => [id, name, quantity, price];
+  List<Object?> get props => <Object?>[id, name, quantity, price];
 }
