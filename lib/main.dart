@@ -1,4 +1,3 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:eco_bites/app.dart';
 import 'package:eco_bites/firebase_options.dart';
 import 'package:eco_bites/injection_container.dart';
