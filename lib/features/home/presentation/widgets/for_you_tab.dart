@@ -14,6 +14,7 @@ import 'package:eco_bites/features/profile/presentation/bloc/profile_state.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:eco_bites/features/home/presentation/screens/rating_screen.dart';
 
 class ForYouTab extends StatelessWidget {
   const ForYouTab({super.key});
@@ -60,9 +61,21 @@ class ForYouTab extends StatelessWidget {
                       Text(foodBusiness.name),
                       if (foodBusiness.isNew) // Check if the restaurant is new
                         Padding(
-                          padding: const EdgeInsets.only(left: 8.0),
+                          padding: const EdgeInsets.only(left: 6.0),
                           child: _buildNewFlag(),
                         ),
+                      const Spacer(), // Push the "Rate" button to the end of the row
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              builder: (BuildContext context) => RatingScreen(
+                                  restaurantName: foodBusiness.name),
+                            ),
+                          );
+                        },
+                        child: const Text('Rate'),
+                      ),
                     ],
                   ),
                   children: foodBusiness.offers
@@ -80,7 +93,6 @@ class ForYouTab extends StatelessWidget {
     );
   }
 
-  // Method to build the "New" flag widget
   Widget _buildNewFlag() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
