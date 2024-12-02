@@ -45,6 +45,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  // ignore: unused_element
   Future<void> _saveProfile(UserProfile updatedProfile) async {
     final InternetConnectionBloc internetConnectionBloc =
         context.read<InternetConnectionBloc>();
@@ -176,6 +177,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                           final SharedPreferences prefs = await SharedPreferences.getInstance();
                           await prefs.setString('cachedProfile', updatedProfile.toMap().toString());
                           if (mounted) {
+                            // ignore: use_build_context_synchronously
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
