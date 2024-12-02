@@ -56,7 +56,7 @@ class SupportBloc extends Bloc<SupportEvent, SupportState> {
       'subOption': event.subOption,
       'reason': event.reason,
       'description': event.description,
-    }));
+    }),);
     await prefs.setStringList('cachedTickets', cachedTickets);
   }
 
