@@ -27,6 +27,12 @@ import 'package:eco_bites/features/food/data/repositories/food_business_reposito
 import 'package:eco_bites/features/food/domain/repositories/food_business_repository.dart';
 import 'package:eco_bites/features/food/domain/usecases/fetch_nearby_surplus_food_businesses.dart';
 import 'package:eco_bites/features/food/presentation/bloc/food_business_bloc.dart';
+import 'package:eco_bites/features/orders/data/datasources/order_local_data_source.dart';
+import 'package:eco_bites/features/orders/data/datasources/order_remote_data_source.dart';
+import 'package:eco_bites/features/orders/data/repositories/order_repository_impl.dart';
+import 'package:eco_bites/features/orders/domain/repositories/order_repository.dart';
+import 'package:eco_bites/features/orders/domain/usecases/get_orders.dart';
+import 'package:eco_bites/features/orders/domain/usecases/update_order_status.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_bloc.dart';
 import 'package:eco_bites/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:eco_bites/features/profile/domain/repositories/user_profile_repository.dart';
@@ -177,7 +183,37 @@ void _setupAddressFeature() {
 }
 
 void _setupOrderFeature() {
-  serviceLocator.registerFactory(() => OrderBloc());
+  serviceLocator.registerFactory(
+    () => OrderBloc(
+      getOrders: serviceLocator(),
+      updateOrderStatus: serviceLocator(),
+    ),
+  );
+
+  // Use cases
+  serviceLocator.registerLazySingleton(() => GetOrders(serviceLocator()));
+  serviceLocator
+      .registerLazySingleton(() => UpdateOrderStatus(serviceLocator()));
+
+  // Repository
+  serviceLocator.registerLazySingleton<OrderRepository>(
+    () => OrderRepositoryImpl(
+      remoteDataSource: serviceLocator(),
+      localDataSource: serviceLocator(),
+      networkInfo: serviceLocator(),
+    ),
+  );
+
+  // Data sources
+  serviceLocator.registerLazySingleton<OrderRemoteDataSource>(
+    () => OrderRemoteDataSourceImpl(
+      firestore: serviceLocator(),
+      auth: serviceLocator(),
+    ),
+  );
+  serviceLocator.registerLazySingleton<OrderLocalDataSource>(
+    () => OrderLocalDataSourceImpl(),
+  );
 }
 
 void _setupCartFeature() {
