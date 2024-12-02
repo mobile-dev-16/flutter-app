@@ -9,6 +9,7 @@ import 'package:eco_bites/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:eco_bites/features/food/presentation/bloc/food_business_bloc.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_bloc.dart';
 import 'package:eco_bites/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:eco_bites/features/support/presentation/bloc/support_bloc.dart';
 import 'package:eco_bites/injection_container.dart';
 import 'package:eco_bites/route_generator.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -68,6 +69,7 @@ class EcoBitesApp extends StatelessWidget {
         BlocProvider<ProfileBloc>(
           create: (_) => serviceLocator<ProfileBloc>(),
         ),
+        BlocProvider<SupportBloc>(create: (_) => serviceLocator<SupportBloc>()),
       ],
       child: BlocResetter(
         child: MaterialApp(
