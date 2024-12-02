@@ -39,6 +39,7 @@ import 'package:eco_bites/features/profile/domain/repositories/user_profile_repo
 import 'package:eco_bites/features/profile/domain/usecases/fetch_user_profile_usecase.dart';
 import 'package:eco_bites/features/profile/domain/usecases/update_user_profile_usecase.dart';
 import 'package:eco_bites/features/profile/presentation/bloc/profile_bloc.dart';
+import 'package:eco_bites/features/support/presentation/bloc/support_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -57,6 +58,7 @@ Future<void> setupServiceLocator() async {
   _setupOrderFeature();
   _setupCartFeature();
   _setupFoodFeature();
+  _setupSupportFeature();
 }
 
 Future<void> _setupCoreDependencies() async {
@@ -250,5 +252,15 @@ void _setupFoodFeature() {
   );
   serviceLocator.registerLazySingleton<FoodBusinessLocalDataSource>(
     () => FoodBusinessLocalDataSourceImpl(),
+  );
+}
+
+void _setupSupportFeature() {
+  // Bloc
+  serviceLocator.registerFactory(
+    () => SupportBloc(
+      firestore: serviceLocator(),
+      internetConnectionBloc: serviceLocator(),
+    ),
   );
 }

@@ -120,6 +120,17 @@ class ProfileScreenState extends State<ProfileScreen> {
 
             return Column(
               children: <Widget>[
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/support');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    textStyle: const TextStyle(fontSize: 18),
+                  ),
+                  child: const Text('Need help?'),
+                ),
+                const SizedBox(height: 24),
                 Text(
                   '¡Hi, ${_nameController.text}!',
                   style: Theme.of(context).textTheme.headlineSmall,
@@ -142,7 +153,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                 const SizedBox(height: 24),
                 Center(
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       final String? userId =
                           FirebaseAuth.instance.currentUser?.uid;
                       if (userId != null) {
@@ -160,12 +171,29 @@ class ProfileScreenState extends State<ProfileScreen> {
                           dietType: _dietType ?? DietType.none,
                         );
 
-                        context.read<ProfileBloc>().add(
-                              UpdateProfileEvent(
-                                userId: userId,
-                                updatedProfile: updatedProfile,
+                        final InternetConnectionBloc internetConnectionBloc =
+                            context.read<InternetConnectionBloc>();
+                        if (internetConnectionBloc.state is DisconnectedInternet) {
+                          final SharedPreferences prefs = await SharedPreferences.getInstance();
+                          await prefs.setString('cachedProfile', updatedProfile.toMap().toString());
+                          if (mounted) {
+                            // ignore: use_build_context_synchronously
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'No internet connection. Your data will be saved when you are online.',
+                                ),
                               ),
                             );
+                          }
+                        } else {
+                          context.read<ProfileBloc>().add(
+                                UpdateProfileEvent(
+                                  userId: userId,
+                                  updatedProfile: updatedProfile,
+                                ),
+                              );
+                        }
                       }
                     },
                     child: const Text('Save'),

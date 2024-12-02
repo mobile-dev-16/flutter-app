@@ -2,7 +2,9 @@ import 'package:eco_bites/core/network/network_info.dart';
 import 'package:eco_bites/core/ui/layouts/main_layout.dart';
 import 'package:eco_bites/features/auth/presentation/screens/login_screen.dart';
 import 'package:eco_bites/features/auth/presentation/screens/register_screen.dart';
+import 'package:eco_bites/features/profile/presentation/screens/profile_screen.dart';
 import 'package:eco_bites/features/splash/presentation/screens/splash_screen.dart';
+import 'package:eco_bites/features/support/presentation/screens/support_screen.dart';
 import 'package:flutter/material.dart';
 
 class RouteGenerator {
@@ -10,6 +12,8 @@ class RouteGenerator {
   static const String loginScreen = '/login';
   static const String registerScreen = '/register';
   static const String mainScreen = '/main';
+  static const String supportScreen = '/support';
+  static const String profileScreen = '/profile';
 
   static Route<dynamic> generateRoute(
     RouteSettings settings, {
@@ -32,6 +36,10 @@ class RouteGenerator {
         return MaterialPageRoute<void>(
           builder: (_) => MainLayout(appLaunchTime: appLaunchTime),
         );
+      case supportScreen:
+        return MaterialPageRoute<void>(builder: (_) => const SupportScreen());
+      case profileScreen:
+        return MaterialPageRoute<void>(builder: (_) => const ProfileScreen());
       default:
         return MaterialPageRoute<void>(
           builder: (_) => const Scaffold(
