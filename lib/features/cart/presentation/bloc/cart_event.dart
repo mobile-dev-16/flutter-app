@@ -36,3 +36,7 @@ class AddToCart extends CartEvent {
 class ClearCart extends CartEvent {}
 
 class CompletePurchase extends CartEvent {}
+
+class PurchaseCartEvent extends CartEvent {
+  const PurchaseCartEvent();
+}

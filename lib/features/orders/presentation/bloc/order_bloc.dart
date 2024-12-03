@@ -3,6 +3,7 @@ import 'package:eco_bites/core/blocs/resettable_mixin.dart';
 import 'package:eco_bites/core/error/failures.dart';
 import 'package:eco_bites/features/orders/domain/entities/order.dart'
     as order_entity;
+import 'package:eco_bites/features/orders/domain/usecases/create_order.dart';
 import 'package:eco_bites/features/orders/domain/usecases/get_orders.dart';
 import 'package:eco_bites/features/orders/domain/usecases/update_order_status.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_event.dart';
@@ -15,15 +16,19 @@ class OrderBloc extends Bloc<OrderEvent, OrderState>
   OrderBloc({
     required GetOrders getOrders,
     required UpdateOrderStatus updateOrderStatus,
+    required CreateOrder createOrder,
   })  : _getOrders = getOrders,
         _updateOrderStatus = updateOrderStatus,
+        _createOrder = createOrder,
         super(OrdersLoading()) {
     on<LoadOrders>(_onLoadOrders);
     on<UpdateOrder>(_onUpdateOrder);
+    on<CreateOrderEvent>(_onCreateOrder);
   }
 
   final GetOrders _getOrders;
   final UpdateOrderStatus _updateOrderStatus;
+  final CreateOrder _createOrder;
 
   Future<void> _onLoadOrders(LoadOrders event, Emitter<OrderState> emit) async {
     emit(OrdersLoading());
@@ -68,6 +73,32 @@ class OrderBloc extends Bloc<OrderEvent, OrderState>
         },
       );
     }
+  }
+
+  Future<void> _onCreateOrder(
+    CreateOrderEvent event,
+    Emitter<OrderState> emit,
+  ) async {
+    Logger().d('Creating order');
+    emit(OrdersLoading());
+
+    final Either<Failure, void> result = await _createOrder(
+      CreateOrderParams(order: event.order),
+    );
+
+    Logger().d('Order created');
+
+    result.fold(
+      (Failure failure) {
+        Logger().e('Failed to create order: ${failure.message}');
+        emit(OrdersError(failure.message));
+      },
+      (_) {
+        Logger().d('Order created successfully');
+        // Reload orders after successful creation
+        add(LoadOrders());
+      },
+    );
   }
 
   @override

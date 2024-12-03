@@ -2,11 +2,14 @@ import 'package:eco_bites/features/cart/domain/models/cart_item_data.dart';
 import 'package:equatable/equatable.dart';
 
 class CartState extends Equatable {
-  const CartState({required this.items});
+  const CartState({
+    required this.items,
+    this.error,
+  });
 
   final List<CartItemData> items;
+  final String? error;
 
-  // Calculate subtotal as the sum of offer prices times quantity for each item
   double get subtotal => items.fold(
         0.0,
         (double sum, CartItemData item) =>
@@ -14,11 +17,15 @@ class CartState extends Equatable {
       );
 
   @override
-  List<Object?> get props => <Object>[items];
+  List<Object?> get props => <Object?>[items, error];
 
-  CartState copyWith({List<CartItemData>? items}) {
+  CartState copyWith({
+    List<CartItemData>? items,
+    String? error,
+  }) {
     return CartState(
       items: items ?? this.items,
+      error: error,
     );
   }
 }

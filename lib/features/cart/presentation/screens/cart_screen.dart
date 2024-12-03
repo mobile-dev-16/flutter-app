@@ -71,12 +71,22 @@ class CartScreenContent extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      context.read<CartBloc>().add(CompletePurchase());
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Purchase Completed')),
-                      );
+                      if (state.items.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Cart is empty'),
+                          ),
+                        );
+                      } else {
+                        context.read<CartBloc>().add(const PurchaseCartEvent());
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Order placed successfully!'),
+                          ),
+                        );
+                      }
                     },
-                    child: const Text('Complete Purchase'),
+                    child: const Text('Purchase'),
                   ),
                 ],
               ),

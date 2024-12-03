@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_bites/core/error/exceptions.dart';
+import 'package:eco_bites/core/utils/user_util.dart';
 import 'package:eco_bites/features/orders/data/models/order_model.dart';
 import 'package:eco_bites/features/orders/domain/entities/order.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:logger/logger.dart';
 
 abstract class OrderRemoteDataSource {
@@ -14,17 +14,14 @@ abstract class OrderRemoteDataSource {
 class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   const OrderRemoteDataSourceImpl({
     required FirebaseFirestore firestore,
-    required FirebaseAuth auth,
-  })  : _firestore = firestore,
-        _auth = auth;
+  }) : _firestore = firestore;
 
   final FirebaseFirestore _firestore;
-  final FirebaseAuth _auth;
 
   @override
   Future<List<OrderModel>> getOrders() async {
     try {
-      final String? userId = _auth.currentUser?.uid;
+      final String? userId = await getUserId();
       if (userId == null) {
         throw const AuthException('User not authenticated');
       }
@@ -66,6 +63,41 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
 
   @override
   Future<void> createOrder(OrderModel order) async {
-    await _firestore.collection('orders').doc().set(order.toMap());
+    try {
+      final String? userId = await getUserId();
+      if (userId == null) {
+        throw const AuthException('User not authenticated');
+      }
+
+      // validate if the order items are not empty
+      if (order.items.isEmpty) {
+        Logger().e('Order items cannot be empty');
+        // do not throw, snackbar will handle this
+        return;
+      }
+
+      // Get business name from Firestore
+      final DocumentSnapshot<Map<String, dynamic>> businessDoc =
+          await _firestore
+              .collection('foodBusiness')
+              .doc(order.businessId)
+              .get();
+
+      if (!businessDoc.exists) {
+        Logger().e('Business not found');
+      }
+
+      final String businessName = businessDoc.data()?['name'] as String;
+
+      // Create the order with the fetched business name
+      final Map<String, dynamic> orderData = order.toMap()
+        ..['userId'] = userId
+        ..['businessName'] = businessName;
+
+      await _firestore.collection('orders').doc().set(orderData);
+    } catch (e) {
+      Logger().e('Error creating order: $e');
+      throw AuthException('Failed to create order: $e');
+    }
   }
 }

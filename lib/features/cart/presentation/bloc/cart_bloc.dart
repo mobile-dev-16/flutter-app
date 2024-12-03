@@ -2,18 +2,27 @@ import 'package:eco_bites/core/blocs/resettable_mixin.dart';
 import 'package:eco_bites/features/cart/domain/models/cart_item_data.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_event.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_state.dart';
+import 'package:eco_bites/features/orders/data/models/order_model.dart';
+import 'package:eco_bites/features/orders/domain/entities/order.dart';
+import 'package:eco_bites/features/orders/presentation/bloc/order_bloc.dart';
+import 'package:eco_bites/features/orders/presentation/bloc/order_event.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState>
     with ResettableMixin<CartEvent, CartState> {
-  CartBloc(List<CartItemData> initialItems)
-      : super(CartState(items: initialItems)) {
+  CartBloc({
+    required this.orderBloc,
+    required List<CartItemData> initialItems,
+  }) : super(CartState(items: initialItems)) {
     on<AddToCart>(_onAddToCart);
     on<CartItemQuantityChanged>(_onCartItemQuantityChanged);
     on<CartItemRemoved>(_onCartItemRemoved);
     on<ClearCart>(_onClearCart);
     on<CompletePurchase>(_onCompletePurchase);
+    on<PurchaseCartEvent>(_onPurchaseCart);
   }
+
+  final OrderBloc orderBloc;
 
   void _onClearCart(ClearCart event, Emitter<CartState> emit) {
     emit(
@@ -72,6 +81,52 @@ class CartBloc extends Bloc<CartEvent, CartState>
         .where((CartItemData item) => item.id != event.itemId)
         .toList();
     emit(CartState(items: updatedItems));
+  }
+
+  Future<void> _onPurchaseCart(
+    PurchaseCartEvent event,
+    Emitter<CartState> emit,
+  ) async {
+    if (state.items.isEmpty) {
+      emit(state.copyWith(items: state.items, error: 'Cart is empty'));
+      return;
+    }
+
+    try {
+      final List<OrderItemModel> orderItems =
+          state.items.map((CartItemData cartItem) {
+        return OrderItemModel(
+          id: cartItem.id,
+          name: cartItem.title,
+          quantity: cartItem.quantity,
+          price: cartItem.offerPrice,
+        );
+      }).toList();
+
+      final double totalAmount = state.items.fold<double>(
+        0,
+        (double sum, CartItemData item) =>
+            sum + (item.offerPrice * item.quantity),
+      );
+
+      final OrderModel order = OrderModel(
+        id: '', // Will be set by Firestore
+        businessId: state.items.first.businessId,
+        items: orderItems,
+        totalAmount: totalAmount,
+        status: OrderStatus.pending,
+        createdAt: DateTime.now(),
+      );
+
+      orderBloc.add(CreateOrderEvent(order: order));
+
+      // Clear cart after successful purchase
+      emit(const CartState(items: <CartItemData>[]));
+    } catch (e) {
+      emit(
+        state.copyWith(items: state.items, error: 'Failed to create order: $e'),
+      );
+    }
   }
 
   @override
