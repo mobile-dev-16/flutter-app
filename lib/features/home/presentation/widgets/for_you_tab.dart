@@ -9,12 +9,12 @@ import 'package:eco_bites/features/food/domain/entities/offer.dart';
 import 'package:eco_bites/features/food/presentation/bloc/food_business_bloc.dart';
 import 'package:eco_bites/features/food/presentation/bloc/food_business_event.dart';
 import 'package:eco_bites/features/food/presentation/bloc/food_business_state.dart';
+import 'package:eco_bites/features/home/presentation/screens/rating_screen.dart';
 import 'package:eco_bites/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:eco_bites/features/profile/presentation/bloc/profile_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:eco_bites/features/home/presentation/screens/rating_screen.dart';
 
 class ForYouTab extends StatelessWidget {
   const ForYouTab({super.key});
@@ -70,7 +70,7 @@ class ForYouTab extends StatelessWidget {
                           Navigator.of(context).push(
                             MaterialPageRoute<void>(
                               builder: (BuildContext context) => RatingScreen(
-                                  restaurantName: foodBusiness.name),
+                                  restaurantName: foodBusiness.name,),
                             ),
                           );
                         },
