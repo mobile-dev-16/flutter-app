@@ -73,4 +73,20 @@ class OrderRepositoryImpl implements OrderRepository {
       );
     }
   }
+
+  @override
+  Future<Either<Failure, void>> createOrder(OrderModel order) async {
+    if (await networkInfo.isConnected) {
+      try {
+        await remoteDataSource.createOrder(order);
+        return const Right<Failure, void>(null);
+      } on AuthException catch (e) {
+        return Left<Failure, void>(AuthFailure(e.message));
+      }
+    } else {
+      return const Left<Failure, void>(
+        NetworkFailure('No internet connection'),
+      );
+    }
+  }
 }

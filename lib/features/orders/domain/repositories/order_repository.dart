@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:eco_bites/core/error/failures.dart';
+import 'package:eco_bites/features/orders/data/models/order_model.dart';
 import 'package:eco_bites/features/orders/domain/entities/order.dart'
     as entities;
 
@@ -9,4 +10,5 @@ abstract class OrderRepository {
     String orderId,
     entities.OrderStatus newStatus,
   );
+  Future<Either<Failure, void>> createOrder(OrderModel order);
 }

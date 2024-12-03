@@ -6,13 +6,15 @@ class OrderModel extends order_entity.Order {
   const OrderModel({
     required super.id,
     required super.businessId,
-    required super.businessName,
+    String? businessName,
     required super.items,
     required super.totalAmount,
     required super.status,
     required super.createdAt,
     super.completedAt,
-  });
+  }) : super(
+          businessName: businessName ?? '',
+        );
 
   factory OrderModel.fromMap(Map<String, dynamic> map, String id) {
     return OrderModel(

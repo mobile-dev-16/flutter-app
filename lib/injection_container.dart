@@ -31,6 +31,7 @@ import 'package:eco_bites/features/orders/data/datasources/order_local_data_sour
 import 'package:eco_bites/features/orders/data/datasources/order_remote_data_source.dart';
 import 'package:eco_bites/features/orders/data/repositories/order_repository_impl.dart';
 import 'package:eco_bites/features/orders/domain/repositories/order_repository.dart';
+import 'package:eco_bites/features/orders/domain/usecases/create_order.dart';
 import 'package:eco_bites/features/orders/domain/usecases/get_orders.dart';
 import 'package:eco_bites/features/orders/domain/usecases/update_order_status.dart';
 import 'package:eco_bites/features/orders/presentation/bloc/order_bloc.dart';
@@ -189,6 +190,7 @@ void _setupOrderFeature() {
     () => OrderBloc(
       getOrders: serviceLocator(),
       updateOrderStatus: serviceLocator(),
+      createOrder: serviceLocator(),
     ),
   );
 
@@ -196,6 +198,7 @@ void _setupOrderFeature() {
   serviceLocator.registerLazySingleton(() => GetOrders(serviceLocator()));
   serviceLocator
       .registerLazySingleton(() => UpdateOrderStatus(serviceLocator()));
+  serviceLocator.registerLazySingleton(() => CreateOrder(serviceLocator()));
 
   // Repository
   serviceLocator.registerLazySingleton<OrderRepository>(
@@ -210,7 +213,6 @@ void _setupOrderFeature() {
   serviceLocator.registerLazySingleton<OrderRemoteDataSource>(
     () => OrderRemoteDataSourceImpl(
       firestore: serviceLocator(),
-      auth: serviceLocator(),
     ),
   );
   serviceLocator.registerLazySingleton<OrderLocalDataSource>(
@@ -220,7 +222,10 @@ void _setupOrderFeature() {
 
 void _setupCartFeature() {
   serviceLocator.registerFactory(
-    () => CartBloc(<CartItemData>[]),
+    () => CartBloc(
+      orderBloc: serviceLocator(),
+      initialItems: <CartItemData>[],
+    ),
   );
 }
 

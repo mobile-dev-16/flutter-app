@@ -49,6 +49,7 @@ extension OfferExtensions on Offer {
       offerPrice: offerPrice,
       imageUrl: imageUrl,
       suitableFor: suitableFor,
+      businessId: businessId,
     );
   }
 }
