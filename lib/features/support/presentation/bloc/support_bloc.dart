@@ -30,7 +30,6 @@ class SupportBloc extends Bloc<SupportEvent, SupportState> {
   ) async {
     emit(SupportLoading());
     try {
-      // Intentar subir el ticket a Firestore
       await firestore.collection('support_tickets').add(<String, dynamic>{
         'category': event.category,
         'subOption': event.subOption,

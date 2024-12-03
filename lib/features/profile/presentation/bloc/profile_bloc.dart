@@ -1,6 +1,7 @@
 // ignore_for_file: unused_element
 
 import 'dart:convert';
+import 'dart:io';
 import 'package:eco_bites/core/blocs/internet_connection/internet_connection_bloc.dart';
 import 'package:eco_bites/core/blocs/resettable_mixin.dart';
 import 'package:eco_bites/core/constants/storage_keys.dart';
@@ -11,6 +12,7 @@ import 'package:eco_bites/features/profile/presentation/bloc/profile_event.dart'
 import 'package:eco_bites/features/profile/presentation/bloc/profile_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
@@ -50,6 +52,13 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState>
         );
         Logger().d('Cached profile: ${event.updatedProfile.toMap()}');
         Logger().d('Cached profile: ${prefs.getString('cachedProfile')}');
+
+        final Directory cacheDir = await getTemporaryDirectory();
+        final String imagePath = '${cacheDir.path}/profile_image.png';
+        if (File(imagePath).existsSync()) {
+          // Handle cached profile image
+        }
+
         emit(
           ProfileError(
             'No internet connection. Your data will be saved when you are online.',

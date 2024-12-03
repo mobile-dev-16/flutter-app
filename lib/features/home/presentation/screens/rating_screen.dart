@@ -78,6 +78,7 @@ class _RatingScreenState extends State<RatingScreen> {
   }
 
   void _submitRating(BuildContext context) {
+    // ignore: unused_local_variable
     final String comment = _commentController.text.trim();
 
     // Perform the rating submission logic here
