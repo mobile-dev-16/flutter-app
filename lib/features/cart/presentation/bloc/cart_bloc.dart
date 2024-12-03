@@ -1,4 +1,5 @@
 import 'package:eco_bites/core/blocs/resettable_mixin.dart';
+import 'package:eco_bites/core/utils/analytics_logger.dart';
 import 'package:eco_bites/features/cart/domain/models/cart_item_data.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_event.dart';
 import 'package:eco_bites/features/cart/presentation/bloc/cart_state.dart';
@@ -18,21 +19,19 @@ class CartBloc extends Bloc<CartEvent, CartState>
     on<CartItemQuantityChanged>(_onCartItemQuantityChanged);
     on<CartItemRemoved>(_onCartItemRemoved);
     on<ClearCart>(_onClearCart);
-    on<CompletePurchase>(_onCompletePurchase);
     on<PurchaseCartEvent>(_onPurchaseCart);
   }
 
   final OrderBloc orderBloc;
 
   void _onClearCart(ClearCart event, Emitter<CartState> emit) {
-    emit(
-      const CartState(items: <CartItemData>[]),
-    ); // Set items to an empty list
-  }
-
-  void _onCompletePurchase(CompletePurchase event, Emitter<CartState> emit) {
-    // Here you could add logic to process the purchase
-    // For now, it clears the cart to simulate a completed purchase
+    AnalyticsLogger.logEvent(
+      eventName: 'clear_cart',
+      additionalData: <String, dynamic>{
+        'item_count': state.items.length,
+        'total_amount': state.subtotal,
+      },
+    );
     emit(const CartState(items: <CartItemData>[]));
   }
 
@@ -45,23 +44,30 @@ class CartBloc extends Bloc<CartEvent, CartState>
       existingItem = null;
     }
 
+    final List<CartItemData> updatedItems = <CartItemData>[...state.items];
     if (existingItem != null) {
-      final List<CartItemData> updatedItems =
-          state.items.map((CartItemData item) {
-        if (item.id == event.item.id) {
-          return item.copyWith(quantity: item.quantity + event.item.quantity);
-        }
-        return item;
-      }).toList();
-      emit(CartState(items: updatedItems));
+      final int index = updatedItems.indexOf(existingItem);
+      updatedItems[index] = existingItem.copyWith(
+        quantity: existingItem.quantity + 1,
+      );
     } else {
-      final List<CartItemData> updatedItems =
-          List<CartItemData>.from(state.items)..add(event.item);
-      emit(CartState(items: updatedItems));
+      updatedItems.add(event.item);
     }
+
+    AnalyticsLogger.logEvent(
+      eventName: 'add_to_cart',
+      additionalData: <String, dynamic>{
+        'item_id': event.item.id,
+        'item_name': event.item.title,
+        'business_id': event.item.businessId,
+        'price': event.item.offerPrice,
+        'is_new_item': existingItem == null,
+      },
+    );
+
+    emit(CartState(items: updatedItems));
   }
 
-  // Existing handlers (no changes needed for these)
   void _onCartItemQuantityChanged(
     CartItemQuantityChanged event,
     Emitter<CartState> emit,
@@ -73,10 +79,36 @@ class CartBloc extends Bloc<CartEvent, CartState>
       }
       return item;
     }).toList();
+
+    AnalyticsLogger.logEvent(
+      eventName: 'update_cart_quantity',
+      additionalData: <String, dynamic>{
+        'item_id': event.itemId,
+        'new_quantity': event.quantity,
+        'previous_quantity': state.items
+            .firstWhere((CartItemData item) => item.id == event.itemId)
+            .quantity,
+      },
+    );
+
     emit(CartState(items: updatedItems));
   }
 
   void _onCartItemRemoved(CartItemRemoved event, Emitter<CartState> emit) {
+    final CartItemData removedItem =
+        state.items.firstWhere((CartItemData item) => item.id == event.itemId);
+
+    AnalyticsLogger.logEvent(
+      eventName: 'remove_from_cart',
+      additionalData: <String, dynamic>{
+        'item_id': event.itemId,
+        'item_name': removedItem.title,
+        'business_id': removedItem.businessId,
+        'quantity': removedItem.quantity,
+        'price': removedItem.offerPrice,
+      },
+    );
+
     final List<CartItemData> updatedItems = state.items
         .where((CartItemData item) => item.id != event.itemId)
         .toList();
@@ -116,6 +148,15 @@ class CartBloc extends Bloc<CartEvent, CartState>
         totalAmount: totalAmount,
         status: OrderStatus.pending,
         createdAt: DateTime.now(),
+      );
+
+      AnalyticsLogger.logEvent(
+        eventName: 'create_order',
+        additionalData: <String, dynamic>{
+          'business_id': order.businessId,
+          'item_count': order.items.length,
+          'total_amount': order.totalAmount,
+        },
       );
 
       orderBloc.add(CreateOrderEvent(order: order));
