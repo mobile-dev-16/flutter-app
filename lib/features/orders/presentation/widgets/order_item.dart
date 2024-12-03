@@ -3,9 +3,12 @@ import 'package:eco_bites/features/orders/domain/entities/order.dart'
     as order_entity;
 import 'package:flutter/material.dart';
 
-const double cardBorderRadius = 24.0;
-const EdgeInsets cardMargin = EdgeInsets.symmetric(vertical: 8, horizontal: 16);
-const EdgeInsets cardPadding = EdgeInsets.all(16);
+const double _cardBorderRadius = 24.0;
+const EdgeInsets _cardMargin = EdgeInsets.symmetric(
+  vertical: 8,
+  horizontal: 16,
+);
+const EdgeInsets _cardPadding = EdgeInsets.all(16);
 const double spaceBetweenElements = 12.0;
 
 class OrderItem extends StatelessWidget {
@@ -24,14 +27,14 @@ class OrderItem extends StatelessWidget {
 
     return Card(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(cardBorderRadius),
+        borderRadius: BorderRadius.circular(_cardBorderRadius),
       ),
-      margin: cardMargin,
+      margin: _cardMargin,
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(cardBorderRadius),
+        borderRadius: BorderRadius.circular(_cardBorderRadius),
         child: Padding(
-          padding: cardPadding,
+          padding: _cardPadding,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,

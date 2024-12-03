@@ -67,6 +67,14 @@ class FoodBusinessLocalDataSourceImpl implements FoodBusinessLocalDataSource {
             FOREIGN KEY (offerId) REFERENCES offers (id)
           )
         ''');
+
+        // Add indexes for frequently queried columns
+        await db.execute(
+          'CREATE INDEX idx_business_category ON food_businesses(category)',
+        );
+        await db.execute(
+          'CREATE INDEX idx_business_cuisine ON food_businesses(cuisineType)',
+        );
       },
     );
   }
