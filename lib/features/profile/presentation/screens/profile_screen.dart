@@ -70,9 +70,11 @@ class ProfileScreenState extends State<ProfileScreen> {
         await _profileImage!.copy(imagePath);
       }
     } else {
+      // ignore: avoid_print
       print('Storage permission not granted.');
     }
   } catch (e) {
+    // ignore: avoid_print
     print('Error picking image: $e');
   }
 }
@@ -87,6 +89,7 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  // ignore: unused_element
   Future<void> _saveProfile(UserProfile updatedProfile) async {
     final InternetConnectionBloc internetConnectionBloc =
         context.read<InternetConnectionBloc>();
@@ -234,6 +237,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                           final String profilePath = '${cacheDir.path}/profile.json';
                           await File(profilePath).writeAsString(updatedProfile.toMap().toString());
                           if (mounted) {
+                            // ignore: use_build_context_synchronously
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
