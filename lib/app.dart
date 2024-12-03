@@ -66,9 +66,6 @@ class EcoBitesApp extends StatelessWidget {
         BlocProvider<ProfileBloc>(
           create: (_) => serviceLocator<ProfileBloc>(),
         ),
-        BlocProvider<ProfileBloc>(
-          create: (_) => serviceLocator<ProfileBloc>(),
-        ),
         BlocProvider<SupportBloc>(create: (_) => serviceLocator<SupportBloc>()),
       ],
       child: BlocResetter(

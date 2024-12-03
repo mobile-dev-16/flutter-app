@@ -22,6 +22,8 @@ class ForYouTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<AddressBloc, AddressState>(
+      listenWhen: (AddressState previous, AddressState current) =>
+          previous is! AddressLoaded && current is AddressLoaded,
       listener: (BuildContext context, AddressState addressState) {
         if (addressState is AddressLoaded) {
           final ProfileState profileState = context.read<ProfileBloc>().state;
@@ -70,7 +72,8 @@ class ForYouTab extends StatelessWidget {
                           Navigator.of(context).push(
                             MaterialPageRoute<void>(
                               builder: (BuildContext context) => RatingScreen(
-                                  restaurantName: foodBusiness.name,),
+                                restaurantName: foodBusiness.name,
+                              ),
                             ),
                           );
                         },
