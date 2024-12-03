@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:eco_bites/core/blocs/internet_connection/internet_connection_bloc.dart';
 import 'package:eco_bites/core/utils/analytics_service.dart';
 import 'package:eco_bites/features/auth/presentation/bloc/auth_bloc.dart';
@@ -11,7 +13,10 @@ import 'package:eco_bites/features/profile/presentation/bloc/profile_state.dart'
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -31,10 +36,12 @@ class ProfileScreenState extends State<ProfileScreen> {
   CuisineType? _favoriteCuisine;
   DietType? _dietType;
   bool _isInitialized = false;
+  File? _profileImage;
 
   @override
   void initState() {
     super.initState();
+    _loadProfileImage();
     final String? userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId != null) {
       context.read<ProfileBloc>().add(LoadProfileEvent(userId));
@@ -45,7 +52,41 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  // ignore: unused_element
+  Future<void> _pickImage() async {
+  try {
+    // Check storage permission
+    if (await Permission.storage.request().isGranted) {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.gallery);
+
+      if (image != null) {
+        setState(() {
+          _profileImage = File(image.path);
+        });
+
+        // Save the profile image to cache
+        final Directory cacheDir = await getTemporaryDirectory();
+        final String imagePath = '${cacheDir.path}/profile_image.png';
+        await _profileImage!.copy(imagePath);
+      }
+    } else {
+      print('Storage permission not granted.');
+    }
+  } catch (e) {
+    print('Error picking image: $e');
+  }
+}
+
+  Future<void> _loadProfileImage() async {
+    final Directory cacheDir = await getTemporaryDirectory();
+    final String imagePath = '${cacheDir.path}/profile_image.png';
+    if (File(imagePath).existsSync()) {
+      setState(() {
+        _profileImage = File(imagePath);
+      });
+    }
+  }
+
   Future<void> _saveProfile(UserProfile updatedProfile) async {
     final InternetConnectionBloc internetConnectionBloc =
         context.read<InternetConnectionBloc>();
@@ -71,6 +112,12 @@ class ProfileScreenState extends State<ProfileScreen> {
               ),
             );
       }
+    }
+    if (_profileImage != null) {
+      // Save the profile image to cache
+      final Directory cacheDir = await getTemporaryDirectory();
+      final String imagePath = '${cacheDir.path}/profile_image.png';
+      await _profileImage!.copy(imagePath);
     }
   }
 
@@ -120,6 +167,19 @@ class ProfileScreenState extends State<ProfileScreen> {
 
             return Column(
               children: <Widget>[
+                GestureDetector(
+                  onTap: _pickImage,
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundImage: _profileImage != null
+                        ? FileImage(_profileImage!)
+                        : null,
+                    child: _profileImage == null
+                        ? const Icon(Icons.camera_alt, size: 50)
+                        : null,
+                  ),
+                ),
+                const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/support');
@@ -154,8 +214,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                 Center(
                   child: ElevatedButton(
                     onPressed: () async {
-                      final String? userId =
-                          FirebaseAuth.instance.currentUser?.uid;
+                      final String? userId = FirebaseAuth.instance.currentUser?.uid;
                       if (userId != null) {
                         final UserProfile updatedProfile = UserProfile(
                           userId: userId,
@@ -164,20 +223,17 @@ class ProfileScreenState extends State<ProfileScreen> {
                           citizenId: _citizenIdController.text,
                           email: _emailController.text,
                           phone: _phoneController.text,
-                          birthDate: DateFormat('MM/dd/yyyy')
-                              .parse(_birthDateController.text),
-                          favoriteCuisine:
-                              _favoriteCuisine ?? CuisineType.other,
+                          birthDate: DateFormat('MM/dd/yyyy').parse(_birthDateController.text),
+                          favoriteCuisine: _favoriteCuisine ?? CuisineType.other,
                           dietType: _dietType ?? DietType.none,
                         );
 
-                        final InternetConnectionBloc internetConnectionBloc =
-                            context.read<InternetConnectionBloc>();
+                        final InternetConnectionBloc internetConnectionBloc = context.read<InternetConnectionBloc>();
                         if (internetConnectionBloc.state is DisconnectedInternet) {
-                          final SharedPreferences prefs = await SharedPreferences.getInstance();
-                          await prefs.setString('cachedProfile', updatedProfile.toMap().toString());
+                          final Directory cacheDir = await getTemporaryDirectory();
+                          final String profilePath = '${cacheDir.path}/profile.json';
+                          await File(profilePath).writeAsString(updatedProfile.toMap().toString());
                           if (mounted) {
-                            // ignore: use_build_context_synchronously
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
@@ -188,11 +244,11 @@ class ProfileScreenState extends State<ProfileScreen> {
                           }
                         } else {
                           context.read<ProfileBloc>().add(
-                                UpdateProfileEvent(
-                                  userId: userId,
-                                  updatedProfile: updatedProfile,
-                                ),
-                              );
+                            UpdateProfileEvent(
+                              userId: userId,
+                              updatedProfile: updatedProfile,
+                            ),
+                          );
                         }
                       }
                     },
