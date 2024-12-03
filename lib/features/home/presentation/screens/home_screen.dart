@@ -1,4 +1,6 @@
 import 'dart:async';
+
+import 'package:eco_bites/core/utils/analytics_logger.dart';
 import 'package:eco_bites/core/utils/analytics_service.dart';
 import 'package:eco_bites/core/utils/distance.dart';
 import 'package:eco_bites/features/address/domain/entities/address.dart';
@@ -114,6 +116,13 @@ class _HomeScreenContentState extends State<HomeScreenContent>
   void _handleTabSelection() {
     if (_tabController.indexIsChanging) {
       context.read<HomeBloc>().add(TabChanged(_tabController.index));
+      AnalyticsLogger.logEvent(
+        eventName: 'tab_change',
+        additionalData: <String, dynamic>{
+          'tab': _getTabName(_tabController.index),
+          'previous_tab': _getTabName(_tabController.previousIndex),
+        },
+      );
     }
   }
 
@@ -340,5 +349,18 @@ class _HomeScreenContentState extends State<HomeScreenContent>
         ],
       ),
     );
+  }
+
+  String _getTabName(int index) {
+    final List<String> tabNames = <String>[
+      'for_you',
+      'dietary',
+      'restaurant',
+      'ingredients',
+      'store',
+      'diary',
+      'drink',
+    ];
+    return tabNames[index];
   }
 }

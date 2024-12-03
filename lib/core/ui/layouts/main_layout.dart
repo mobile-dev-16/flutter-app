@@ -1,4 +1,5 @@
 import 'package:eco_bites/core/ui/widgets/bottom_navbar.dart';
+import 'package:eco_bites/core/utils/analytics_logger.dart';
 import 'package:eco_bites/features/cart/presentation/screens/cart_screen.dart';
 import 'package:eco_bites/features/home/presentation/bloc/home_bloc.dart';
 import 'package:eco_bites/features/home/presentation/screens/home_screen.dart';
@@ -9,8 +10,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MainLayout extends StatefulWidget {
-  // Pass the app launch time here
-
   const MainLayout({super.key, required this.appLaunchTime});
 
   final DateTime appLaunchTime;
@@ -32,7 +31,7 @@ class MainLayoutState extends State<MainLayout> {
         create: (BuildContext context) => HomeBloc(),
         child: HomeScreen(
           appLaunchTime: widget.appLaunchTime,
-        ), // Pass appLaunchTime to HomeScreen
+        ),
       ),
       const CartScreen(),
       const OrderListScreen(),
@@ -41,6 +40,21 @@ class MainLayoutState extends State<MainLayout> {
   }
 
   void _onItemTapped(int index) {
+    final List<String> screenNames = <String>[
+      'home',
+      'cart',
+      'orders',
+      'profile',
+    ];
+
+    AnalyticsLogger.logEvent(
+      eventName: 'navigation',
+      additionalData: <String, dynamic>{
+        'screen': screenNames[index],
+        'previous_screen': screenNames[_currentIndex],
+      },
+    );
+
     setState(() {
       _currentIndex = index;
     });

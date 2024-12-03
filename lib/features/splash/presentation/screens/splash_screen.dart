@@ -1,6 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:eco_bites/core/network/network_info.dart';
+import 'package:eco_bites/core/utils/analytics_logger.dart';
 import 'package:eco_bites/features/splash/presentation/bloc/splash_bloc.dart';
 import 'package:eco_bites/features/splash/presentation/bloc/splash_event.dart';
 import 'package:eco_bites/features/splash/presentation/bloc/splash_state.dart';
@@ -33,10 +33,10 @@ class SplashScreen extends StatelessWidget {
           if (state is Authenticated) {
             try {
               if (await networkInfo.isConnected) {
-                await logEvent(
+                await AnalyticsLogger.logEvent(
+                  eventName: 'splash_screen',
                   milliseconds: loadTime.inMilliseconds,
                   authenticated: true,
-                  eventName: 'splash_screen',
                 );
               }
             } catch (e) {
@@ -46,10 +46,10 @@ class SplashScreen extends StatelessWidget {
           } else if (state is Unauthenticated) {
             try {
               if (await networkInfo.isConnected) {
-                await logEvent(
+                await AnalyticsLogger.logEvent(
+                  eventName: 'splash_screen',
                   milliseconds: loadTime.inMilliseconds,
                   authenticated: false,
-                  eventName: 'splash_screen',
                 );
               }
             } catch (e) {
@@ -78,22 +78,5 @@ class SplashScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Future<void> logEvent({
-    required int milliseconds,
-    required bool authenticated,
-    required String eventName,
-  }) async {
-    try {
-      await FirebaseFirestore.instance.collection('logs').add(<String, dynamic>{
-        'milliseconds': milliseconds,
-        'authenticated': authenticated,
-        'eventName': eventName,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-    } catch (e) {
-      // Silently fail if logging fails
-    }
   }
 }
